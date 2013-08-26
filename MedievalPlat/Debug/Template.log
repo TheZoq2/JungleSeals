@@ -1,0 +1,61 @@
+﻿Build started 2013-08-25 21:47:39.
+     1>Project "C:\Users\TheZoq2\Documents\Visual Studio 2010\Projects\MedievalPlat\Template.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Creating "Debug\MedievalPlat.unsuccessfulbuild" because "AlwaysCreate" was specified.
+       ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I"C:\Program Files (x86)\The Game Creators\AGK\IDE\common\Include" /I"C:\Program Files (x86)\The Game Creators\AGK\IDE\common" /Z7 /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D IDE_VS2008 /D _CRT_SECURE_NO_WARNINGS /Gm- /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt Core.cpp GF.cpp IngameMenu.cpp Input.cpp Item.cpp Part.cpp Player.cpp Script.cpp World.cpp template.cpp
+         Core.cpp
+     1>Core.cpp(557): warning C4244: '=' : conversion from 'float' to 'int', possible loss of data
+     1>Core.cpp(566): warning C4244: '=' : conversion from 'float' to 'int', possible loss of data
+         GF.cpp
+         IngameMenu.cpp
+         Input.cpp
+     1>Input.cpp(34): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>Input.cpp(35): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>Input.cpp(35): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+         Item.cpp
+     1>Item.cpp(150): warning C4305: '=' : truncation from 'double' to 'float'
+     1>Item.cpp(151): warning C4305: '=' : truncation from 'double' to 'float'
+         Part.cpp
+     1>Part.cpp(45): warning C4305: 'argument' : truncation from 'double' to 'float'
+         Player.cpp
+         Script.cpp
+         World.cpp
+     1>World.cpp(198): warning C4018: '<' : signed/unsigned mismatch
+     1>World.cpp(428): warning C4244: 'initializing' : conversion from 'int' to 'float', possible loss of data
+         template.cpp
+     1>template.cpp(12): warning C4244: 'argument' : conversion from 'time_t' to 'unsigned int', possible loss of data
+         Generating Code...
+     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\Microsoft.CppBuild.targets(990,5): warning MSB8012: TargetPath(C:\Users\TheZoq2\Documents\Visual Studio 2010\Projects\MedievalPlat\Debug\MedievalPlat.exe) does not match the Linker's OutputFile property value (C:\Users\TheZoq2\Documents\Visual Studio 2010\Projects\MedievalPlat\Final\MedievalPlat.exe). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"Final\MedievalPlat.exe" /INCREMENTAL:NO /NOLOGO /LIBPATH:"C:\Program Files (x86)\The Game Creators\AGK\IDE\platform\windows\Lib\VS2010\Debug" AGKWindows.lib OpenGL32.lib winmm.lib dwmapi.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib Delayimp.lib /NODEFAULTLIB:atlsd.lib /DELAYLOAD:Dwmapi.dll /MANIFEST /ManifestFile:"Debug\MedievalPlat.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\Users\TheZoq2\Documents\Visual Studio 2010\Projects\MedievalPlat\Debug\MedievalPlat.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\TheZoq2\Documents\Visual Studio 2010\Projects\MedievalPlat\Debug\MedievalPlat.lib" /MACHINE:X86 Debug\Core.obj
+         Debug\GF.obj
+         Debug\IngameMenu.obj
+         Debug\Input.obj
+         Debug\Item.obj
+         Debug\Part.obj
+         Debug\Player.obj
+         Debug\Script.obj
+         Debug\template.obj
+         Debug\World.obj
+     1>AGKWindows.lib(Externs.obj) : warning LNK4099: PDB 'atlsd.pdb' was not found with 'AGKWindows.lib(Externs.obj)' or at 'C:\Users\TheZoq2\Documents\Visual Studio 2010\Projects\MedievalPlat\Debug\atlsd.pdb'; linking object as if no debug info
+     1>AGKWindows.lib(AtlTraceModuleManager.obj) : warning LNK4099: PDB 'atlsd.pdb' was not found with 'AGKWindows.lib(AtlTraceModuleManager.obj)' or at 'C:\Users\TheZoq2\Documents\Visual Studio 2010\Projects\MedievalPlat\Debug\atlsd.pdb'; linking object as if no debug info
+     1>AGKWindows.lib(atltypes.obj) : warning LNK4099: PDB 'atlsd.pdb' was not found with 'AGKWindows.lib(atltypes.obj)' or at 'C:\Users\TheZoq2\Documents\Visual Studio 2010\Projects\MedievalPlat\Debug\atlsd.pdb'; linking object as if no debug info
+     1>AGKWindows.lib(atltrace.obj) : warning LNK4099: PDB 'atlsd.pdb' was not found with 'AGKWindows.lib(atltrace.obj)' or at 'C:\Users\TheZoq2\Documents\Visual Studio 2010\Projects\MedievalPlat\Debug\atlsd.pdb'; linking object as if no debug info
+     1>AGKWindows.lib(atlstr.obj) : warning LNK4099: PDB 'atlsd.pdb' was not found with 'AGKWindows.lib(atlstr.obj)' or at 'C:\Users\TheZoq2\Documents\Visual Studio 2010\Projects\MedievalPlat\Debug\atlsd.pdb'; linking object as if no debug info
+     1>AGKWindows.lib(atlimage2.obj) : warning LNK4099: PDB 'atlsd.pdb' was not found with 'AGKWindows.lib(atlimage2.obj)' or at 'C:\Users\TheZoq2\Documents\Visual Studio 2010\Projects\MedievalPlat\Debug\atlsd.pdb'; linking object as if no debug info
+     1>AGKWindows.lib(atlimage.obj) : warning LNK4099: PDB 'atlsd.pdb' was not found with 'AGKWindows.lib(atlimage.obj)' or at 'C:\Users\TheZoq2\Documents\Visual Studio 2010\Projects\MedievalPlat\Debug\atlsd.pdb'; linking object as if no debug info
+     1>AGKWindows.lib(AtlDebugAPI.obj) : warning LNK4099: PDB 'atlsd.pdb' was not found with 'AGKWindows.lib(AtlDebugAPI.obj)' or at 'C:\Users\TheZoq2\Documents\Visual Studio 2010\Projects\MedievalPlat\Debug\atlsd.pdb'; linking object as if no debug info
+     1>AGKWindows.lib(atlbase.obj) : warning LNK4099: PDB 'atlsd.pdb' was not found with 'AGKWindows.lib(atlbase.obj)' or at 'C:\Users\TheZoq2\Documents\Visual Studio 2010\Projects\MedievalPlat\Debug\atlsd.pdb'; linking object as if no debug info
+     1>AGKWindows.lib(Allocate.obj) : warning LNK4099: PDB 'atlsd.pdb' was not found with 'AGKWindows.lib(Allocate.obj)' or at 'C:\Users\TheZoq2\Documents\Visual Studio 2010\Projects\MedievalPlat\Debug\atlsd.pdb'; linking object as if no debug info
+         Template.vcxproj -> C:\Users\TheZoq2\Documents\Visual Studio 2010\Projects\MedievalPlat\Debug\MedievalPlat.exe
+       Manifest:
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:"Final\MedievalPlat.exe;#1" /manifest Debug\MedievalPlat.exe.intermediate.manifest
+       FinalizeBuildStatus:
+         Deleting file "Debug\MedievalPlat.unsuccessfulbuild".
+         Touching "Debug\MedievalPlat.lastbuildstate".
+     1>Done Building Project "C:\Users\TheZoq2\Documents\Visual Studio 2010\Projects\MedievalPlat\Template.vcxproj" (build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:07.57

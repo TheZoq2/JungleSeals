@@ -1,0 +1,5 @@
+﻿Turns on the physics for the part owning the script and the makes it fall over
+3
+setPhysOn()
+turn(2)
+setUnusable()

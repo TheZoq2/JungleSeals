@@ -1,0 +1,29 @@
+﻿Build started 2013-07-09 22:55:55.
+     1>Project "C:\Users\TheZoq2\Documents\Visual Studio 2010\Projects\MedievalPlat\Template.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Touching "Release\MedievalPlat.unsuccessfulbuild".
+       ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I"C:\Program Files (x86)\The Game Creators\AGK\IDE\common\Include" /I"C:\Program Files (x86)\The Game Creators\AGK\IDE\common" /nologo /W3 /WX- /Ox /Ob2 /Oi /Ot /Oy- /D WIN32 /D NDEBUG /D _WINDOWS /D IDE_VS2008 /D _CRT_SECURE_NO_WARNINGS /Gm- /EHsc /MT /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt Item.cpp
+         Item.cpp
+     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\Microsoft.CppBuild.targets(990,5): warning MSB8012: TargetPath(C:\Users\TheZoq2\Documents\Visual Studio 2010\Projects\MedievalPlat\Release\MedievalPlat.exe) does not match the Linker's OutputFile property value (C:\Users\TheZoq2\Documents\Visual Studio 2010\Projects\MedievalPlat\Final\MedievalPlat.exe). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"Final\MedievalPlat.exe" /INCREMENTAL:NO /NOLOGO /LIBPATH:"C:\Program Files (x86)\The Game Creators\AGK\IDE\platform\windows\Lib\VS2010\Release" AGKWindows.lib OpenGL32.lib Winmm.lib dwmapi.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib Delayimp.lib /NODEFAULTLIB:atls.lib /DELAYLOAD:Dwmapi.dll /MANIFEST /ManifestFile:"Release\MedievalPlat.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /PDB:"C:\Users\TheZoq2\Documents\Visual Studio 2010\Projects\MedievalPlat\Release\MedievalPlat.pdb" /SUBSYSTEM:WINDOWS /OPT:REF /OPT:ICF /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\TheZoq2\Documents\Visual Studio 2010\Projects\MedievalPlat\Release\MedievalPlat.lib" /MACHINE:X86 Release\Core.obj
+         Release\GF.obj
+         Release\Input.obj
+         Release\Item.obj
+         Release\Part.obj
+         Release\Player.obj
+         Release\Script.obj
+         Release\template.obj
+         Release\World.obj
+         Template.vcxproj -> C:\Users\TheZoq2\Documents\Visual Studio 2010\Projects\MedievalPlat\Release\MedievalPlat.exe
+       Manifest:
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:"Final\MedievalPlat.exe;#1" /manifest Release\MedievalPlat.exe.intermediate.manifest
+       FinalizeBuildStatus:
+         Deleting file "Release\MedievalPlat.unsuccessfulbuild".
+         Touching "Release\MedievalPlat.lastbuildstate".
+     1>Done Building Project "C:\Users\TheZoq2\Documents\Visual Studio 2010\Projects\MedievalPlat\Template.vcxproj" (build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:01.30
