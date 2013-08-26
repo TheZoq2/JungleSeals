@@ -71,7 +71,7 @@ void app::Loop (void)
 
 		world.load(cWorldName);
 
-		player.load("media/Bound.png");
+		player.load(GF::getPath("Bound.png"));
 
 		//player.spawn("start");
 		//Running the first spawn script

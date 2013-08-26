@@ -18,6 +18,8 @@
 	extern float i_my;
 	extern float i_screenMX;
 	extern float i_screenMY;
+
+	extern float i_moveX;
 #endif
 
 class Input

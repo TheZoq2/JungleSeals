@@ -1,0 +1,13 @@
+a = 1
+b = 2
+x = 3
+y = 4
+
+lb = 5
+rb = 6
+
+back = 7
+start = 8
+
+ls = 9
+rs = 10

@@ -14,6 +14,8 @@ float i_my;
 float i_screenMX;
 float i_screenMY;
 
+float i_moveX;
+
 
 Input::Input(void)
 {
@@ -38,7 +40,10 @@ void Input::setup()
 
 void Input::updateInput()
 {
+	//Jumping
 	if(agk::GetRawKeyPressed(87)) { i_up = true; }
+	else if(agk::GetRawKeyState(32)) { i_up = true; }
+	else if(agk::GetRawJoystickButtonPressed(1, 1)) { i_up = true; }
 	else if(agk::GetVirtualJoystickY(1) < -.5) { i_up = true; }
 	else { i_up = false; }
 
@@ -47,14 +52,19 @@ void Input::updateInput()
 
 	if(agk::GetRawKeyState(65)) { i_left = true; }
 	else if(agk::GetVirtualJoystickX(1) < -0.5f) { i_left = true; }
+	//else if(agk::GetRawJoystickX(1) < -0.5f) { i_left = true; }
 	else { i_left = false; }
 
 	if(agk::GetRawKeyState(68)) { i_right = true; }
 	else if(agk::GetVirtualJoystickX(1) > 0.5f){ i_right = true; }
+	//else if(agk::GetRawJoystickX(1) > 0.5f) { i_right = true; }
 	else { i_right = false; }
 	
+	i_moveX = agk::GetRawJoystickX(1);
+
 	if(agk::GetRawKeyPressed(69) == 1){ i_activate = true; }
 	else if( agk::GetVirtualButtonPressed(1) == 1 ){ i_activate = true; }
+	else if( agk::GetRawJoystickButtonPressed(1, 4) ){ i_activate = true; }
 	else { i_activate = false; }
 
 	i_screenMX = agk::GetPointerX();

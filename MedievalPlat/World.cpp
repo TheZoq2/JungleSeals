@@ -53,6 +53,8 @@ void World::load(uString filename)
 				Part tempPart;
 				//Reading the filename
 				//uString filename = agk::ReadString(fileID);
+
+				uString filename;
 				filename.SetStr(agk::ReadString(fileID));
 
 				//Checking if the filename already exists

@@ -113,6 +113,17 @@ void Player::update()
 
 		moving = true;
 	}
+
+	//Adapting the speed checking for use with floats to move
+	float chkSpeed = speed;
+
+	if(i_moveX != 0)
+	{
+		chkSpeed = abs(speed * i_moveX);
+
+		agk::SetSpritePhysicsForce(SID, x, y, moveForce * i_moveX, 0);
+		moving = true;
+	}
 	
 	if(moving == false) //The player didn't move
 	{
@@ -134,13 +145,13 @@ void Player::update()
 	}
 
 	//Making sure that the left/right speed is not to big
-	if(agk::GetSpritePhysicsVelocityX(SID) > speed)
+	if(agk::GetSpritePhysicsVelocityX(SID) > chkSpeed)
 	{
-		agk::SetSpritePhysicsVelocity(SID, speed, agk::GetSpritePhysicsVelocityY(SID));
+		agk::SetSpritePhysicsVelocity(SID, chkSpeed, agk::GetSpritePhysicsVelocityY(SID));
 	}
-	if(agk::GetSpritePhysicsVelocityX(SID) < -speed)
+	if(agk::GetSpritePhysicsVelocityX(SID) < -chkSpeed)
 	{
-		agk::SetSpritePhysicsVelocity(SID, -speed, agk::GetSpritePhysicsVelocityY(SID));
+		agk::SetSpritePhysicsVelocity(SID, -chkSpeed, agk::GetSpritePhysicsVelocityY(SID));
 	}
 
 	/*
