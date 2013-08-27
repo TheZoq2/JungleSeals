@@ -73,3 +73,15 @@ void Input::updateInput()
 	i_mx = agk::ScreenToWorldX(i_screenMX);
 	i_my = agk::ScreenToWorldY(i_screenMY);
 }
+
+bool Input::debugKey()
+{
+	if(agk::GetRawKeyPressed(220))
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}

@@ -30,5 +30,7 @@ public:
 
 	static void setup();
 	static void updateInput();
+
+	static bool debugKey();
 };
 

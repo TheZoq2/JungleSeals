@@ -102,6 +102,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Core.cpp" />
+    <ClCompile Include="DebugConsole.cpp" />
     <ClCompile Include="GF.cpp" />
     <ClCompile Include="IngameMenu.cpp" />
     <ClCompile Include="Input.cpp" />
@@ -113,6 +114,7 @@
     <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DebugConsole.h" />
     <ClInclude Include="GF.h" />
     <ClInclude Include="IngameMenu.h" />
     <ClInclude Include="Input.h" />

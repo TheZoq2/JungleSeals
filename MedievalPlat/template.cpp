@@ -17,7 +17,7 @@ void app::Begin(void)
 	agk::SetVirtualResolution (agk::GetDeviceWidth(), agk::GetDeviceHeight());
 	//agk::SetDisplayAspect(16.0f/9.0f);
 	//agk::SetClearColor( 151,170,204 ); // light blue
-	agk::SetSyncRate(60,1);
+	agk::SetSyncRate(0,1);
 	//agk::SetScissor(0,0,0,0);
 
 	agk::SetPrintSize(15);
@@ -36,6 +36,8 @@ void app::Begin(void)
 	//Creating the 1x1 sprite
 	agk::LoadImage(1, GF::getPath("1x1.png"));
 	agk::CreateSprite(1, 1);
+
+	DebugConsole::setup();
 }
 
 void app::Loop (void)
@@ -118,6 +120,23 @@ void app::Loop (void)
 	{
 		agk::SetPhysicsDebugOff();
 	}
+
+	//Updating the debug console
+	if(Input::debugKey())
+	{
+		GF::changeState(&console);
+	}
+
+	if(console == true)
+	{
+		DebugConsole::setVisible(1);
+	}
+	else
+	{
+		DebugConsole::setVisible(0);
+	}
+
+	//Syncing
 
 	agk::Update2D();
 	//agk::Render();

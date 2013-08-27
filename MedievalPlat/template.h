@@ -13,6 +13,7 @@
 #include "Script.h"
 #include "Item.h"
 #include "IngameMenu.h"
+#include "DebugConsole.h"
 
 #define DEVICE_WIDTH 1600
 #define DEVICE_HEIGHT 900
@@ -44,9 +45,11 @@ class app
 		/////////////////////////////////////////////////////////////////////
 		//						Debug variables
 		/////////////////////////////////////////////////////////////////////
-		bool debug;
+		bool debug;		
 		bool fps;
 		bool physDebug;
+
+		bool console;
 };
 
 extern app App;
