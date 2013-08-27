@@ -56,12 +56,6 @@ void app::Loop (void)
 		player.update();
 		world.update(player.getX(), player.getY());
 
-		//Item generation test
-		if(agk::GetRawKeyPressed(116))
-		{
-			ItemGen::generate(1);
-		}
-
 		IngameMenu::update();
 	}
 	else if(programState == 2)

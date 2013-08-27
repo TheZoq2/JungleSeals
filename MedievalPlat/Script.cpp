@@ -33,108 +33,123 @@ void Script::run(uString scriptName, Part* part, World* world, Player* player)
 	//Execute the script
 	for(unsigned int i = 0; i < lines.size(); i++)
 	{
-		//Separating the command from the parameters
-		uString fcommand;
-		
-		fcommand.SetStr(lines[i]);
-
-		//Removing all of the spaces
-		fcommand.ReplaceStr(" ","");
-
-		int commandLength = fcommand.FindStr("(");
-
-		//Separating the command from the line
-		uString command;
-		fcommand.SubString(command, 0, commandLength); 
-		
-		if(command.CompareTo("playerGoTo") == 0)
-		{
-			//This command requires one parameter
-			int paramEnd = fcommand.FindStr(")");
-
-			//uString param; //The parameter for what world to enter
-			uString entrance; //The parameter for where the player should start in the new level
-
-			// fcommand.SubString(param, commandLength + 1, paramEnd - commandLength - 1);
-
-			uString levelName;
-
-			levelName.SetStr("levels/");
-			levelName.Append(getParam(fcommand, 1, false, part));
-			entrance.SetStr(getParam(fcommand, 2, true, part));
-
-			//Working out what level we are going to
-
-			//We have the world we want to go to, let's check if it exists
-			if(player->canTravel())
-			{
-				world->clear(); //Clear this world to make room for a new one
-				world->load(levelName); //Loading the new level
-				player->spawn(entrance); //Respawning the player in this new world
-
-				//Making sure we don't change worlds to often
-				player->setJustLoaded(true);
-			}
-		}
-
-		//				playerSpawnAt
-		if(command.CompareTo("playerSpawnAt") == 0)
-		{
-			uString param;
-			
-			//int paramEnd = fcommand.FindStr(")");
-
-			//fcommand.SubString(param, commandLength + 1, paramEnd - commandLength - 1);
-			param.SetStr(getParam(fcommand, 1, true, part));
-
-			/*if(isSpecial(param))
-			{
-				//The parameter may be a label
-				if(isLabel(param))
-				{
-					param.SetStr(getValueFromLabel(param, part));
-				}
-			}*/
-			//Telling the player to spawn at the part
-			player->spawn(param);
-		}
-
-		if(command.CompareTo("setPhysOn") == 0) //This changes the physics of the part to dynamic
-		{
-			part->setPhysState(2); //Turning on physics
-		}
-
-		if(command.CompareTo("turn") == 0)
-		{
-			//Getting the amount to turn the part
-			float amount = agk::ValFloat(getParam(fcommand, 1, true, part));
-
-			agk::SetSpritePhysicsAngularVelocity(part->getSID(), amount);
-		}
-
-		if(command.CompareTo("setUnusable") == 0)
-		{
-			part->setUsable(0);
-		}
-
-		if(command.CompareTo("playerMove") == 0)
-		{
-			Part* targetPart = world->getPartFromName(getParam(fcommand, 1, true, part));
-			player->spawn(getParam(fcommand, 1, true, part)); 
-			//player->setPosition(targetPart->getX(), targetPart->getY());
-		}
-
-		if(command.CompareTo("openShop") == 0)
-		{
-			//Opening the shop
-			IngameMenu::createShop(player, 1);
-		}
+		runFunction(lines[i], part, world, player);
 	}
 
 	//We are done reading the script, remove all the pointers
 	for(unsigned int i = 0; i < lines.size(); i++)
 	{
 		delete[] lines[i];
+	}
+}
+
+void Script::runFunction(uString function, Part* part, World* world, Player* player)
+{
+	//Separating the command from the parameters
+	uString fcommand;
+		
+	//fcommand.SetStr(lines[i]);
+	fcommand.SetStr(function);
+
+	//Removing all of the spaces
+	fcommand.ReplaceStr(" ","");
+
+	int commandLength = fcommand.FindStr("(");
+
+	//Separating the command from the line
+	uString command;
+	fcommand.SubString(command, 0, commandLength); 
+		
+	if(command.CompareTo("playerGoTo") == 0)
+	{
+		//This command requires one parameter
+		int paramEnd = fcommand.FindStr(")");
+
+		//uString param; //The parameter for what world to enter
+		uString entrance; //The parameter for where the player should start in the new level
+
+		// fcommand.SubString(param, commandLength + 1, paramEnd - commandLength - 1);
+
+		uString levelName;
+
+		levelName.SetStr("levels/");
+		levelName.Append(getParam(fcommand, 1, false, part));
+		entrance.SetStr(getParam(fcommand, 2, true, part));
+
+		//Working out what level we are going to
+
+		//We have the world we want to go to, let's check if it exists
+		if(player->canTravel())
+		{
+			world->clear(); //Clear this world to make room for a new one
+			world->load(levelName); //Loading the new level
+			player->spawn(entrance); //Respawning the player in this new world
+
+			//Making sure we don't change worlds to often
+			player->setJustLoaded(true);
+		}
+	}
+
+	//				playerSpawnAt
+	if(command.CompareTo("playerSpawnAt") == 0)
+	{
+		uString param;
+			
+		//int paramEnd = fcommand.FindStr(")");
+
+		//fcommand.SubString(param, commandLength + 1, paramEnd - commandLength - 1);
+		param.SetStr(getParam(fcommand, 1, true, part));
+
+		//Telling the player to spawn at the part
+		player->spawn(param);
+	}
+
+	if(command.CompareTo("setPhysOn") == 0) //This changes the physics of the part to dynamic
+	{
+		part->setPhysState(2); //Turning on physics
+	}
+
+	if(command.CompareTo("turn") == 0)
+	{
+		//Getting the amount to turn the part
+		float amount = agk::ValFloat(getParam(fcommand, 1, true, part));
+
+		agk::SetSpritePhysicsAngularVelocity(part->getSID(), amount);
+	}
+	
+	if(command.CompareTo("turnFromPlr") == 0) //Turns the item away from the player with the force supplied as parameter
+	{
+		//Getting the amount to turn the part
+		float amount = agk::ValFloat(getParam(fcommand, 1, true, part));
+		
+		//Calculating the direction of the force
+		float plrX = player->getX();
+		float partX = part->getX();
+		float diff = partX - plrX;
+		if(diff < 0)
+		{
+			//The tree should be turned the other way
+			amount = amount * -1;
+		}
+		agk::SetSpritePhysicsAngularVelocity(part->getSID(), amount);
+	}
+
+	if(command.CompareTo("setUnusable") == 0)
+	{
+		part->setUsable(0);
+	}
+
+	if(command.CompareTo("playerMove") == 0)
+	{
+		Part* targetPart = world->getPartFromName(getParam(fcommand, 1, true, part));
+		player->spawn(getParam(fcommand, 1, true, part)); 
+		//player->setPosition(targetPart->getX(), targetPart->getY());
+	}
+
+	if(command.CompareTo("openShop") == 0)
+	{
+		//Opening the shop
+		IngameMenu::createShop(player, 1);
 	}
 }
 
