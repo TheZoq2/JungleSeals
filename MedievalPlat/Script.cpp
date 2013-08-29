@@ -1,5 +1,6 @@
 #include "Script.h"
 
+#include "DebugConsole.h"
 
 Script::Script(void)
 {
@@ -150,6 +151,12 @@ void Script::runFunction(uString function, Part* part, World* world, Player* pla
 	{
 		//Opening the shop
 		IngameMenu::createShop(player, 1);
+	}
+	
+	//Print command
+	if(command.CompareTo("print") == 0)
+	{
+		DebugConsole::addToLog(getParam(fcommand, 1, true, NULL));
 	}
 }
 

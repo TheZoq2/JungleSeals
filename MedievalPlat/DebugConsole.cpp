@@ -1,5 +1,6 @@
 #include "DebugConsole.h"
 
+#include "Script.h"
 
 int  dc_textID;
 int dc_editID;
@@ -34,6 +35,21 @@ void DebugConsole::setup()
 
 	setVisible(0);
 }
+void DebugConsole::update()
+{
+	//Enter key for now
+	bool enterkey = false;
+	
+	if(agk::GetRawKeyPressed(13)) enterkey = true;
+
+	if(enterkey) //Running the script typed in the console
+	{
+		Script::runFunction(agk::GetEditBoxText(dc_editID), NULL, NULL, NULL);
+
+		addC("Running function "); addToLog(agk::GetEditBoxText(dc_editID));
+		//Clearing the text from the editbox
+	}
+}
 
 void DebugConsole::addToLog(uString text)
 {
@@ -41,6 +57,17 @@ void DebugConsole::addToLog(uString text)
 	consoleText.Append("\n");
 
 	//Calculating the new height of the debug log
+	agk::SetTextString(dc_textID, consoleText);
+	float yPos = 250 - agk::GetTextTotalHeight(dc_textID);
+	agk::SetTextPosition(dc_textID, 0, yPos);
+}
+
+void DebugConsole::addC(uString msg)
+{
+	consoleText.Append(msg);
+
+	//Calculating the new height of the debug log
+	agk::SetTextString(dc_textID, consoleText);
 	float yPos = 250 - agk::GetTextTotalHeight(dc_textID);
 	agk::SetTextPosition(dc_textID, 0, yPos);
 }

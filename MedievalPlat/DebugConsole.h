@@ -17,9 +17,12 @@ public:
 	~DebugConsole(void);
 
 	static void setup();
+	static void update();
 
 	static void setVisible(int visible);
 
 	static void addToLog(uString msg);
+	static void addC(uString msg);
+
 };
 

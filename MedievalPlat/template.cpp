@@ -15,10 +15,7 @@ void app::Begin(void)
 
 	agk::SetWindowTitle("MedievalPlat");
 	agk::SetVirtualResolution (agk::GetDeviceWidth(), agk::GetDeviceHeight());
-	//agk::SetDisplayAspect(16.0f/9.0f);
-	//agk::SetClearColor( 151,170,204 ); // light blue
 	agk::SetSyncRate(0,1);
-	//agk::SetScissor(0,0,0,0);
 
 	agk::SetPrintSize(15);
 
@@ -36,6 +33,7 @@ void app::Begin(void)
 	//Creating the 1x1 sprite
 	agk::LoadImage(1, GF::getPath("1x1.png"));
 	agk::CreateSprite(1, 1);
+	agk::SetSpriteVisible(1, 0);
 
 	DebugConsole::setup();
 }
@@ -130,6 +128,7 @@ void app::Loop (void)
 	if(console == true)
 	{
 		DebugConsole::setVisible(1);
+		DebugConsole::update();
 	}
 	else
 	{
