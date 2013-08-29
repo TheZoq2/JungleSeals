@@ -40,6 +40,7 @@ private:
 	int SID;
 
 	int activateText;
+	int activateSprite;
 
 	float x;
 	float y;

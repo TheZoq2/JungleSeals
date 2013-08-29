@@ -92,4 +92,6 @@ private:
 	};
 	Background bg[4];
 	Background dist[4];
+
+	float overcast;
 };

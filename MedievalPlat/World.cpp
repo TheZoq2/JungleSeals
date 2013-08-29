@@ -23,8 +23,6 @@ void World::begin()
 
 void World::load(uString filename)
 {
-	loadBG();
-
 	//Starting to read the level file
 	int fileID = agk::OpenToRead(filename);
 		//Reading the version of the file
@@ -183,6 +181,8 @@ void World::load(uString filename)
 		
 		
 	agk::CloseFile(fileID);
+
+	loadBG();
 }
 void World::update(float playerX, float playerY)
 {
@@ -325,6 +325,8 @@ uString World::getName()
 
 void World::loadBG()
 {
+	overcast = 0.1;
+
 	skyR = 160;
 	skyG = 200;
 	skyB = 255;
@@ -345,7 +347,33 @@ void World::loadBG()
 	agk::SetSpriteScale(cloudSprite, 0.07f, 0.07f);
 	agk::SetSpriteVisible(cloudSprite, 0);
 
-	int cloudAmount = 40;
+
+	float minWidth = 0.0; //The part cordinate with the lowest x
+	float maxWidth = 0.0; //The part cordinate with the highest x
+	//Calculating the width of the world
+	for(unsigned int i = 0; i < part->size(); i++)
+	{
+		if(part->at(i).getX() < minWidth) //If this is the lowest part found
+		{
+			minWidth = part->at(i).getX(); //Update the lowest variable
+		}
+
+		if(part->at(i).getX() > maxWidth) //If this is the highest part found
+		{
+			maxWidth = part->at(i).getX(); //Update the lowest variable
+		}
+	}
+
+	float cloudsPerUnit = 0.5f;
+
+	//Calculating the distance between the "leftest" and "rightest" prat
+	float partDist = maxWidth - minWidth;
+	
+	int cloudAmount = agk::Round(partDist * cloudsPerUnit * overcast);
+
+	float cloudStartX = minWidth - 100;
+	float cloudEndX = maxWidth + 100;
+
 	for(int i = 0; i < cloudAmount; i++)
 	{
 		Cloud tempCloud;
@@ -353,9 +381,7 @@ void World::loadBG()
 
 		agk::SetSpriteVisible(tempCloud.SID, 1);
 
-		/*int randomPos = agk::Random(0, 200) - 100;
-		randomPos = agk::Random(0, 10) - 5;*/
-		tempCloud.x = (float) agk::Random(1, 500);
+		tempCloud.x = (float) agk::Random(0, cloudEndX) + cloudStartX;
 		tempCloud.y = (float )agk::Random(1, 30);
 		tempCloud.y = tempCloud.y - 40;
 
@@ -363,37 +389,6 @@ void World::loadBG()
 		agk::SetSpriteDepth(tempCloud.SID, tempCloud.depth);
 		clouds->push_back(tempCloud);
 	}
-
-	//Loading the backdrop layers
-	/*bg[0].imgID = agk::LoadImage(GF::getPath("Background/ForestBG_1.png"));
-	bg[1].imgID = agk::LoadImage(GF::getPath("Background/ForestBG_2.png"));
-	dist[0].imgID = agk::LoadImage(GF::getPath("Background/ForestBGDist_1.png"));
-	dist[1].imgID = agk::LoadImage(GF::getPath("Background/ForestBGDist_2.png"));
-
-	//Creating the sprites
-	for(int i = 0; i < 2; i++)
-	{
-		bg[i].SID = agk::CreateSprite(bg[i].imgID);
-		agk::SetSpriteScale(bg[i].SID, 0.1f, 0.1f);
-		agk::SetSpriteDepth(bg[i].SID, 700);
-		bg[i].depth = 700;
-
-		bg[i].x = i * 1024 * 0.1 - 512 * 0.1;
-		//bg[i].y = (i * 512 * 0.1) - 30;
-	}
-
-	for(int i = 0; i< 2; i++)
-	{
-		dist[i].SID = agk::CreateSprite(dist[i].imgID);
-		agk::SetSpriteScale(dist[i].SID, 0.1f, 0.1f);
-		agk::SetSpriteDepth(dist[i].SID, 800);
-		dist[i].depth = 800;
-
-		dist[i].x = i * 1024 * 0.1 - 512 * 0.1;
-		//dist[i].y = (i * 512 * 0.1) - 20;
-	}*/
-	
-	
 }
 void World::updateBG(float playerX, float playerY)
 {
@@ -406,20 +401,6 @@ void World::updateBG(float playerX, float playerY)
 		float yPos = clouds->at(i).y + paralaxOffset(clouds->at(i).depth) * playerY;
 		agk::SetSpritePosition(clouds->at(i).SID, xPos, yPos);
 	}
-
-	/*for(int i = 0; i < 2; i++)
-	{
-		float xPos = bg[i].x + paralaxOffset(bg[i].depth) * playerX;
-		float yPos = bg[i].y + paralaxOffset(bg[i].depth) * playerY;
-		agk::SetSpritePosition(bg[i].SID, xPos, yPos);
-	}
-
-	for(int i = 0; i < 2; i++)
-	{
-		float xPos = dist[i].x + paralaxOffset(dist[i].depth) * playerX;
-		float yPos = dist[i].y + paralaxOffset(dist[i].depth) * playerY;
-		agk::SetSpritePosition(dist[i].SID, xPos, yPos);
-	}*/
 }
 
 float World::paralaxOffset(int depth)

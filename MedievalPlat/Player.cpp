@@ -38,6 +38,11 @@ void Player::load(uString name)
 	speed = 15;
 	jumpHeight = 3;
 
+	//Creating the activation message
+	activateSprite = agk::CloneSprite(1);
+	agk::SetSpriteColor(activateSprite, 100, 100, 100, 200);
+	agk::SetSpriteDepth(activateSprite, 3);
+	agk::FixSpriteToScreen(activateSprite, 1);
 	activateText = agk::CreateText("E) Activate");
 	agk::FixTextToScreen(activateText, 1);
 	agk::SetTextDepth(activateText, 2);
@@ -261,6 +266,7 @@ void Player::activation()
 
 	if(partFound == true)
 	{
+		//Positioning the activation text
 		agk::SetTextVisible(activateText, 1);
 		agk::SetTextPosition(activateText, agk::WorldToScreenX( closestPart->getX() ), agk::WorldToScreenY( closestPart->getY() ));
 
@@ -271,6 +277,11 @@ void Player::activation()
 		fText.Append(closestPart->getUseMsg());
 
 		agk::SetTextString(activateText, fText);
+
+		//Adding the background
+		agk::SetSpritePosition(activateSprite, agk::WorldToScreenX(closestPart->getX()) -5, agk::WorldToScreenY(closestPart->getY()) - 2.5);
+		agk::SetSpriteVisible(activateSprite, 1);
+		agk::SetSpriteScale(activateSprite, agk::GetTextTotalWidth(activateText) + 10, agk::GetTextTotalHeight(activateText) + 5);
 
 		//Checking if the part is activated
 		if(i_activate == true)
@@ -287,6 +298,7 @@ void Player::activation()
 	else //No parts where found, hide the text
 	{
 		agk::SetTextVisible(activateText, 0);
+		agk::SetSpriteVisible(activateSprite, 0);
 	}
 }
 
