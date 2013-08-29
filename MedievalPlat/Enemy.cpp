@@ -50,7 +50,7 @@ void Enemy::spawn(uString name)
 
 	setPosition(spawnPoint.x, spawnPoint.y);*/
 	//We got the spawnpoint, let's set the Enemy position
-	setPosition(0,0);
+	setPosition(100,0);
 
 	lastTravel = globaltime;
 }
@@ -68,7 +68,7 @@ void Enemy::update()
 	bool onGround = checkOnGround(); //Checking if the Enemy is on the ground right now
 
 	//Making sure the Enemy does not fall over
-	//agk::SetSpriteAngle(SID, 0);
+	agk::SetSpriteAngle(SID, 0);
 
 	x = agk::GetSpriteXByOffset(SID);
 	y = agk::GetSpriteYByOffset(SID);

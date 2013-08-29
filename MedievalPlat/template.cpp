@@ -19,9 +19,16 @@ void app::Begin(void)
 
 	agk::SetPrintSize(15);
 
+	enemy=new std::vector< Enemy >;
+
 	world.begin();
 
 	player.begin(&world);
+
+
+	Enemy tempEnemy;
+	tempEnemy.begin(&world);
+	enemy->push_back(tempEnemy);
 
 	Input::setup();
 
@@ -54,6 +61,7 @@ void app::Loop (void)
 		//agk::SetViewZoomMode(1);
 		agk::SetViewZoom(15);
 		player.update();
+		enemy->at(0).update();
 		world.update(player.getX(), player.getY());
 
 		IngameMenu::update();
@@ -66,6 +74,9 @@ void app::Loop (void)
 		world.load(cWorldName);
 
 		player.load(GF::getPath("Bound.png"));
+
+		enemy->at(0).load(GF::getPath("Bound.png"));
+		enemy->at(0).spawn("entrance");
 
 		//player.spawn("start");
 		//Running the first spawn script

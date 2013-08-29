@@ -158,7 +158,38 @@ void Script::runFunction(uString function, Part* part, World* world, Player* pla
 	{
 		DebugConsole::addToLog(getParam(fcommand, 1, true, NULL));
 	}
+		
 }
+
+void runFunction(uString function, World* world, Enemy* enemy)
+{
+	//Separating the command from the parameters
+	uString fcommand;
+		
+	//fcommand.SetStr(lines[i]);
+	fcommand.SetStr(function);
+
+	//Removing all of the spaces
+	fcommand.ReplaceStr(" ","");
+
+	int commandLength = fcommand.FindStr("(");
+
+	//Separating the command from the line
+	uString command;
+	fcommand.SubString(command, 0, commandLength);
+
+		//Spawns enemies
+	if(command.CompareTo("spawnE") == 0)
+	{
+		enemy->begin(world);
+		enemy->load(GF::getPath("Bound.png"));
+		enemy->spawn("entrance");
+
+	}
+}
+
+
+
 
 uString Script::getParam(uString command, int number, bool isLast, Part* part)
 {

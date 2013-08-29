@@ -15,6 +15,10 @@
 #include "IngameMenu.h"
 #include "DebugConsole.h"
 
+#include "Enemy.h"
+
+#include <vector>
+
 #define DEVICE_WIDTH 1600
 #define DEVICE_HEIGHT 900
 #define DEVICE_POS_X 32
@@ -39,6 +43,8 @@ class app
 
 		World world;
 		Player player;
+
+		std::vector< Enemy >*enemy;	
 
 		bool initLoaded;
 
