@@ -59,7 +59,6 @@ void app::Loop (void)
 	{
 		//Main game loop
 		//agk::SetViewZoomMode(1);
-		agk::SetViewZoom(15);
 		player.update();
 		//enemy->at(0).update();
 		world.update(player.getX(), player.getY());
@@ -68,6 +67,8 @@ void app::Loop (void)
 	}
 	else if(programState == 2)
 	{
+		agk::SetViewZoom(15);
+
 		uString cWorldName;
 		cWorldName.SetStr("levels/snow1");
 
@@ -121,6 +122,7 @@ void app::Loop (void)
 		agk::PrintC("Speedmod: ");agk::Print(speedMod);
 		agk::PrintC("Active keystate: "); agk::Print(i_activate);
 		agk::PrintC("Pointer x: ");agk::PrintC(i_mx);agk::PrintC("   PointerY: ");agk::Print(i_my);
+		agk::PrintC("View zoom: ");agk::Print(agk::GetViewZoom());
 	}
 
 	if(physDebug == true)

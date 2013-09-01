@@ -19,6 +19,8 @@ void World::begin()
 	entry = new std::vector< Entry >;
 
 	clouds = new std::vector< Cloud >;
+
+	stars = new std::vector< Star >;
 }
 
 void World::load(uString filename)
@@ -197,7 +199,7 @@ void World::clear()
 	}
 
 	//Removing the clouds
-	for(int i = 0; i < clouds->size(); i++)
+	for(unsigned int i = 0; i < clouds->size(); i++)
 	{
 		if(agk::GetSpriteExists(clouds->at(i).SID))
 		{
@@ -213,6 +215,17 @@ void World::clear()
 	}
 
 	part->clear();
+
+	//Removing stars
+	for(unsigned int i = 0; i < stars->size(); i++)
+	{
+		if(agk::GetSpriteExists(stars->at(i).SID))
+		{
+			agk::DeleteSprite(stars->at(i).SID);
+		}
+	}
+
+	stars->clear();
 }
 
 int World::checkForWS(uString filename)
@@ -267,6 +280,10 @@ World::Entry* World::findEntry(uString name)
 void World::setOvercast(float overcast)
 {
 	this->overcast = overcast;
+}
+void World::setTime(float time)
+{
+	this->time = time;
 }
 
 Part* World::getPartFromName(uString name) //This function goes thru all the parts and looks for one with the name specified //It will return the first part with the name
@@ -392,70 +409,24 @@ void World::loadBG()
 
 	xDist = maxX - minX;
 
-	/*std::vector< int > cloudImg;
-	std::vector< int > cloudSprite;
+	//Creating stars
+	int starAmount = 500;
 
-	//Creating clouds
-	cloudImg.push_back( agk::LoadImage(GF::getPath("Background/cloud1.png")) );
-	cloudSprite.push_back( agk::CreateSprite(cloudImg.at(0)) );
-	agk::SetSpriteDepth(cloudSprite.at(0), 900);
-	agk::SetSpriteScale(cloudSprite.at(0), 0.07f, 0.07f);
-	agk::SetSpriteVisible(cloudSprite.at(0), 0);
-
-	cloudImg.push_back( agk::LoadImage(GF::getPath("Background/cloud2.png")) );
-	cloudSprite.push_back( agk::CreateSprite(cloudImg.at(1)) );
-	agk::SetSpriteDepth(cloudSprite.at(1), 900);
-	agk::SetSpriteScale(cloudSprite.at(1), 0.07f, 0.07f);
-	agk::SetSpriteVisible(cloudSprite.at(1), 0);
-
-
-	float minWidth = 0.0; //The part cordinate with the lowest x
-	float maxWidth = 0.0; //The part cordinate with the highest x
-	//Calculating the width of the world
-	for(unsigned int i = 0; i < part->size(); i++)
+	for(int i = 0; i < starAmount; i++)
 	{
-		if(part->at(i).getX() < minWidth) //If this is the lowest part found
-		{
-			minWidth = part->at(i).getX(); //Update the lowest variable
-		}
+		//Creating a temporary star
+		Star tempStar;
+		tempStar.SID = agk::CloneSprite(1);
+		agk::SetSpriteScale(tempStar.SID, 1 / agk::GetViewZoom(), 1 / agk::GetViewZoom());
+		float maxX = agk::GetVirtualWidth() / agk::GetViewZoom();
+		float maxY = agk::GetVirtualHeight() / agk::GetViewZoom();
+		tempStar.x = agk::Random(0, maxX);
+		tempStar.y = agk::Random(0, maxY);
+		agk::SetSpriteDepth(tempStar.SID, 999);
+		agk::SetSpriteVisible(tempStar.SID, 1);
 
-		if(part->at(i).getX() > maxWidth) //If this is the highest part found
-		{
-			maxWidth = part->at(i).getX(); //Update the lowest variable
-		}
+		stars->push_back(tempStar); //Adding the star to the star array
 	}
-
-	float cloudsPerUnit = 0.5f;
-
-	//Calculating the distance between the "leftest" and "rightest" prat
-	float partDist = maxWidth - minWidth;
-	
-	int cloudAmount = agk::Round(partDist * cloudsPerUnit * overcast);
-
-	float cloudStartX = minWidth - 100;
-	float cloudEndX = maxWidth + 100;
-
-	for(int i = 0; i < cloudAmount; i++)
-	{
-		//Selecting the type of cloud to create
-		int cloudType = agk::Random(0, cloudSprite.size() - 1 );
-
-		//Creating a temporary cloud
-		Cloud tempCloud;
-		tempCloud.SID = agk::CloneSprite(cloudSprite.at(cloudType));
-
-		agk::SetSpriteVisible(tempCloud.SID, 1);
-
-		tempCloud.x = (float) agk::Random(0, cloudEndX) + cloudStartX;
-		tempCloud.y = (float )agk::Random(1, 30);
-		tempCloud.y = tempCloud.y - 40;
-		
-		//Setting the depth of the cloud
-		tempCloud.depth = agk::Random(760, 840);
-		agk::SetSpriteDepth(tempCloud.SID, tempCloud.depth);
-		//Adding it to the vector
-		clouds->push_back(tempCloud);
-	}*/
 }
 void World::updateBG(float playerX, float playerY)
 {
@@ -503,6 +474,44 @@ void World::updateBG(float playerX, float playerY)
 			clouds->push_back(tempCloud);
 		}
 	}
+
+	////////////////////////////////////////////////////////////////////////
+	//							Time
+	////////////////////////////////////////////////////////////////////////
+	//Making sure time is between 0 and 24
+	while(time > 2400)
+	{
+		time = time - 2400;
+	}
+	
+	//checking if it is nighttime
+	if(time > 2000 || time < 600)
+	{
+		skyR = 25;
+		skyG = 25;
+		skyB = 100;
+
+		agk::SetSpriteColor(skyID, skyR, skyG, skyB, 255);
+
+		//making the clouds really dark
+		for(unsigned int i = 0; i < clouds->size(); i++)
+		{
+			agk::SetSpriteColor(clouds->at(i).SID, 10, 10, 10, 255);
+		}
+
+		for(unsigned int i = 0; i < part->size(); i++)
+		{
+			agk::SetSpriteColor(part->at(i).getSID(), 5, 5, 5, 255);
+		}
+	}
+
+	////////////////////////////////////////////////////////////////////////
+	//								Stars
+	////////////////////////////////////////////////////////////////////////
+	for(unsigned int i = 0; i < stars->size(); i++)
+	{
+		agk::SetSpritePosition(stars->at(i).SID, agk::ScreenToWorldX(0) + stars->at(i).x, agk::ScreenToWorldY(0) + stars->at(i).y);
+	}
 }
 
 float World::paralaxOffset(int depth)
@@ -510,7 +519,7 @@ float World::paralaxOffset(int depth)
 	//at depth 1000 the sprite will not move at all, at depth 100 the sprite will not have any paralax offset
 	float result;
 
-	float paralaxDepth = depth -100; //Calculating the depth if 0 is 100
+	float paralaxDepth = depth - 100.0; //Calculating the depth if 0 is 100
 
 	result = paralaxDepth / 900.0f;
 

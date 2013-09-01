@@ -159,6 +159,9 @@ void Script::runFunction(uString function, Part* part, World* world, Player* pla
 		DebugConsole::addToLog(getParam(fcommand, 1, true, NULL));
 	}
 	
+	//////////////////////////////////////////////////////////////////
+	//					World modifications
+	//////////////////////////////////////////////////////////////////
 	if(command.CompareTo("setOvercast") == 0)
 	{
 		//getting the parameter
@@ -166,6 +169,13 @@ void Script::runFunction(uString function, Part* part, World* world, Player* pla
 
 		world->setOvercast(overcast);
 	}
+	if(command.CompareTo("setTime") == 0)
+	{
+		float time = atof(getParam(fcommand, 1, true, part));
+
+		world->setTime(time);
+	}
+	
 }
 
 void runFunction(uString function, World* world, Enemy* enemy)

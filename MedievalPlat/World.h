@@ -40,6 +40,7 @@ public:
 	void clear();
 
 	void setOvercast(float overcast);
+	void setTime(float time);
 
 	Part* getPartFromName(uString name); //This function goes thru all the parts and looks for one with the name specified //It will return the first part with the name
 	Part* getPartFromID(int partID);
@@ -81,6 +82,16 @@ private:
 	unsigned int skyG;
 	unsigned int skyB;
 
+	int starAmount;
+
+	struct Star
+	{
+		int SID;
+		float x;
+		float y;
+	};
+
+	std::vector< Star >* stars;
 	std::vector< Cloud >* clouds;
 
 	struct Background
@@ -110,4 +121,6 @@ private:
 	Background dist[4];
 
 	float overcast;
+
+	float time;
 };
