@@ -264,6 +264,11 @@ World::Entry* World::findEntry(uString name)
 	return &entry->at(slot);
 }
 
+void World::setOvercast(float overcast)
+{
+	this->overcast = overcast;
+}
+
 Part* World::getPartFromName(uString name) //This function goes thru all the parts and looks for one with the name specified //It will return the first part with the name
 {
 	Part* fPart = 0; //Will be 0 or null if no part is found
@@ -323,6 +328,33 @@ uString World::getName()
 	return name;
 }
 
+void World::loadBaseMedia() //Loads media that is used in all worlds
+{
+	//Creating a vector of the cloud sprites
+	cloudBase = new std::vector< CloudBase >;
+
+	//Loading the media
+	CloudBase tempCB;
+	tempCB.img = agk::LoadImage(GF::getPath("Background/cloud1.png"));
+	tempCB.SID = agk::CreateSprite(tempCB.img);
+	agk::SetSpriteDepth(tempCB.SID, 900);
+	agk::SetSpriteScale(tempCB.SID, 0.07f, 0.07f);
+	agk::SetSpriteVisible(tempCB.SID, 0);
+
+	//Adding the new cloud to the vector
+	cloudBase->push_back(tempCB);
+
+	//Creating the next cloud
+	tempCB.img = agk::LoadImage(GF::getPath("Background/cloud2.png"));
+	tempCB.SID = agk::CreateSprite(tempCB.img);
+	agk::SetSpriteDepth(tempCB.SID, 900);
+	agk::SetSpriteScale(tempCB.SID, 0.07f, 0.07f);
+	agk::SetSpriteVisible(tempCB.SID, 0);
+
+	//Adding the new cloud to the vector
+	cloudBase->push_back(tempCB);
+
+}
 void World::loadBG()
 {
 	overcast = 0.25;
@@ -340,7 +372,27 @@ void World::loadBG()
 
 	agk::SetSpriteColor(skyID, skyR, skyG, skyB, 255);
 
-	std::vector< int > cloudImg;
+	//Calculating the size of the world
+	
+	minX = 0.0; //The part cordinate with the lowest x
+	maxX = 0.0; //The part cordinate with the highest x
+	//Calculating the width of the world
+	for(unsigned int i = 0; i < part->size(); i++)
+	{
+		if(part->at(i).getX() < minX) //If this is the lowest part found
+		{
+			minX = part->at(i).getX(); //Update the lowest variable
+		}
+
+		if(part->at(i).getX() > maxX) //If this is the highest part found
+		{
+			maxX = part->at(i).getX(); //Update the lowest variable
+		}
+	}
+
+	xDist = maxX - minX;
+
+	/*std::vector< int > cloudImg;
 	std::vector< int > cloudSprite;
 
 	//Creating clouds
@@ -403,7 +455,7 @@ void World::loadBG()
 		agk::SetSpriteDepth(tempCloud.SID, tempCloud.depth);
 		//Adding it to the vector
 		clouds->push_back(tempCloud);
-	}
+	}*/
 }
 void World::updateBG(float playerX, float playerY)
 {
@@ -415,6 +467,41 @@ void World::updateBG(float playerX, float playerY)
 		float xPos = clouds->at(i).x + paralaxOffset(clouds->at(i).depth) * playerX;
 		float yPos = clouds->at(i).y + paralaxOffset(clouds->at(i).depth) * playerY;
 		agk::SetSpritePosition(clouds->at(i).SID, xPos, yPos);
+	}
+
+	float cloudsPerUnit = 0.5f;
+
+	//Calculating the amount of clouds that should be in the world
+	float cloudAmount = cloudsPerUnit * xDist * overcast;
+
+	float cloudStartX = minX - 50;
+	float cloudEndX = maxX + 50;
+
+	//Checking if more clouds should be created
+	if(clouds->size() < cloudAmount)
+	{
+		//Creating more clouds
+		for(int i = clouds->size(); i < cloudAmount; i++)
+		{
+			//Selecting a random cloud type
+			int cloudType = agk::Random(0, cloudBase->size() - 1);
+
+			//Temporary cloud
+			Cloud tempCloud;
+			tempCloud.SID = agk::CloneSprite(cloudBase->at(cloudType).SID);
+
+			tempCloud.x = (float) agk::Random(0, cloudEndX) + cloudStartX;
+			tempCloud.y = (float) agk::Random(1, 30);
+			tempCloud.y = tempCloud.y - 40;
+		
+			//Setting the depth of the cloud
+			tempCloud.depth = agk::Random(760, 840);
+			agk::SetSpriteDepth(tempCloud.SID, tempCloud.depth);
+
+			agk::SetSpriteVisible(tempCloud.SID, 1);
+			//Adding it to the vector
+			clouds->push_back(tempCloud);
+		}
 	}
 }
 

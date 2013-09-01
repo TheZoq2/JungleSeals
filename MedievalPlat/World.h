@@ -34,13 +34,15 @@ public:
 
 	Entry* findEntry(uString name);
 
+	void loadBaseMedia();
 	void load(uString name);
 	void update(float playerX, float playerY);
 	void clear();
 
+	void setOvercast(float overcast);
+
 	Part* getPartFromName(uString name); //This function goes thru all the parts and looks for one with the name specified //It will return the first part with the name
 	Part* getPartFromID(int partID);
-
 	int getPartAmount();
 	int getPartSID(int partID); //Returns the sprite id of a part in the world
 	int getPartPhysState(int partID);
@@ -90,6 +92,20 @@ private:
 
 		int depth;
 	};
+
+	struct CloudBase
+	{
+		int img;
+		int SID;
+	};
+
+	std::vector< CloudBase >* cloudBase;
+	
+	//The size of the world
+	float minX;
+	float maxX;
+	float xDist;
+
 	Background bg[4];
 	Background dist[4];
 

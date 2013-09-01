@@ -158,7 +158,14 @@ void Script::runFunction(uString function, Part* part, World* world, Player* pla
 	{
 		DebugConsole::addToLog(getParam(fcommand, 1, true, NULL));
 	}
-		
+	
+	if(command.CompareTo("setOvercast") == 0)
+	{
+		//getting the parameter
+		float overcast = atof(getParam(fcommand, 1, true, part));
+
+		world->setOvercast(overcast);
+	}
 }
 
 void runFunction(uString function, World* world, Enemy* enemy)

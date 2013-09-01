@@ -26,9 +26,9 @@ void app::Begin(void)
 	player.begin(&world);
 
 
-	Enemy tempEnemy;
+	/*Enemy tempEnemy;
 	tempEnemy.begin(&world);
-	enemy->push_back(tempEnemy);
+	enemy->push_back(tempEnemy);*/
 
 	Input::setup();
 
@@ -61,7 +61,7 @@ void app::Loop (void)
 		//agk::SetViewZoomMode(1);
 		agk::SetViewZoom(15);
 		player.update();
-		enemy->at(0).update();
+		//enemy->at(0).update();
 		world.update(player.getX(), player.getY());
 
 		IngameMenu::update();
@@ -72,11 +72,12 @@ void app::Loop (void)
 		cWorldName.SetStr("levels/snow1");
 
 		world.load(cWorldName);
+		world.loadBaseMedia();
 
 		player.load(GF::getPath("Bound.png"));
 
-		enemy->at(0).load(GF::getPath("Bound.png"));
-		enemy->at(0).spawn("entrance");
+		//enemy->at(0).load(GF::getPath("Bound.png"));
+		//enemy->at(0).spawn("entrance");
 
 		//player.spawn("start");
 		//Running the first spawn script
@@ -139,7 +140,7 @@ void app::Loop (void)
 	if(console == true)
 	{
 		DebugConsole::setVisible(1);
-		DebugConsole::update();
+		DebugConsole::update(&world, &player);
 	}
 	else
 	{
