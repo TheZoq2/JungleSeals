@@ -93,7 +93,7 @@ void Enemy::update()
 		moveForce = 10.0f;
 	}
 
-	if(i_left)
+	if(Input::left() == true)
 	{
 		//agk::SetSpritePhysicsImpulse(SID, x, y, -0.5f, 0);
 		agk::SetSpritePhysicsForce(SID, x, y, -moveForce, 0);
@@ -101,7 +101,7 @@ void Enemy::update()
 		moving = true;
 	}
 	
-	if(i_right)
+	if(Input::right() == true)
 	{
 		//agk::SetSpritePhysicsImpulse(SID, x, y, 0.5f, 0);
 		agk::SetSpritePhysicsForce(SID, x, y, moveForce, 0);

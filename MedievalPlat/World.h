@@ -60,6 +60,9 @@ public:
 	void loadBG();
 	void updateBG(float playerX, float playerY);
 	float paralaxOffset(int depth); //Returns the procent that the sprite should be offset based on it's depth
+
+	void setLightModeOn(); //Set to one will set the world in a mode for making light calculations
+	void setLightModeOff();
 private:
 	struct Cloud
 	{
@@ -123,4 +126,6 @@ private:
 	float overcast;
 
 	float time;
+
+	int lightSky;
 };

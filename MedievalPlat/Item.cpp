@@ -147,8 +147,8 @@ void ItemGen::setup() //Setting up the item generator
 	attrib[3].armor = -.2f;
 
 	attrib[4].name.SetStr("light");
-	attrib[4].damage = -0.1;
-	attrib[4].attSpeed = 0.3;
+	attrib[4].damage = -0.1f;
+	attrib[4].attSpeed = 0.3f;
 
 	attribAmount = 5;
 }

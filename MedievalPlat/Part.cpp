@@ -42,7 +42,7 @@ void Part::setPhysState(int physState)
 
 		if(physState == 2)
 		{
-			agk::SetSpritePhysicsFriction(SID, 0.8);
+			agk::SetSpritePhysicsFriction(SID, 0.8f);
 		}
 	}
 

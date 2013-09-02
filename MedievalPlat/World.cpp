@@ -384,6 +384,13 @@ void World::loadBG()
 	skyID = agk::CreateSprite(skyImg);
 	agk::SetSpriteDepth(skyID, 1000); //Placing the sky at the back
 
+	//White sky image
+	lightSky = agk::CloneSprite(1);
+	agk::FixSpriteToScreen(lightSky, 1);
+	agk::SetSpriteScale(lightSky, agk::GetVirtualWidth(), agk::GetVirtualHeight());
+	agk::SetSpriteColor(lightSky, 255, 255, 255, 255);
+	agk::SetSpriteDepth(lightSky, 1000);
+
 	//Filling the screen with the sprite
 	agk::SetSpriteScale(skyID, (float)agk::GetDeviceWidth(), 1.0f);
 
@@ -418,8 +425,8 @@ void World::loadBG()
 		Star tempStar;
 		tempStar.SID = agk::CloneSprite(1);
 		agk::SetSpriteScale(tempStar.SID, 1 / agk::GetViewZoom(), 1 / agk::GetViewZoom());
-		float maxX = agk::GetVirtualWidth() / agk::GetViewZoom();
-		float maxY = agk::GetVirtualHeight() / agk::GetViewZoom();
+		float maxX = float( agk::GetVirtualWidth() / agk::GetViewZoom() );
+		float maxY = float( agk::GetVirtualHeight() / agk::GetViewZoom() );
 		tempStar.x = agk::Random(0, maxX);
 		tempStar.y = agk::Random(0, maxY);
 		agk::SetSpriteDepth(tempStar.SID, 999);
@@ -461,8 +468,8 @@ void World::updateBG(float playerX, float playerY)
 			Cloud tempCloud;
 			tempCloud.SID = agk::CloneSprite(cloudBase->at(cloudType).SID);
 
-			tempCloud.x = (float) agk::Random(0, cloudEndX) + cloudStartX;
-			tempCloud.y = (float) agk::Random(1, 30);
+			tempCloud.x = float( agk::Random(0, cloudEndX) + cloudStartX );
+			tempCloud.y = float( agk::Random(1, 30) );
 			tempCloud.y = tempCloud.y - 40;
 		
 			//Setting the depth of the cloud
@@ -514,12 +521,49 @@ void World::updateBG(float playerX, float playerY)
 	}
 }
 
+void World::setLightModeOn()
+{
+	//Hiding the sky
+	agk::SetSpriteVisible(skyID, 0);
+	agk::SetSpriteVisible(lightSky, 1);
+
+	//Hiding the clouds
+	for(unsigned int i = 0; i < clouds->size(); i++)
+	{
+		agk::SetSpriteVisible(clouds->at(i).SID, 0);
+	}
+
+	//Setting the color of the rest of the world
+	/*for(unsigned int i = 0; i < part->size(); i++)
+	{
+		agk::SetSpriteColor(part->at(i).getSID(), 0, 0, 0, 255);
+	}*/
+}
+void World::setLightModeOff()
+{
+	//Hiding the sky
+	agk::SetSpriteVisible(skyID, 1);
+	agk::SetSpriteVisible(lightSky, 0);
+
+	//Hiding the clouds
+	for(unsigned int i = 0; i < clouds->size(); i++)
+	{
+		agk::SetSpriteVisible(clouds->at(i).SID, 1);
+	}
+
+	//Setting the color of the rest of the world
+	/*for(unsigned int i = 0; i < part->size(); i++)
+	{
+		agk::SetSpriteColor(part->at(i).getSID(), 255, 255, 255, 255);
+	}*/
+}
+
 float World::paralaxOffset(int depth)
 {
 	//at depth 1000 the sprite will not move at all, at depth 100 the sprite will not have any paralax offset
 	float result;
 
-	float paralaxDepth = depth - 100.0; //Calculating the depth if 0 is 100
+	float paralaxDepth = depth - 100.0f; //Calculating the depth if 0 is 100
 
 	result = paralaxDepth / 900.0f;
 

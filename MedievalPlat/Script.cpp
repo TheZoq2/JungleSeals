@@ -165,20 +165,20 @@ void Script::runFunction(uString function, Part* part, World* world, Player* pla
 	if(command.CompareTo("setOvercast") == 0)
 	{
 		//getting the parameter
-		float overcast = atof(getParam(fcommand, 1, true, part));
+		float overcast = double( atof(getParam(fcommand, 1, true, part)) );
 
 		world->setOvercast(overcast);
 	}
 	if(command.CompareTo("setTime") == 0)
 	{
-		float time = atof(getParam(fcommand, 1, true, part));
+		float time = double( atof(getParam(fcommand, 1, true, part)) );
 
 		world->setTime(time);
 	}
 	
 }
 
-void runFunction(uString function, World* world, Enemy* enemy)
+/*void runFunction(uString function, World* world, Enemy* enemy)
 {
 	//Separating the command from the parameters
 	uString fcommand;
@@ -203,7 +203,7 @@ void runFunction(uString function, World* world, Enemy* enemy)
 		enemy->spawn("entrance");
 
 	}
-}
+}*/
 
 
 

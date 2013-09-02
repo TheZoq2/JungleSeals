@@ -5,12 +5,12 @@
 //Defining external variables
 #ifndef _input_globals
 #define _input_globals
-	extern bool i_left;
-	extern bool i_right;
-	extern bool i_up;
-	extern bool i_down;
+	//extern bool i_left;
+	//extern bool i_right;
+	//extern bool i_up;
+	//extern bool i_down;
 
-	extern bool i_activate;
+	//extern bool i_activate;
 
 	extern uString i_activateName;
 
@@ -19,7 +19,7 @@
 	extern float i_screenMX;
 	extern float i_screenMY;
 
-	extern float i_moveX;
+	//extern float i_moveX;
 #endif
 
 class Input
@@ -32,5 +32,15 @@ public:
 	static void updateInput();
 
 	static bool debugKey();
+
+	static bool left();
+	static bool right();
+
+	static bool up();
+	static bool down();
+
+	static bool activate();
+
+	static float moveX();
 };
 

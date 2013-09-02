@@ -1,7 +1,5 @@
 #include "DebugConsole.h"
 
-#include "Script.h"
-
 int  dc_textID;
 int dc_editID;
 
@@ -28,14 +26,14 @@ void DebugConsole::setup()
 	dc_editID = agk::CreateEditBox();
 	agk::FixEditBoxToScreen(dc_editID, 1);
 	agk::SetEditBoxPosition(dc_editID, 0, 250);
-	agk::SetEditBoxSize(dc_editID, agk::GetVirtualWidth(), 20);
+	agk::SetEditBoxSize(dc_editID, agk::GetVirtualWidth(), 20.0f);
 
 	//Adding a message to the output
 	addToLog("Debug console");
 
 	setVisible(0);
 }
-void DebugConsole::update()
+void DebugConsole::update(World* world, Player* player)
 {
 	//Enter key for now
 	bool enterkey = false;
@@ -44,7 +42,7 @@ void DebugConsole::update()
 
 	if(enterkey) //Running the script typed in the console
 	{
-		Script::runFunction(agk::GetEditBoxText(dc_editID), NULL, NULL, NULL);
+		Script::runFunction(agk::GetEditBoxText(dc_editID), NULL, world, player);
 
 		addC("Running function "); addToLog(agk::GetEditBoxText(dc_editID));
 		//Clearing the text from the editbox

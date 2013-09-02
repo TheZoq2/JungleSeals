@@ -554,7 +554,7 @@ HWND CreateWin32Window( HINSTANCE hInstance, int width, int height, uString &szT
 		{
 			float ratio = (rc.right-rc.left-15) / (float)width;
 			width = rc.right-rc.left-15;
-			height = (int) height*ratio;
+			height = (int) height * (int) ratio;
 		}
 	}
 	else
@@ -563,7 +563,7 @@ HWND CreateWin32Window( HINSTANCE hInstance, int width, int height, uString &szT
 		{
 			float ratio = (rc.bottom-rc.top-80) / (float)height;
 			height = rc.bottom-rc.top-80;
-			width = (int) width*ratio;
+			width = (int) width* (int) ratio;
 		}
 	}
 	

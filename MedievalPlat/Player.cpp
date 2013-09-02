@@ -83,7 +83,7 @@ void Player::update()
 	x = agk::GetSpriteXByOffset(SID);
 	y = agk::GetSpriteYByOffset(SID);
 
-	if(i_up)
+	if(Input::up() == true)
 	{
 		if(onGround && globaltime > lastJump + 0.1) //Checking if the player can jump
 		{
@@ -103,7 +103,7 @@ void Player::update()
 		moveForce = 10.0f;
 	}
 
-	if(i_left)
+	if(Input::left() == true)
 	{
 		//agk::SetSpritePhysicsImpulse(SID, x, y, -0.5f, 0);
 		agk::SetSpritePhysicsForce(SID, x, y, -moveForce, 0);
@@ -111,7 +111,7 @@ void Player::update()
 		moving = true;
 	}
 	
-	if(i_right)
+	if(Input::right() == true)
 	{
 		//agk::SetSpritePhysicsImpulse(SID, x, y, 0.5f, 0);
 		agk::SetSpritePhysicsForce(SID, x, y, moveForce, 0);
@@ -122,11 +122,11 @@ void Player::update()
 	//Adapting the speed checking for use with floats to move
 	float chkSpeed = speed;
 
-	if(i_moveX != 0)
+	if(Input::moveX() != 0)
 	{
-		chkSpeed = abs(speed * i_moveX);
+		chkSpeed = abs(speed * Input::moveX());
 
-		agk::SetSpritePhysicsForce(SID, x, y, moveForce * i_moveX, 0);
+		agk::SetSpritePhysicsForce(SID, x, y, moveForce * Input::moveX(), 0);
 		moving = true;
 	}
 	
@@ -279,12 +279,12 @@ void Player::activation()
 		agk::SetTextString(activateText, fText);
 
 		//Adding the background
-		agk::SetSpritePosition(activateSprite, agk::WorldToScreenX(closestPart->getX()) -5, agk::WorldToScreenY(closestPart->getY()) - 2.5);
+		agk::SetSpritePosition(activateSprite, agk::WorldToScreenX(closestPart->getX()) -5.0f, agk::WorldToScreenY(closestPart->getY()) - 2.5f);
 		agk::SetSpriteVisible(activateSprite, 1);
 		agk::SetSpriteScale(activateSprite, agk::GetTextTotalWidth(activateText) + 10, agk::GetTextTotalHeight(activateText) + 5);
 
 		//Checking if the part is activated
-		if(i_activate == true)
+		if(Input::activate() == true)
 		{
 			//Getting the script of the item
 			uString actScript;

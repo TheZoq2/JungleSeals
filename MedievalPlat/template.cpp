@@ -120,7 +120,7 @@ void app::Loop (void)
 		agk::PrintC("Drawing time: ");agk::Print(agk::GetDrawingTime());
 		agk::Print("");
 		agk::PrintC("Speedmod: ");agk::Print(speedMod);
-		agk::PrintC("Active keystate: "); agk::Print(i_activate);
+		agk::PrintC("Active keystate: "); agk::Print(Input::activate());
 		agk::PrintC("Pointer x: ");agk::PrintC(i_mx);agk::PrintC("   PointerY: ");agk::Print(i_my);
 		agk::PrintC("View zoom: ");agk::Print(agk::GetViewZoom());
 	}
@@ -151,12 +151,45 @@ void app::Loop (void)
 
 	//Syncing
 
-	agk::Update2D();
+	agk::Update2D(); //Updating the game
+
+	/////////////////////////////////////////////////////////////////////////
+	//							Light calculation
+	/////////////////////////////////////////////////////////////////////////
+	/*//Turning the light mode on
+	world.setLightModeOn();
+
+	agk::Render(); //Rendering the image
+	//Changing the display aspect
+	float lightScale = 10.0f;
+	agk::SetViewZoom(15 / lightScale);
+
+	//Calculating the cordinates of the new image
+	float h = agk::GetVirtualHeight(); float w = agk::GetVirtualWidth();
+	float imgHeight = h / lightScale;
+	float imgWidth = w / lightScale;
+
+	//Getting the image
+	int lightImg = agk::GetImage(w / 2.0f - imgWidth / 2.0f, h / 2.0f - imgHeight / 2.0f, imgWidth, imgHeight);
+
+	int sprite = agk::CreateSprite(lightImg);
+	agk::FixSpriteToScreen(sprite, 1);
+	//agk::SetSpriteScale(sprite, lightScale, lightScale);
+
+	//Resetting the world
+	world.setLightModeOff();*/
+	//agk::SetViewZoom(15);
+	/////////////////////////////////////////////////////////////////////////
+
 	//agk::Render();
+
 	agk::Render2DBack();
+	agk::SetViewZoom(15);
 	agk::Render2DFront();
 	agk::Swap();
-	//agk::Sync();
+
+	/*agk::DeleteImage(lightImg);
+	agk::DeleteSprite(sprite);*/
 }
 
 void app::End (void)
