@@ -38,6 +38,7 @@ class app
 		void Loop( void );
 		void End( void );
 
+		void calculateLight();
 	private:
 		int programState;
 

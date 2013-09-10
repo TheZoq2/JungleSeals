@@ -155,8 +155,10 @@ void app::Loop (void)
 
 	/////////////////////////////////////////////////////////////////////////
 	//							Light calculation
-	/////////////////////////////////////////////////////////////////////////
-	/*//Turning the light mode on
+	/////////////////////////////////////////////////////////////////////////'
+
+	/*
+	//Turning the light mode on
 	world.setLightModeOn();
 
 	agk::Render(); //Rendering the image
@@ -179,12 +181,13 @@ void app::Loop (void)
 	//Resetting the world
 	world.setLightModeOff();*/
 	//agk::SetViewZoom(15);
+
+	//calculateLight();
 	/////////////////////////////////////////////////////////////////////////
 
 	//agk::Render();
 
 	agk::Render2DBack();
-	agk::SetViewZoom(15);
 	agk::Render2DFront();
 	agk::Swap();
 
@@ -195,4 +198,36 @@ void app::Loop (void)
 void app::End (void)
 {
 
+}
+
+void app::calculateLight()
+{
+	/*
+	//Turning the light mode on
+	world.setLightModeOn();
+
+	agk::Render2DFront(); //Rendering the image
+	//Changing the display aspect
+	float lightScale = 10.0f;
+	agk::SetViewZoom(15 / lightScale);
+
+	//Calculating the cordinates of the new image
+	float h = agk::GetVirtualHeight(); float w = agk::GetVirtualWidth();
+	float imgHeight = h / lightScale;
+	float imgWidth = w / lightScale;
+
+	//Getting the image
+	int lightImg = agk::GetImage(w / 2.0f - imgWidth / 2.0f, h / 2.0f - imgHeight / 2.0f, imgWidth, imgHeight);
+
+	agk::ClearScreen();
+
+	int sprite = agk::CreateSprite(lightImg);
+	agk::FixSpriteToScreen(sprite, 1);
+	//agk::SetSpriteScale(sprite, lightScale, lightScale);
+
+	//Resetting the world
+	world.setLightModeOff();
+
+	agk::SetViewZoom(15);
+	*/
 }

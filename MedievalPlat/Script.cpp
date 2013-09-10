@@ -175,6 +175,10 @@ void Script::runFunction(uString function, Part* part, World* world, Player* pla
 
 		world->setTime(time);
 	}
+	if(command.CompareTo("getTime") == 0)
+	{
+		DebugConsole::addToLog(agk::Str(world->getTime()));
+	}
 	
 }
 

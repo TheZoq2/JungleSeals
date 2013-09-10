@@ -330,6 +330,14 @@ float World::getPartY(int partID)
 {
 	return part->at(partID).getY();
 }
+int World::getSkyID()
+{
+	return skyID;
+}
+float World::getTime()
+{
+	return time;
+}
 
 int World::getEntryAmount()
 {
@@ -490,13 +498,25 @@ void World::updateBG(float playerX, float playerY)
 	{
 		time = time - 2400;
 	}
+	//Increasing time
+	float timeInc = 0.1 * speedMod;
+	time = time + timeInc;
 	
+	//Setting the color values for day/night
+	int dayR = 160;
+	int dayG = 200;
+	int dayB = 255;
+
+	int nightR = 25;
+	int nightG = 25;
+	int nightB = 100;
+
 	//checking if it is nighttime
-	if(time > 2000 || time < 600)
+	if(time > 2200 || time < 600)
 	{
-		skyR = 25;
-		skyG = 25;
-		skyB = 100;
+		skyR = nightR;
+		skyG = nightG;
+		skyB = nightB;
 
 		agk::SetSpriteColor(skyID, skyR, skyG, skyB, 255);
 
@@ -510,8 +530,135 @@ void World::updateBG(float playerX, float playerY)
 		{
 			agk::SetSpriteColor(part->at(i).getSID(), 5, 5, 5, 255);
 		}
-	}
 
+		//Star color
+		for(unsigned int i = 0; i < stars->size(); i++)
+		{
+			agk::SetSpriteColor(stars->at(i).SID, 255, 255, 255, 255);
+		}
+	}
+	else if(time > 600 && time < 800)
+	{
+		//Calculating the diffirence in color levels
+		float rDiff = 255 - 5;
+		float gDiff = 255 - 5;
+		float bDiff = 255 - 5;
+
+		float timeFact = (time - 600) / 200;
+
+		float r = nightR + rDiff * timeFact;
+		float g = nightG + gDiff * timeFact;
+		float b = nightB + bDiff * timeFact;
+
+		for(unsigned int i = 0; i < part->size(); i++)
+		{
+			agk::SetSpriteColor(part->at(i).getSID(), r, g, b, 255);
+		}
+
+		//Star color
+		for(unsigned int i = 0; i < stars->size(); i++)
+		{
+			agk::SetSpriteColor(stars->at(i).SID, 255, 255, 255, 255 - 255 * timeFact);
+		}
+
+		//Sky color
+		float skyRDiff = dayR - nightR;
+		float skyGDiff = dayG - nightG;
+		float skyBDiff = dayB - nightB;
+
+		float skyR = nightR + skyRDiff * timeFact;
+		float skyG = nightG + skyGDiff * timeFact;
+		float skyB = nightB + skyBDiff * timeFact;
+
+		agk::SetSpriteColor(skyID, skyR, skyG, skyB, 255);
+
+		//CLoud color
+		float cloudRDiff = 255 - 10;
+		float cloudGDiff = 255 - 10; 
+		float cloudBDiff = 255 - 10;
+
+		float cloudR = 10 + cloudRDiff * timeFact;
+		float cloudG = 10 + cloudGDiff * timeFact;
+		float cloudB = 10 + cloudBDiff * timeFact;
+
+		for(unsigned int i = 0; i < clouds->size(); i++)
+		{
+			agk::SetSpriteColor(clouds->at(i).SID, cloudR, cloudG, cloudB, 255);
+		}
+	}
+	else if(time > 800 && time < 1999)
+	{
+		skyR = dayR;
+		skyG = dayG;
+		skyB = dayB;
+
+		agk::SetSpriteColor(skyID, skyR, skyG, skyB, 255);
+
+		for(unsigned int i = 0; i < clouds->size(); i++)
+		{
+			agk::SetSpriteColor(clouds->at(i).SID, 255, 255, 255, 255);
+		}
+
+		for(unsigned int i = 0; i < part->size(); i++)
+		{
+			agk::SetSpriteColor(part->at(i).getSID(), 255, 255, 255, 255);
+		}
+
+		//Star color
+		for(unsigned int i = 0; i < stars->size(); i++)
+		{
+			agk::SetSpriteColor(stars->at(i).SID, 255, 255, 255, 0);
+		}
+	}
+	else if( time > 2000 && time < 2200)
+	{
+		//Calculating the diffirence in color levels
+		float rDiff = 255 - 5;
+		float gDiff = 255 - 5;
+		float bDiff = 255 - 5;
+
+		float timeFact = (time - 2000) / 200;
+
+		float r = 255 - rDiff * timeFact;
+		float g = 255 - gDiff * timeFact;
+		float b = 255 - bDiff * timeFact;
+
+		for(unsigned int i = 0; i < part->size(); i++)
+		{
+			agk::SetSpriteColor(part->at(i).getSID(), r, g, b, 255);
+		}
+
+		//Star color
+		for(unsigned int i = 0; i < stars->size(); i++)
+		{
+			agk::SetSpriteColor(stars->at(i).SID, 255, 255, 255, 255 + 255 * timeFact);
+		}
+
+		//Sky color
+		float skyRDiff = dayR - nightR;
+		float skyGDiff = dayG - nightG;
+		float skyBDiff = dayB - nightB;
+
+		float skyR = dayR - skyRDiff * timeFact;
+		float skyG = dayG - skyGDiff * timeFact;
+		float skyB = dayB - skyBDiff * timeFact;
+
+		agk::SetSpriteColor(skyID, skyR, skyG, skyB, 255);
+
+		//CLoud color
+		float cloudRDiff = 255 - 10;
+		float cloudGDiff = 255 - 10; 
+		float cloudBDiff = 255 - 10;
+
+		float cloudR = 255 - cloudRDiff * timeFact;
+		float cloudG = 255 - cloudGDiff * timeFact;
+		float cloudB = 255 - cloudBDiff * timeFact;
+
+		for(unsigned int i = 0; i < clouds->size(); i++)
+		{
+			agk::SetSpriteColor(clouds->at(i).SID, cloudR, cloudG, cloudB, 255);
+		}
+	}
 	////////////////////////////////////////////////////////////////////////
 	//								Stars
 	////////////////////////////////////////////////////////////////////////
@@ -519,6 +666,11 @@ void World::updateBG(float playerX, float playerY)
 	{
 		agk::SetSpritePosition(stars->at(i).SID, agk::ScreenToWorldX(0) + stars->at(i).x, agk::ScreenToWorldY(0) + stars->at(i).y);
 	}
+
+	////////////////////////////////////////////////////////////////////////
+	//							Moon / Sun
+	////////////////////////////////////////////////////////////////////////
+
 }
 
 void World::setLightModeOn()
@@ -534,10 +686,10 @@ void World::setLightModeOn()
 	}
 
 	//Setting the color of the rest of the world
-	/*for(unsigned int i = 0; i < part->size(); i++)
+	for(unsigned int i = 0; i < part->size(); i++)
 	{
 		agk::SetSpriteColor(part->at(i).getSID(), 0, 0, 0, 255);
-	}*/
+	}
 }
 void World::setLightModeOff()
 {
@@ -552,10 +704,10 @@ void World::setLightModeOff()
 	}
 
 	//Setting the color of the rest of the world
-	/*for(unsigned int i = 0; i < part->size(); i++)
+	for(unsigned int i = 0; i < part->size(); i++)
 	{
 		agk::SetSpriteColor(part->at(i).getSID(), 255, 255, 255, 255);
-	}*/
+	}
 }
 
 float World::paralaxOffset(int depth)

@@ -50,6 +50,8 @@ public:
 	int getPartUsable(int partID);
 	float getPartX(int partID);
 	float getPartY(int partID);
+	int getSkyID();
+	float getTime();
 
 	int getEntryAmount();
 	Entry* getEntry(int entryID);
