@@ -355,6 +355,10 @@ void Player::setJustLoaded(bool justLoaded)
 {
 	this->justLoaded = justLoaded;
 }
+void Player::setVisible(int visible)
+{
+	agk::SetSpriteVisible(SID, visible);
+}
 
 float Player::getX()
 {

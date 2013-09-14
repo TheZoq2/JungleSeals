@@ -23,7 +23,7 @@
 #define DEVICE_HEIGHT 900
 #define DEVICE_POS_X 32
 #define DEVICE_POS_Y 32
-#define FULLSCREEN false
+#define FULLSCREEN true
 
 // Global values for the app
 class app

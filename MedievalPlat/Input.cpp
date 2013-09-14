@@ -33,8 +33,8 @@ void Input::setup()
 	char* deviceName = agk::GetDeviceName();
 	if(strcmp(deviceName, "WSindows"))
 	{
-		agk::AddVirtualJoystick(1, 200.0f, agk::GetDeviceHeight() - 200.0f, 250.0f);
-		agk::AddVirtualButton(1, agk::GetDeviceWidth() - 200.0f, agk::GetDeviceHeight() - 200.0f, 200.0f);
+		//agk::AddVirtualJoystick(1, 200.0f, agk::GetDeviceHeight() - 200.0f, 250.0f);
+		//agk::AddVirtualButton(1, agk::GetDeviceWidth() - 200.0f, agk::GetDeviceHeight() - 200.0f, 200.0f);
 	}
 }
 

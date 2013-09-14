@@ -180,6 +180,12 @@ void Script::runFunction(uString function, Part* part, World* world, Player* pla
 		DebugConsole::addToLog(agk::Str(world->getTime()));
 	}
 	
+	if(command.CompareTo("setPlayerVisible") == 0)
+	{
+		int visible = atoi(getParam(fcommand, 1, true, part));
+
+		player->setVisible(visible);
+	}
 }
 
 /*void runFunction(uString function, World* world, Enemy* enemy)

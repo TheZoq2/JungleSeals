@@ -27,6 +27,7 @@ public:
 
 	bool canTravel();
 	void setJustLoaded(bool justLoaded);
+	void setVisible(int visible);
 
 	void addItem(Item item);
 

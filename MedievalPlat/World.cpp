@@ -499,7 +499,7 @@ void World::updateBG(float playerX, float playerY)
 		time = time - 2400;
 	}
 	//Increasing time
-	float timeInc = 0.1 * speedMod;
+	float timeInc = 0.5 * speedMod;
 	time = time + timeInc;
 	
 	//Setting the color values for day/night
@@ -546,9 +546,9 @@ void World::updateBG(float playerX, float playerY)
 
 		float timeFact = (time - 600) / 200;
 
-		float r = nightR + rDiff * timeFact;
-		float g = nightG + gDiff * timeFact;
-		float b = nightB + bDiff * timeFact;
+		float r = 5 + rDiff * timeFact;
+		float g = 5 + gDiff * timeFact;
+		float b = 5 + bDiff * timeFact;
 
 		for(unsigned int i = 0; i < part->size(); i++)
 		{
