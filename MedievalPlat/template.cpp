@@ -16,8 +16,10 @@ void app::Begin(void)
 	agk::SetWindowTitle("MedievalPlat");
 	agk::SetVirtualResolution (agk::GetDeviceWidth(), agk::GetDeviceHeight());
 	agk::SetSyncRate(0,1);
+	agk::SetClearColor(255, 0, 150);
 
 	agk::SetPrintSize(15);
+	agk::SetPrintColor(255, 0, 0, 255);
 
 	enemy=new std::vector< Enemy >;
 
@@ -188,6 +190,7 @@ void app::Loop (void)
 	//agk::Render();
 
 	agk::Render2DBack();
+	agk::Render3D();
 	agk::Render2DFront();
 	agk::Swap();
 

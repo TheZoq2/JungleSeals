@@ -83,9 +83,10 @@ private:
 	std::vector< Entry >* entry;
 
 	int skyID;
-	unsigned int skyR;
+	/*unsigned int skyR;
 	unsigned int skyG;
-	unsigned int skyB;
+	unsigned int skyB;*/
+	int skyShader;
 
 	int starAmount;
 

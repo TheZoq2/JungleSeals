@@ -192,7 +192,7 @@ void World::update(float playerX, float playerY)
 }
 void World::clear()
 {
-	//Removing the background
+	/*//Removing the background
 	if(agk::GetSpriteExists(skyID))
 	{
 		agk::DeleteSprite(skyID);
@@ -207,7 +207,10 @@ void World::clear()
 		}
 	}
 	//Clearing the cloud vector
-	clouds->clear();
+	clouds->clear();*/
+
+	//Remvoving the background
+	agk::DeleteObject(skyID);
 
 	for(unsigned int i = 0; i < part->size(); i++)
 	{
@@ -382,13 +385,13 @@ void World::loadBaseMedia() //Loads media that is used in all worlds
 }
 void World::loadBG()
 {
-	overcast = 0.25;
+	overcast = 0.75;
 
-	skyR = 160;
+	/*skyR = 160;
 	skyG = 200;
-	skyB = 255;
+	skyB = 255;*/
 
-	int skyImg = agk::LoadImage(GF::getPath("Background/Sky.png"));
+	/*int skyImg = agk::LoadImage(GF::getPath("Background/Sky.png"));
 	skyID = agk::CreateSprite(skyImg);
 	agk::SetSpriteDepth(skyID, 1000); //Placing the sky at the back
 
@@ -441,11 +444,47 @@ void World::loadBG()
 		agk::SetSpriteVisible(tempStar.SID, 1);
 
 		stars->push_back(tempStar); //Adding the star to the star array
-	}
+	}*/
+
+	skyID = agk::CreateObjectPlane(100, 100);
+	agk::SetObjectLookAt(skyID, 0, 5, 0, 0);
+	agk::SetObjectColor(skyID, 255, 0, 0, 255);
+
+	agk::SetCameraPosition(1, 0, 5, 0);
+	agk::SetCameraLookAt(1, 0, 0, 0, 0);
+
+	skyShader = agk::LoadShader("shaders/sky.vs", "shaders/sky.fs");
+	agk::SetShaderConstantByName(skyShader, "iResolution", agk::GetVirtualWidth(), agk::GetVirtualHeight(), 0, 0);
+
+	float dSkyR = 0.62f;
+	float dSkyG = 0.78f;
+	float dSkyB = 1.0f;
+
+	float nSkyR = 0.05f;
+	float nSkyG = 0.05f;
+	float nSkyB = 0.39f;
+
+	agk::SetShaderConstantByName(skyShader, "dSky", dSkyR, dSkyG, dSkyB, 1.0f);
+	agk::SetShaderConstantByName(skyShader, "nSky", nSkyR, nSkyG, nSkyB, 1.0f);
+	
+	float dCloudR = 1.0f;
+	float dCloudG = 1.0f;
+	float dCloudB = 1.0f;
+	
+	float nCloudR = 0.05f;
+	float nCloudG = 0.05f;
+	float nCloudB = 0.05f;
+
+	agk::SetShaderConstantByName(skyShader, "dCloud", dCloudR, dCloudG, dCloudB, 1.0f);
+	agk::SetShaderConstantByName(skyShader, "nCloud", nCloudR, nCloudG, nCloudB, 1.0f);
+
+	agk::SetObjectShader(skyID, skyShader);
+
+	
 }
 void World::updateBG(float playerX, float playerY)
 {
-	agk::SetSpritePosition(skyID, agk::ScreenToWorldX(0), agk::ScreenToWorldY(0));
+	/*agk::SetSpritePosition(skyID, agk::ScreenToWorldX(0), agk::ScreenToWorldY(0));
 
 	//Drawing the clouds
 	for(unsigned int i = 0; i < clouds->size(); i++)
@@ -669,8 +708,101 @@ void World::updateBG(float playerX, float playerY)
 
 	////////////////////////////////////////////////////////////////////////
 	//							Moon / Sun
-	////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////*/
 
+////////////////////////////////////////////////////////////////////////
+	//							Time
+	////////////////////////////////////////////////////////////////////////
+	//Making sure time is between 0 and 24
+	while(time > 2400)
+	{
+		time = time - 2400;
+	}
+	//Increasing time
+	float timeInc = 0.5 * speedMod;
+	time = time + timeInc;
+	
+	//Setting the color values for day/night
+	int dayR = 160;
+	int dayG = 200;
+	int dayB = 255;
+
+	int nightR = 25;
+	int nightG = 25;
+	int nightB = 100;
+
+	//checking if it is nighttime
+	if(time > 2200 || time < 600)
+	{
+		/*skyR = nightR;
+		skyG = nightG;
+		skyB = nightB;*/
+
+		//Part color
+		for(unsigned int i = 0; i < part->size(); i++)
+		{
+			agk::SetSpriteColor(part->at(i).getSID(), 5, 5, 5, 255);
+		}
+
+		//Star color
+		for(unsigned int i = 0; i < stars->size(); i++)
+		{
+			agk::SetSpriteColor(stars->at(i).SID, 255, 255, 255, 255);
+		}
+	}
+	else if(time > 600 && time < 800)
+	{
+		//Calculating the diffirence in color levels
+		float rDiff = 255 - 5;
+		float gDiff = 255 - 5;
+		float bDiff = 255 - 5;
+
+		float timeFact = (time - 600) / 200;
+
+		float r = 5 + rDiff * timeFact;
+		float g = 5 + gDiff * timeFact;
+		float b = 5 + bDiff * timeFact;
+
+		for(unsigned int i = 0; i < part->size(); i++)
+		{
+			agk::SetSpriteColor(part->at(i).getSID(), r, g, b, 255);
+		}
+	}
+	else if(time > 800 && time < 1999)
+	{
+		/*skyR = dayR;
+		skyG = dayG;
+		skyB = dayB;*/
+
+		for(unsigned int i = 0; i < part->size(); i++)
+		{
+			agk::SetSpriteColor(part->at(i).getSID(), 255, 255, 255, 255);
+		}
+	}
+	else if( time > 2000 && time < 2200)
+	{
+		//Calculating the diffirence in color levels
+		float rDiff = 255 - 5;
+		float gDiff = 255 - 5;
+		float bDiff = 255 - 5;
+
+		float timeFact = (time - 2000) / 200;
+
+		float r = 255 - rDiff * timeFact;
+		float g = 255 - gDiff * timeFact;
+		float b = 255 - bDiff * timeFact;
+
+		for(unsigned int i = 0; i < part->size(); i++)
+		{
+			agk::SetSpriteColor(part->at(i).getSID(), r, g, b, 255);
+		}
+	}
+	
+	agk::SetShaderConstantByName(skyShader, "overcast", overcast, 0, 0, 0);
+	agk::SetShaderConstantByName(skyShader, "posX", playerX / 2000, 0, 0, 0);
+	agk::SetShaderConstantByName(skyShader, "posY", - playerY / 2000, 0, 0, 0);
+
+	agk::SetShaderConstantByName(skyShader, "time", time, 0, 0, 0);
 }
 
 void World::setLightModeOn()
