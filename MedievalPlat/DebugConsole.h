@@ -21,7 +21,7 @@ public:
 	~DebugConsole(void);
 
 	static void setup();
-	static void update(World* world, Player* player);
+	static void update(World* world, Player* player, NPCGroup* npcGroup);
 
 	static void setVisible(int visible);
 

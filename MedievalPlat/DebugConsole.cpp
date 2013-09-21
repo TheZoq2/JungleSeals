@@ -33,7 +33,7 @@ void DebugConsole::setup()
 
 	setVisible(0);
 }
-void DebugConsole::update(World* world, Player* player)
+void DebugConsole::update(World* world, Player* player, NPCGroup* npcGroup)
 {
 	//Enter key for now
 	bool enterkey = false;
@@ -42,7 +42,7 @@ void DebugConsole::update(World* world, Player* player)
 
 	if(enterkey) //Running the script typed in the console
 	{
-		Script::runFunction(agk::GetEditBoxText(dc_editID), NULL, world, player);
+		Script::runFunction(agk::GetEditBoxText(dc_editID), NULL, world, player, npcGroup);
 
 		addC("Running function "); addToLog(agk::GetEditBoxText(dc_editID));
 		//Clearing the text from the editbox

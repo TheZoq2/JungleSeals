@@ -14,6 +14,7 @@
 #include "Item.h"
 #include "IngameMenu.h"
 #include "DebugConsole.h"
+#include "NPC.h"
 
 #include "Enemy.h"
 
@@ -45,7 +46,7 @@ class app
 		World world;
 		Player player;
 
-		std::vector< Enemy >*enemy;	
+		NPCGroup npcGroup;
 
 		bool initLoaded;
 

@@ -46,6 +46,11 @@ void Script::run(uString scriptName, Part* part, World* world, Player* player)
 
 void Script::runFunction(uString function, Part* part, World* world, Player* player)
 {
+	//Passing the function to the complete function list
+	runFunction(function, part, world, player, NULL);
+}
+void Script::runFunction(uString function, Part* part, World* world, Player* player, NPCGroup* npcGroup)
+{
 	//Separating the command from the parameters
 	uString fcommand;
 		
@@ -185,6 +190,11 @@ void Script::runFunction(uString function, Part* part, World* world, Player* pla
 		int visible = atoi(getParam(fcommand, 1, true, part));
 
 		player->setVisible(visible);
+	}
+
+	if(command.CompareTo("loadNPC") == 0)
+	{
+		npcGroup->addNPCFromFile(getParam(fcommand, 1, true, part));
 	}
 }
 

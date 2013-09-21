@@ -21,18 +21,13 @@ void app::Begin(void)
 	agk::SetPrintSize(15);
 	agk::SetPrintColor(255, 0, 0, 255);
 
-	enemy=new std::vector< Enemy >;
-
 	world.begin();
 
 	player.begin(&world);
 
-
-	/*Enemy tempEnemy;
-	tempEnemy.begin(&world);
-	enemy->push_back(tempEnemy);*/
-
 	Input::setup();
+
+	npcGroup.setup();
 
 	//Setting up the item generator
 	ItemGen::setup();
@@ -62,7 +57,7 @@ void app::Loop (void)
 		//Main game loop
 		//agk::SetViewZoomMode(1);
 		player.update();
-		//enemy->at(0).update();
+
 		world.update(player.getX(), player.getY());
 
 		IngameMenu::update();
@@ -144,7 +139,7 @@ void app::Loop (void)
 	if(console == true)
 	{
 		DebugConsole::setVisible(1);
-		DebugConsole::update(&world, &player);
+		DebugConsole::update(&world, &player, &npcGroup);
 	}
 	else
 	{

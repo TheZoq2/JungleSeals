@@ -102,11 +102,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Core.cpp" />
+    <ClCompile Include="DataReader.cpp" />
     <ClCompile Include="DebugConsole.cpp" />
     <ClCompile Include="GF.cpp" />
     <ClCompile Include="IngameMenu.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Item.cpp" />
+    <ClCompile Include="NPC.cpp" />
     <ClCompile Include="Part.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Script.cpp" />
@@ -114,11 +116,13 @@
     <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DataReader.h" />
     <ClInclude Include="DebugConsole.h" />
     <ClInclude Include="GF.h" />
     <ClInclude Include="IngameMenu.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="Item.h" />
+    <ClInclude Include="NPC.h" />
     <ClInclude Include="Part.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Script.h" />
