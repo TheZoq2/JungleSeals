@@ -69,8 +69,15 @@ void NPC::createFromName(uString name)
 
 					for(int i = 0; i < valueAmount + 1; i++) //+1 since there are only commas between values and not at the end
 					{
+						uString value;
+						value.SetStr(DataReader::getValue(p, i));
 
+						this->formal->push_back(value);
 					}
+				}
+				else if(type.CompareTo("Dialog") == 0)
+				{
+
 				}
 			}
 

@@ -10,6 +10,17 @@
 #include "agk.h"
 #include "DataReader.h"
 
+class Character
+{
+public:
+
+private:
+	int SID;
+
+	float x;
+	float y;
+};
+
 class NPC
 {
 public:
@@ -23,6 +34,8 @@ private:
 	uString name;
 
 	std::vector< uString >* formal;
+
+	Character chr;
 };
 
 class NPCGroup
