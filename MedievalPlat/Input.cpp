@@ -1,5 +1,6 @@
 #include "Input.h"
 
+#include "DebugConsole.h"
 /*bool i_up;
 bool i_down;*/
 //bool i_left;

@@ -2,6 +2,8 @@
 
 int  dc_textID;
 int dc_editID;
+int dc_bgSID;
+int dc_visible = 0;
 
 uString consoleText;
 
@@ -27,6 +29,15 @@ void DebugConsole::setup()
 	agk::FixEditBoxToScreen(dc_editID, 1);
 	agk::SetEditBoxPosition(dc_editID, 0, 250);
 	agk::SetEditBoxSize(dc_editID, agk::GetVirtualWidth(), 20.0f);
+	agk::SetEditBoxBorderColor(dc_editID, 150, 150, 150, 150);
+	agk::SetEditBoxBackgroundColor(dc_editID, 150, 150, 150, 150);
+
+	//Creating the background sprite
+	dc_bgSID = agk::CloneSprite(1);
+	agk::FixSpriteToScreen(dc_bgSID, 1);
+	agk::SetSpriteScale(dc_bgSID, agk::GetVirtualWidth(), 270.0f);
+	agk::SetSpriteColor(dc_bgSID, 150, 150, 150, 100);
+	agk::SetSpriteVisible(dc_bgSID, 0);
 
 	//Adding a message to the output
 	addToLog("Debug console");
@@ -46,6 +57,7 @@ void DebugConsole::update(World* world, Player* player, NPCGroup* npcGroup)
 
 		addC("Running function "); addToLog(agk::GetEditBoxText(dc_editID));
 		//Clearing the text from the editbox
+		agk::SetEditBoxText(dc_editID, "");
 	}
 }
 
@@ -73,5 +85,23 @@ void DebugConsole::addC(uString msg)
 void DebugConsole::setVisible(int visible)
 {
 	agk::SetTextVisible(dc_textID, visible);
-	agk::SetEditBoxVisible(dc_textID, visible);
+	agk::SetEditBoxVisible(dc_editID, visible);
+	agk::SetSpriteVisible(dc_bgSID, visible);
+
+	if(visible == 1)
+	{
+		agk::SetEditBoxFocus(dc_editID, 1);
+	}
+
+	dc_visible = visible;
+}
+
+bool DebugConsole::isActive()
+{
+	if(dc_visible == 0)
+	{
+		return false;
+	}
+	
+	return true;
 }

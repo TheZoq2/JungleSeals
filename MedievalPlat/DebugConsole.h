@@ -10,6 +10,9 @@
 #define DC_GLOBALS
 	extern int  dc_textID;
 	extern int dc_editID;
+	extern int dc_bgSID;
+
+	extern int dc_visible;
 
 	extern uString consoleText;
 #endif
@@ -28,5 +31,6 @@ public:
 	static void addToLog(uString msg);
 	static void addC(uString msg);
 
+	static bool isActive();
 };
 
