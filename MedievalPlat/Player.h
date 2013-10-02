@@ -6,7 +6,7 @@
 #include "World.h"
 #include "Input.h"
 #include "Item.h"
-//#include "Weapon.h"
+#include "Weapon.h"
 //#include "Script.h"
 
 class Player
@@ -69,6 +69,6 @@ private:
 
 	std::vector< Item >* inventory;
 
-	//Weapon cWeapon;
+	Weapon cWeapon;
 };
 

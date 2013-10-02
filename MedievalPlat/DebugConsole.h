@@ -1,7 +1,6 @@
 #pragma once
 
 #include "agk.h"
-#include "DebugInput.h"
 
 #ifndef DC_GLOBALS
 #define DC_GLOBALS

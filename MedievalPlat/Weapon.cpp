@@ -11,7 +11,7 @@ Weapon::~Weapon(void)
 {
 }
 
-/*void Weapon::loadWeaponByName(uString name)
+void Weapon::loadWeaponByName(uString name)
 {
 	uString filename;
 	filename.SetStr(weapPath);
@@ -29,4 +29,4 @@ Weapon::~Weapon(void)
 		DebugConsole::addC(filename);
 		DebugConsole::addToLog(" did not exist");
 	}
-}*/
+}

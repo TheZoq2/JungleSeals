@@ -15,7 +15,7 @@ public:
 	Weapon(void);
 	~Weapon(void);
 
-	//void loadWeaponByName(uString name);
+	void loadWeaponByName(uString name);
 private:
 	uString name;
 
