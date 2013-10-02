@@ -26,6 +26,7 @@ public:
 	static void setupGlobals();
 
 	static uString getPath(char originalPath[128]); //Returns the path to a file with medium quality
+	static uString getPath(uString filename);
 
 	static float tileSize; //The size of each tile in the world
 

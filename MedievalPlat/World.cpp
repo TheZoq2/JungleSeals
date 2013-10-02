@@ -21,6 +21,8 @@ void World::begin()
 	clouds = new std::vector< Cloud >;
 
 	stars = new std::vector< Star >;
+
+	cloudLayers = 4;
 }
 
 void World::load(uString filename)
@@ -287,6 +289,10 @@ void World::setOvercast(float overcast)
 void World::setTime(float time)
 {
 	this->time = time;
+}
+void World::setCloudLayers(int cloudLayers)
+{
+	this->cloudLayers = cloudLayers;
 }
 
 Part* World::getPartFromName(uString name) //This function goes thru all the parts and looks for one with the name specified //It will return the first part with the name
@@ -798,9 +804,10 @@ void World::updateBG(float playerX, float playerY)
 		}
 	}
 	
-	agk::SetShaderConstantByName(skyShader, "overcast", overcast, 0, 0, 0);
+	agk::SetShaderConstantByName(skyShader, "overcast", overcast / cloudLayers * 4, 0, 0, 0);
 	agk::SetShaderConstantByName(skyShader, "posX", playerX / 2000, 0, 0, 0);
 	agk::SetShaderConstantByName(skyShader, "posY", - playerY / 2000, 0, 0, 0);
+	agk::SetShaderConstantByName(skyShader, "cloudLayers", cloudLayers, 5, 5, 5);
 
 	agk::SetShaderConstantByName(skyShader, "time", time, 0, 0, 0);
 }

@@ -61,6 +61,9 @@ void app::Loop (void)
 		world.update(player.getX(), player.getY());
 
 		IngameMenu::update();
+
+		npcGroup.update(&world);
+		npcGroup.updateChars(&npcGroup, &player);
 	}
 	else if(programState == 2)
 	{

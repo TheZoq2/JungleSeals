@@ -3,6 +3,7 @@ uniform vec2 iMouse;
 
 uniform float time;
 
+uniform int cloudLayers;
 uniform float overcast;
 uniform float posX;
 uniform float posY;
@@ -155,7 +156,6 @@ vec4 sun()
 	float yDist = yPos - sunPos.y;
 	
 	float dist = sqrt(pow(xDist, 2.) + pow(yDist, 2.));
-
 	
 	if(dist < sunWidth)
 	{
@@ -187,40 +187,33 @@ void main(void)
 	{
 		starLayer = vec4(1., 1., 1., 1.);	//Make the pixel very bright
 	}
-	
+
 	//Generating the clouds
 	vec4 cloudLayer = vec4(0., 0., 0., 0.);
-	for(int i = 0; i < 4; i++)
-	{
-		//clouds( (15.0 * float(i)) + gl_FragCoord.xy / iResolution.xy + posX * float(i + 1));
-		/*vec4 cloud = clouds( vec2((15. * float(i)) + gl_FragCoord.x / iResolution.x + posX * float(i + 1)),
-							(15. * float(i)) + gl_FragCoord.y / iResoulution.y);*/
-		
-		vec4 cloud = clouds( vec2( (15. * float(i)) + gl_FragCoord.x / iResolution.x + posX * float(i + 1),
-			(15. * float(i)) + gl_FragCoord.y / iResolution.y + posY * float(i + 1)));
-		
-		//finalColor = finalColor + vec4(cloud, 1.);
-		cloudLayer = mix(cloudLayer, cloud, cloud.a);
-	}
+	//for(int i = 0; i < tempCloudLayers; i++)
 	
+	vec4 cloudColor = vec4(0., 0., 0., 0.);
+
 	if(time > nStart || time < nEnd) //Nighttime
 	{
 		finalColor = finalColor * nSky;
 		
 		finalColor = mix(finalColor, starLayer, starLayer.a);
 		
-		cloudLayer = cloudLayer * nCloud;
+		//cloudLayer = cloudLayer * nCloud;
+		cloudColor = nCloud;
 		//finalColor = mix(finalColor, cloudLayer, cloudLayer.a);
-		vec4 genericColor = cloudLayer;
-		finalColor = mix(finalColor, cloudLayer, cloudLayer.a);
+		//vec4 genericColor = cloudLayer;
+		//finalColor = mix(finalColor, cloudLayer, cloudLayer.a);
 		//finalColor = vec4(nSky.r, nSky.g, nSky.b, 1.0);
 	}
 	else if(time > dStart && time < dEnd)
 	{
 		finalColor = finalColor * dSky;
 		
+		cloudColor = dCloud;
 		//cloudLayer = cloudLayer * dCloud;
-		finalColor = mix(finalColor, cloudLayer, cloudLayer.a);
+		//finalColor = mix(finalColor, cloudLayer, cloudLayer.a);
 	}
 	else if(time > dEnd && time < nStart) //Evening
 	{
@@ -230,35 +223,36 @@ void main(void)
 		vec4 skyDiff = vec4(nSky.r - dSky.r, nSky.g - dSky.g, nSky.b - dSky.b, 1.);
 		vec4 skyColor = vec4(dSky.r + (skyDiff.r * timeFact), dSky.g + (skyDiff.g * timeFact), dSky.b + (skyDiff.b * timeFact), 1.);
 		
-		finalColor = skyColor;
+		finalColor = finalColor * skyColor;
 		
 		//Stars
 		finalColor = mix(finalColor, starLayer, starLayer * timeFact);
 		
 		//Clouds
 		vec4 cloudDiff = vec4(nCloud.r - dCloud.r, nCloud.g - dCloud.g, nCloud.b - dCloud.b, 1.);
-		vec4 cloudColor = vec4(dCloud.r + (cloudDiff.r * timeFact), dCloud.g + (cloudDiff.g * timeFact), dCloud.b + (cloudDiff.b * timeFact), 1.);
-		vec4 cloudLayer = cloudLayer * cloudColor;
-		finalColor = mix(finalColor, cloudLayer, cloudLayer.a);
+		cloudColor = vec4(dCloud.r + (cloudDiff.r * timeFact), dCloud.g + (cloudDiff.g * timeFact), dCloud.b + (cloudDiff.b * timeFact), 1.);
+		//vec4 cloudLayer = cloudLayer * cloudColor;
+		//finalColor = mix(finalColor, cloudLayer, cloudLayer.a);
 	}
-	else if(time > nEnd && time < dStart) //Evening
+	else if(time > nEnd && time < dStart) //Morning
 	{
 		float timeFact = (time - nEnd) / (dStart - nEnd);
 		
 		//Calculating the diffirence between night and day
 		vec4 skyDiff = vec4(dSky.r - nSky.r, dSky.g - nSky.g, dSky.b - nSky.b, 1.);
 		vec4 skyColor = vec4(nSky.r + (skyDiff.r * timeFact), nSky.g + (skyDiff.g * timeFact), nSky.b + (skyDiff.b * timeFact), 1.);
-		
-		finalColor = skyColor;
+		//Calculating the diffirence between night and day
+
+		finalColor = finalColor * skyColor;
 		
 		//Stars
-		finalColor = mix(finalColor, starLayer, starLayer * 1. - timeFact);
+		finalColor = mix(finalColor, starLayer, starLayer * (1. - timeFact));
 		
 		//Clouds
 		vec4 cloudDiff = vec4(dCloud.r - nCloud.r, dCloud.g - nCloud.g, dCloud.b - nCloud.b, 1.);
-		vec4 cloudColor = vec4(nCloud.r + (cloudDiff.r * timeFact), nCloud.g + (cloudDiff.g * timeFact), nCloud.b + (cloudDiff.b * timeFact), 1.);
-		vec4 cloudLayer = cloudLayer * cloudColor;
-		finalColor = mix(finalColor, cloudLayer, cloudLayer.a);
+		cloudColor = vec4(nCloud.r + (cloudDiff.r * timeFact), nCloud.g + (cloudDiff.g * timeFact), nCloud.b + (cloudDiff.b * timeFact), 1.);
+		//vec4 cloudLayer = cloudLayer * cloudColor;
+		//finalColor = mix(finalColor, cloudLayer, cloudLayer.a);
 	}
 	
 	//finalColor = vec4(1., 0., 0., 1.);
@@ -283,6 +277,21 @@ void main(void)
 		//finalColor = finalColor + vec4(cloud, 1.);
 		finalColor = mix(finalColor, cloud, cloud.a);
 	}*/
+	
+	for(int i = 4; i >= 0; i--)
+	{
+		//clouds( (15.0 * float(i)) + gl_FragCoord.xy / iResolution.xy + posX * float(i + 1));
+		/*vec4 cloud = clouds( vec2((15. * float(i)) + gl_FragCoord.x / iResolution.x + posX * float(i + 1)),
+							(15. * float(i)) + gl_FragCoord.y / iResoulution.y);*/
+		
+		vec4 cloud = clouds( vec2( (15. * float(i)) + gl_FragCoord.x / iResolution.x + posX * float(i + 1),
+			(15. * float(i)) + gl_FragCoord.y / iResolution.y + posY * float(i + 1)));
+		
+		//finalColor = finalColor + vec4(cloud, 1.);
+		finalColor = mix(finalColor, cloud * cloudColor, cloud.a);
+		
+		//cloudLayer = vec4(1., 1., 1., 1.);
+	}
 	
 	gl_FragColor = finalColor;
 }

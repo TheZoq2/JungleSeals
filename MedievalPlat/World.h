@@ -41,6 +41,7 @@ public:
 
 	void setOvercast(float overcast);
 	void setTime(float time);
+	void setCloudLayers(int cloudLayers);
 
 	Part* getPartFromName(uString name); //This function goes thru all the parts and looks for one with the name specified //It will return the first part with the name
 	Part* getPartFromID(int partID);
@@ -87,6 +88,7 @@ private:
 	unsigned int skyG;
 	unsigned int skyB;*/
 	int skyShader;
+	int cloudLayers;
 
 	int starAmount;
 

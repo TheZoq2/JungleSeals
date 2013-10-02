@@ -192,9 +192,36 @@ void Script::runFunction(uString function, Part* part, World* world, Player* pla
 		player->setVisible(visible);
 	}
 
-	if(command.CompareTo("loadNPC") == 0)
+	if(command.CompareTo("loadNPC2") == 0)
 	{
 		npcGroup->addNPCFromFile(getParam(fcommand, 1, true, part));
+	}
+
+	if(command.CompareTo("loadNPC") == 0)
+	{
+		uString npc;
+		npc.SetStr(getParam(fcommand, 1, false, part)); //Getting the name of the NPC to load
+
+		uString partName;
+		partName.SetStr(getParam(fcommand, 2, true, part)); //Getting the name of the part to check
+
+		Part* spawnpoint = world->getPartFromName(partName);
+
+		if(spawnpoint != NULL)
+		{
+			float xPos = spawnpoint->getX();
+			float yPos = spawnpoint->getY();
+
+			npcGroup->addNPCFromFile(npc, xPos, yPos);
+		}
+		else
+		{
+			DebugConsole::addC("The spawnpoint: ");
+			DebugConsole::addC(partName);
+			DebugConsole::addC(" for character ");
+			DebugConsole::addC(npc);
+			DebugConsole::addToLog(" was not found, character was not spawned");
+		}
 	}
 }
 
@@ -245,7 +272,6 @@ uString Script::getParam(uString command, int number, bool isLast, Part* part)
 	{
 		cmdStart = 0; //cmdEnd;
 		//Getting a substring with the remaining commands
-		//restParams.SubString(restParams, cmdStart);
 
 		if(i == number - 1 && isLast == true) //This is the last parameter, look for the closing ")" instead of the ","
 		{
@@ -260,6 +286,8 @@ uString Script::getParam(uString command, int number, bool isLast, Part* part)
 		{
 			restParams.SubString(param, cmdStart, cmdEnd);
 		}
+
+		restParams.SubString(restParams, cmdEnd + 1); //Removing the current parameter
 	}
 
 	if(isSpecial(param)) //Making sure this wasn't a special command

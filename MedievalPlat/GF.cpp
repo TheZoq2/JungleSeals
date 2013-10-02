@@ -37,6 +37,18 @@ uString GF::getPath(char originalPath[128])
 
 	return result; //Returning the final path
 }
+uString GF::getPath(uString filename)
+{
+	uString result;
+
+	if(GF::quality == 1)
+	{
+		result.SetStr(sdPath);
+		result.Append(filename);
+	}
+
+	return result;
+}
 
 void GF::updateTime()
 {
