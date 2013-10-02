@@ -14,6 +14,7 @@
 #include "Item.h"
 #include "IngameMenu.h"
 #include "DebugConsole.h"
+#include "DebugInput.h"
 #include "NPC.h"
 
 #include "Enemy.h"

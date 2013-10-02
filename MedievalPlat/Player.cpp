@@ -377,3 +377,7 @@ Item Player::getItemFromSlot(int slot)
 {
 	return inventory->at(slot);
 }
+/*void Player::setCurrentWeaponByName(uString weaponName)
+{
+	cWeapon.loadWeaponByName(weaponName);
+}*/

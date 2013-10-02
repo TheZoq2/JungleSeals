@@ -6,6 +6,7 @@
 #include "World.h"
 #include "Input.h"
 #include "Item.h"
+//#include "Weapon.h"
 //#include "Script.h"
 
 class Player
@@ -30,6 +31,7 @@ public:
 	void setVisible(int visible);
 
 	void addItem(Item item);
+	//void setCurrentWeaponByName(uString name);
 
 	float getX();
 	float getY();
@@ -66,5 +68,7 @@ private:
 	float lastTravel;
 
 	std::vector< Item >* inventory;
+
+	//Weapon cWeapon;
 };
 

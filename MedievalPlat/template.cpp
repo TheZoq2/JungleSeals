@@ -142,7 +142,7 @@ void app::Loop (void)
 	if(console == true)
 	{
 		DebugConsole::setVisible(1);
-		DebugConsole::update(&world, &player, &npcGroup);
+		DebugInput::update(&world, &player, &npcGroup);
 	}
 	else
 	{

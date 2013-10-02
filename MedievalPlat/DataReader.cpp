@@ -61,6 +61,24 @@ uString DataReader::getValue(uString line)
 
 	return value;
 }
+uString DataReader::getValue(uString line, int pos)
+{
+	uString value;
+	//Counting the amount of colons
+	int colon = line.Find(':');
+
+	line.SubString(line, colon + 1, -1);
+	for(int i = 0; i <= pos; i++)
+	{
+		int comma = line.Find(',');
+		line.SubString(value, 0, comma); //Getting the value
+
+		//Removing the already found parameters
+		line.SubString(line, comma + 1, -1);
+	}
+
+	return value;
+}
 
 int DataReader::getValueAmount(uString line)
 {

@@ -1,10 +1,7 @@
 #pragma once
 
-#include "Script.h"
-#include "World.h"
-#include "Player.h"
-
 #include "agk.h"
+#include "DebugInput.h"
 
 #ifndef DC_GLOBALS
 #define DC_GLOBALS
@@ -24,7 +21,6 @@ public:
 	~DebugConsole(void);
 
 	static void setup();
-	static void update(World* world, Player* player, NPCGroup* npcGroup);
 
 	static void setVisible(int visible);
 

@@ -2,6 +2,7 @@
 
 #include "agk.h"
 #include "DataReader.h"
+#include "DebugConsole.h"
 
 #ifndef WEAP_CONST
 #define WEAP_CONST
@@ -14,7 +15,7 @@ public:
 	Weapon(void);
 	~Weapon(void);
 
-	void loadWeaponByName(uString name);
+	//void loadWeaponByName(uString name);
 private:
 	uString name;
 
