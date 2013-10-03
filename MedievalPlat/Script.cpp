@@ -223,6 +223,11 @@ void Script::runFunction(uString function, Part* part, World* world, Player* pla
 			DebugConsole::addToLog(" was not found, character was not spawned");
 		}
 	}
+
+	if(command.CompareTo("setPlayerWeapon") == 0)
+	{
+		player->setCurrentWeaponByName(getParam(fcommand, 1, true, part));
+	}
 }
 
 /*void runFunction(uString function, World* world, Enemy* enemy)

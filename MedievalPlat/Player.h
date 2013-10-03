@@ -31,7 +31,7 @@ public:
 	void setVisible(int visible);
 
 	void addItem(Item item);
-	//void setCurrentWeaponByName(uString name);
+	void setCurrentWeaponByName(uString name);
 
 	float getX();
 	float getY();
@@ -47,6 +47,9 @@ private:
 
 	float x;
 	float y;
+
+	float weapOffsetX;
+	float weapOffsetY;
 
 	float cameraX;
 	float cameraY;

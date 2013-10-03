@@ -47,6 +47,9 @@ void Player::load(uString name)
 	agk::FixTextToScreen(activateText, 1);
 	agk::SetTextDepth(activateText, 2);
 	agk::SetTextSize(activateText, 20);
+
+	weapOffsetX = 0;
+	weapOffsetY = -1.5;
 }
 
 void Player::spawn(uString name)
@@ -229,6 +232,16 @@ void Player::update()
 	cameraY = y - (agk::GetDeviceHeight() / agk::GetViewZoom() / 2);
 
 	agk::SetViewOffset(cameraX, cameraY);
+	///////////////////////////////////////////////////////////////////////
+	//							Weapons
+	///////////////////////////////////////////////////////////////////////
+	cWeapon.setPosition(x + weapOffsetX, y + weapOffsetY);
+
+	//Aiming
+	float targetX = i_mx;
+	float targetY = i_my;
+	
+	cWeapon.targetPos(targetX, targetY);
 }
 
 void Player::activation()
@@ -377,7 +390,7 @@ Item Player::getItemFromSlot(int slot)
 {
 	return inventory->at(slot);
 }
-/*void Player::setCurrentWeaponByName(uString weaponName)
+void Player::setCurrentWeaponByName(uString weaponName)
 {
 	cWeapon.loadWeaponByName(weaponName);
-}*/
+}
