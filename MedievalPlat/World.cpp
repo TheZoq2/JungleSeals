@@ -347,15 +347,31 @@ float World::getTime()
 {
 	return time;
 }
+bool World::isGround(float x, float y)
+{
+	bool isGround = false;
+	for(int i = 0; i < part->size(); i++)
+	{
+		int physState = part->at(i).getPhysState();
+		if(physState == 2 || physState == 1) //Checking if physics is enabled for the sprite
+		{
+			if(part->at(i).getHit(x, y))
+			{
+				isGround = true;
+			}
+		}
+	}
+	return isGround;
+}
 
-int World::getEntryAmount()
+/*int World::getEntryAmount()
 {
 	return entry->size();
 }
-World::Entry* World::getEntry(int entryID)
+//World::Entry* World::getEntry(int entryID)
 {
 	return &entry->at(entryID);
-}
+}*/
 
 uString World::getName()
 {

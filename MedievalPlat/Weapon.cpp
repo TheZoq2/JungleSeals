@@ -73,6 +73,28 @@ void Weapon::loadWeaponByName(uString name)
 
 				scaleY = atof(scaleYStr);
 			}
+			if(DataReader::getType(line).CompareTo("Projectile") == 0) //Projectile type
+			{
+				projectile.SetStr(DataReader::getValue(line));
+			}
+			if(DataReader::getType(line).CompareTo("RateOfFire") == 0) //Rate of fire
+			{
+				rateOfFire = atoi(DataReader::getValue(line));
+			}
+			if(DataReader::getType(line).CompareTo("BarrelX") == 0) //BarrelX
+			{
+				uString barrelXstr;
+				barrelXstr.Append(DataReader::getValue(line));
+
+				barrelX = atof(barrelXstr);
+			}
+			if(DataReader::getType(line).CompareTo("BarrelY") == 0) //BarrelY
+			{
+				uString barrelYstr;
+				barrelYstr.Append(DataReader::getValue(line));
+
+				barrelY = atof(barrelYstr);
+			}
 
 			delete[] line; //Deleting the string
 		}
@@ -125,6 +147,34 @@ void Weapon::loadWeaponByName(uString name)
 	}
 }
 
+void Weapon::shoot(ProjectileGroup* projGroup)
+{
+	//Checking if the weapon can be shot
+	float shotTime = 1 / rateOfFire;
+	if(lastShot + shotTime < globaltime)
+	{
+		//Calculating the 0,0 position of the weapon
+
+		//Offsetting the projectile to the barrel on the Y axis (lengnth)
+		float projX = x + agk::Cos(angle - 90) * (barrelY * scaleY);
+		float projY = y + agk::Sin(angle - 90) * (barrelY * scaleY);
+
+		//Offsetting the projectile to the barrel on the X axis ("height")
+		projX = projX + agk::Cos(angle) * (barrelX * scaleX);
+		projY = projY + agk::Sin(angle) * (barrelX * scaleX);
+
+		uString barrelYstr;
+		barrelYstr.Append(barrelY);
+		DebugConsole::addToLog(barrelYstr);
+
+		float projAngle = angle + ((rand() % 2000) - 1000) / 1000.0 * spread;
+
+		projGroup->addByName(projectile, projX, projY, projAngle, 0, 0);
+
+		lastShot = globaltime;
+	}
+}
+
 void Weapon::setPosition(float x, float y)
 {
 	this->x = x;
@@ -140,7 +190,7 @@ void Weapon::targetPos(float targetX, float targetY)
 	float diffX = targetX - x; //Getting the distance between the target and the position
 	float diffY = targetY - y;
 
-	float nAngle = agk::ATanFull(diffY, - diffX);
+	float nAngle = agk::ATanFull(diffX, diffY);
 
 	angle = nAngle;
 
@@ -157,15 +207,13 @@ void Weapon::targetPos(float targetX, float targetY)
 	if(agk::GetSpriteExists(SID))
 	{
 		agk::SetSpriteAngle(SID, angle);
-		if(angle < -90 || angle > 90)
+		if(angle < 0)
 		{
-			agk::SetSpriteFlip(SID, 0, 1);
+			agk::SetSpriteFlip(SID, 1, 0);
 		}
 		else
 		{
 			agk::SetSpriteFlip(SID, 0, 0);
 		}
 	}
-
-	agk::Print(angle);
 }

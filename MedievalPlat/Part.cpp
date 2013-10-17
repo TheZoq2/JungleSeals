@@ -130,3 +130,11 @@ uString Part::getLabel(int slot)
 {
 	return label[slot];
 }
+bool Part::getHit(float x, float y)
+{
+	if(agk::GetSpriteHitTest(SID, x, y))
+	{
+		return true;
+	}
+	return false;
+}

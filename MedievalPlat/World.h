@@ -53,9 +53,9 @@ public:
 	float getPartY(int partID);
 	int getSkyID();
 	float getTime();
-
-	int getEntryAmount();
-	Entry* getEntry(int entryID);
+	bool isGround(float x, float y);
+	//int getEntryAmount();
+	//Entry* getEntry(int entryID);
 
 	uString getName();
 

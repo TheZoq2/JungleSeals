@@ -5,6 +5,8 @@
 #include "DebugConsole.h"
 #include "GF.h"
 
+#include "Projectile.h"
+
 #ifndef WEAP_CONST
 #define WEAP_CONST
 	extern char weapPath[128];
@@ -21,8 +23,11 @@ public:
 	void setPosition(float x, float y);
 
 	void targetPos(float targetX, float targetY);
+
+	void shoot(ProjectileGroup* projGroup);
 private:
 	uString name;
+	uString projectile;
 
 	bool exists;
 
@@ -36,6 +41,8 @@ private:
 
 	float offsetX;
 	float offsetY;
+	float barrelX;
+	float barrelY;
 
 	float x;
 	float y;
@@ -44,5 +51,9 @@ private:
 	float scaleY;
 
 	float angle;
+
+	float rateOfFire;
+
+	float lastShot;
 };
 

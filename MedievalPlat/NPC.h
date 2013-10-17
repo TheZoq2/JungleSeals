@@ -3,9 +3,14 @@
 #ifndef NPC_GLOBALS
 #define NPC_GLOBALS
 	extern char NPC_path[128];
+
+	extern int NPC_noState;
+	extern int NPC_passiveState;
+	extern int NPC_walkingState;
 #endif
 
 #include <vector>
+#include <deque>
 
 #include "agk.h"
 #include "DataReader.h"
@@ -28,18 +33,35 @@ public:
 	
 	float getX();
 	float getY();
+	float getFeetY();
+	float getFeetX();
 private:
-	int SID;
-	int imgID;
+	int colSID;
+	int colimgID;
 
 	float x;
 	float y;
+
+	float scaleX;
+	float scaleY;
 
 	float colScale;
 
 	float lastJump;
 	float jumpHeight;
 	bool isOnGround;
+};
+
+class Waypoint
+{
+public:
+	float getX();
+	float getY();
+
+	void setPosition(float x, float y);
+private:
+	float x;
+	float y;
 };
 
 class NPC
@@ -68,6 +90,8 @@ private:
 	float y;
 
 	int state; //The current state of the NPC
+
+	std::deque< Waypoint >* waypoint;
 };
 
 class NPCGroup

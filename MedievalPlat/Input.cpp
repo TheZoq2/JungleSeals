@@ -32,10 +32,11 @@ void Input::setup()
 	i_activateName = "E";
 
 	char* deviceName = agk::GetDeviceName();
-	if(strcmp(deviceName, "WSindows"))
+
+	if(strcmp(agk::GetDeviceName(), "android") == 0)
 	{
-		//agk::AddVirtualJoystick(1, 200.0f, agk::GetDeviceHeight() - 200.0f, 250.0f);
-		//agk::AddVirtualButton(1, agk::GetDeviceWidth() - 200.0f, agk::GetDeviceHeight() - 200.0f, 200.0f);
+		agk::AddVirtualJoystick(1, 200.0f, agk::GetDeviceHeight() - 200.0f, 250.0f);
+		agk::AddVirtualButton(1, agk::GetDeviceWidth() - 200.0f, agk::GetDeviceHeight() - 200.0f, 200.0f);
 	}
 }
 
@@ -154,4 +155,13 @@ float Input::moveX()
 		moveX = agk::GetRawJoystickX(1);
 	}
 	return moveX;
+}
+
+bool Input::shoot()
+{
+	if(agk::GetPointerState())
+	{
+		return true;
+	}
+	return false;
 }

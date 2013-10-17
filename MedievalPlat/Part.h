@@ -36,6 +36,7 @@ public:
 	uString getActScript();
 	uString getUseMsg();
 	uString getLabel(int slot);
+	bool getHit(float x, float y);
 private:
 	int SID;
 	uString file;

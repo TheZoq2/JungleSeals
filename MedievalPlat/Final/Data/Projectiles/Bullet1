@@ -1,0 +1,10 @@
+
+Name:Bullet
+//Sprite:Weapons/Bullet1.png
+Sprite:1x1.png
+ScaleX:0.2
+ScaleY:3
+Speed:4.0
+ColorR:200
+ColorG:150
+ColorB:50

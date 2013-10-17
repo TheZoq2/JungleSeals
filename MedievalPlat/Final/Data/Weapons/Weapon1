@@ -2,8 +2,12 @@
 Name:Weapon1
 Sprite:Weapons/Base1.png
 MagCap:30
-Spread:7.5
-OffsetX:-10
-OffsetY:11
+Spread:4
+OffsetX:11
+OffsetY:63
+BarrelX:0
+BarrelY:63
 ScaleX:0.07
 ScaleY:0.07
+Projectile:Bullet1
+RateOfFire: 8

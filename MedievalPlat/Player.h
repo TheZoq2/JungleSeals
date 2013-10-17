@@ -24,6 +24,7 @@ public:
 	void setPosition(float x, float y);
 
 	void update();
+	void updateWeapon(ProjectileGroup* projGroup);
 	void activation();
 
 	bool canTravel();

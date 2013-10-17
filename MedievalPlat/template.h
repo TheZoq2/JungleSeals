@@ -16,6 +16,7 @@
 #include "DebugConsole.h"
 #include "DebugInput.h"
 #include "NPC.h"
+#include "Projectile.h"
 
 #include "Enemy.h"
 
@@ -48,6 +49,7 @@ class app
 		Player player;
 
 		NPCGroup npcGroup;
+		ProjectileGroup projGroup;
 
 		bool initLoaded;
 

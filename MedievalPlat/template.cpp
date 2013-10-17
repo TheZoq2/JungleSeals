@@ -29,6 +29,8 @@ void app::Begin(void)
 
 	npcGroup.setup();
 
+	projGroup.setup();
+
 	//Setting up the item generator
 	ItemGen::setup();
 
@@ -57,6 +59,7 @@ void app::Loop (void)
 		//Main game loop
 		//agk::SetViewZoomMode(1);
 		player.update();
+		player.updateWeapon(&projGroup);
 
 		world.update(player.getX(), player.getY());
 
@@ -64,6 +67,8 @@ void app::Loop (void)
 
 		npcGroup.update(&world);
 		npcGroup.updateChars(&npcGroup, &player);
+
+		projGroup.update( player.getX(), player.getY());
 	}
 	else if(programState == 2)
 	{
@@ -74,6 +79,7 @@ void app::Loop (void)
 
 		world.load(cWorldName);
 		world.loadBaseMedia();
+		world.setTime(800);
 
 		player.load(GF::getPath("Bound.png"));
 
@@ -118,6 +124,7 @@ void app::Loop (void)
 		agk::PrintC("Physics time: ");agk::Print(agk::GetPhysicsTime());
 		agk::PrintC("Drawing setup time: ");agk::Print(agk::GetDrawingSetupTime());
 		agk::PrintC("Drawing time: ");agk::Print(agk::GetDrawingTime());
+		agk::PrintC("Managed sprites: ");agk::Print(agk::GetManagedSpriteCount());
 		agk::Print("");
 		agk::PrintC("Speedmod: ");agk::Print(speedMod);
 		agk::PrintC("Active keystate: "); agk::Print(Input::activate());

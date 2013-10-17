@@ -232,9 +232,9 @@ void Player::update()
 	cameraY = y - (agk::GetDeviceHeight() / agk::GetViewZoom() / 2);
 
 	agk::SetViewOffset(cameraX, cameraY);
-	///////////////////////////////////////////////////////////////////////
-	//							Weapons
-	///////////////////////////////////////////////////////////////////////
+}
+void Player::updateWeapon(ProjectileGroup* projGroup)
+{
 	cWeapon.setPosition(x + weapOffsetX, y + weapOffsetY);
 
 	//Aiming
@@ -242,6 +242,11 @@ void Player::update()
 	float targetY = i_my;
 	
 	cWeapon.targetPos(targetX, targetY);
+
+	if(Input::shoot() == true)
+	{
+		cWeapon.shoot(projGroup);
+	}
 }
 
 void Player::activation()

@@ -91,6 +91,11 @@ void Script::runFunction(uString function, Part* part, World* world, Player* pla
 			world->load(levelName); //Loading the new level
 			player->spawn(entrance); //Respawning the player in this new world
 
+			DebugConsole::addC("Traveling to ");
+			DebugConsole::addC(levelName);
+			DebugConsole::addC(" Entrance: ");
+			DebugConsole::addToLog(entrance);
+
 			//Making sure we don't change worlds to often
 			player->setJustLoaded(true);
 		}
