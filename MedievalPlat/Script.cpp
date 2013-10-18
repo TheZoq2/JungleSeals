@@ -175,13 +175,13 @@ void Script::runFunction(uString function, Part* part, World* world, Player* pla
 	if(command.CompareTo("setOvercast") == 0)
 	{
 		//getting the parameter
-		float overcast = double( atof(getParam(fcommand, 1, true, part)) );
+		float overcast = float( atof(getParam(fcommand, 1, true, part)) );
 
 		world->setOvercast(overcast);
 	}
 	if(command.CompareTo("setTime") == 0)
 	{
-		float time = double( atof(getParam(fcommand, 1, true, part)) );
+		float time = float( atof(getParam(fcommand, 1, true, part)) );
 
 		world->setTime(time);
 	}

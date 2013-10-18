@@ -74,15 +74,16 @@ void NPC::update(World* world)
 				while(goalFound == false)
 				{
 					//Checking if the x / y is ground
-					bool nodeFound = false;
+					bool nodeFound = false; //True if a good node has been found for the current X cord
 
 					for(float height = 0; height <= 1 && nodeFound == false; height = height + 0.1f)
 					{
-						for(int offsetDir = - 1; offsetDir <= 1 && nodeFound == false; offsetDir += 2) //Checking both + height and - height
+						for(int offsetDir = - 1; offsetDir <= 1; offsetDir += 2) //Checking both + height and - height
 						{
-							float yPos = baseY + (height * offsetDir);
+							float offset = height * offsetDir;
+							float yPos = baseY + offset;
 
-							if(world->isGround(xPos, baseY))
+							if(world->isGround(xPos, yPos))
 							{
 								Waypoint tempWaypoint; //Temporary waypoint which we will store
 
@@ -99,9 +100,14 @@ void NPC::update(World* world)
 							}
 							else
 							{
-								goalFound = true;
+								
 							}
 						}
+					}
+
+					if(nodeFound == false) //No nodes were found for the current X cordinate, stop the pathfinder
+					{
+						goalFound = true;
 					}
 				}
 
@@ -118,7 +124,7 @@ void NPC::update(World* world)
 			{
 				float lastX = waypoint->front().getX();
 				float lastY = waypoint->front().getY();
-				for(int i = 0; i < waypoint->size();i++) //Going thru the waypoints
+				for(unsigned int i = 0; i < waypoint->size();i++) //Going thru the waypoints
 				{
 					//Drawing a line between the waypoints
 					float startX = agk::WorldToScreenX(lastX);
@@ -129,7 +135,7 @@ void NPC::update(World* world)
 
 					lastX = waypoint->at(i).getX();
 					lastY = waypoint->at(i).getY();
-				}
+				} //Outputting the path
 			}
 		}
 	}
@@ -306,7 +312,7 @@ float Character::getFeetY()
 	//Getting the height of the colision sprite
 
 	float height = agk::GetImageHeight(colimgID) * scaleY;
-	float feetY = y + height/2.0f + 0.2;
+	float feetY = y + height/2.0f + 0.2f;
 	return feetY;
 }
 float Character::getFeetX()

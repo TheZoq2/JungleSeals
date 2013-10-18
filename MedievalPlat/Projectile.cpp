@@ -135,15 +135,15 @@ void ProjectileBase::loadFromName(uString name)
 			}
 			if(dataType.CompareTo("ScaleX") == 0) //ScaleX
 			{
-				scaleX = atof(DataReader::getValue(line));
+				scaleX = float(atof(DataReader::getValue(line)));
 			}
 			if(dataType.CompareTo("ScaleY") == 0) //ScaleY
 			{
-				scaleY = atof(DataReader::getValue(line));
+				scaleY = float(atof(DataReader::getValue(line)));
 			}
 			if(dataType.CompareTo("Speed") == 0) //Speed
 			{
-				speed = atof(DataReader::getValue(line));
+				speed = float(atof(DataReader::getValue(line)));
 			}
 			if(dataType.CompareTo("ColorR") == 0)//Colors
 			{
@@ -159,11 +159,11 @@ void ProjectileBase::loadFromName(uString name)
 			}
 			if(dataType.CompareTo("Friction") == 0)
 			{
-				friction = atof(DataReader::getValue(line));
+				friction = float(atof(DataReader::getValue(line)));
 			}
 			if(dataType.CompareTo("RelativeMass") == 0)
 			{
-				RelativeMass = atof(DataReader::getValue(line));
+				RelativeMass = float(atof(DataReader::getValue(line)));
 			}
 
 			delete[] line; //Removing the string from memory

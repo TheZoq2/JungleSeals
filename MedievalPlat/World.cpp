@@ -350,7 +350,7 @@ float World::getTime()
 bool World::isGround(float x, float y)
 {
 	bool isGround = false;
-	for(int i = 0; i < part->size(); i++)
+	for(unsigned int i = 0; i < part->size(); i++)
 	{
 		int physState = part->at(i).getPhysState();
 		if(physState == 2 || physState == 1) //Checking if physics is enabled for the sprite
@@ -476,7 +476,7 @@ void World::loadBG()
 	agk::SetCameraLookAt(1, 0, 0, 0, 0);
 
 	skyShader = agk::LoadShader("shaders/sky.vs", "shaders/sky.fs");
-	agk::SetShaderConstantByName(skyShader, "iResolution", agk::GetVirtualWidth(), agk::GetVirtualHeight(), 0, 0);
+	agk::SetShaderConstantByName(skyShader, "iResolution", float( agk::GetVirtualWidth() ), float( agk::GetVirtualHeight() ), 0, 0);
 
 	float dSkyR = 0.62f;
 	float dSkyG = 0.78f;
@@ -741,7 +741,7 @@ void World::updateBG(float playerX, float playerY)
 		time = time - 2400;
 	}
 	//Increasing time
-	float timeInc = 0.5 * speedMod;
+	float timeInc = 0.5f * speedMod;
 	time = time + timeInc;
 	
 	//Setting the color values for day/night
@@ -787,7 +787,7 @@ void World::updateBG(float playerX, float playerY)
 
 		for(unsigned int i = 0; i < part->size(); i++)
 		{
-			agk::SetSpriteColor(part->at(i).getSID(), r, g, b, 255);
+			agk::SetSpriteColor(part->at(i).getSID(), int( r ), int( g ), int( b ), 255);
 		}
 	}
 	else if(time > 800 && time < 1999)
@@ -816,14 +816,14 @@ void World::updateBG(float playerX, float playerY)
 
 		for(unsigned int i = 0; i < part->size(); i++)
 		{
-			agk::SetSpriteColor(part->at(i).getSID(), r, g, b, 255);
+			agk::SetSpriteColor(part->at(i).getSID(), int( r ), int( g ), int( b ), 255);
 		}
 	}
 	
 	agk::SetShaderConstantByName(skyShader, "overcast", overcast / cloudLayers * 4, 0, 0, 0);
 	agk::SetShaderConstantByName(skyShader, "posX", playerX / 2000, 0, 0, 0);
 	agk::SetShaderConstantByName(skyShader, "posY", - playerY / 2000, 0, 0, 0);
-	agk::SetShaderConstantByName(skyShader, "cloudLayers", cloudLayers, 5, 5, 5);
+	agk::SetShaderConstantByName(skyShader, "cloudLayers", float( cloudLayers ), 5, 5, 5);
 
 	agk::SetShaderConstantByName(skyShader, "time", time, 0, 0, 0);
 }

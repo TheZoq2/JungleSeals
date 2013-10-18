@@ -9,7 +9,7 @@ app App;
 void app::Begin(void)
 {
 	//Setting a random seed for the c++ random function
-	srand(time(NULL));
+	srand(unsigned int( time(NULL) ));
 
 	GF::setupGlobals();
 

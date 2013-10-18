@@ -43,35 +43,35 @@ void Weapon::loadWeaponByName(uString name)
 				uString spreadStr;
 				spreadStr.SetStr(DataReader::getValue(line));
 
-				spread = atof(spreadStr);
+				spread = float( atof(spreadStr) );
 			}
 			if(DataReader::getType(line).CompareTo("OffsetX") == 0) //OffsetX
 			{
 				uString offsetXStr;
 				offsetXStr.SetStr(DataReader::getValue(line));
 				
-				offsetX = atof(offsetXStr);
+				offsetX = float( atof(offsetXStr) );
 			}
 			if(DataReader::getType(line).CompareTo("OffsetY") == 0) //OffsetY
 			{
 				uString offsetYStr;
 				offsetYStr.SetStr(DataReader::getValue(line));
 				
-				offsetY = atof(offsetYStr);
+				offsetY = float( atof(offsetYStr) );
 			}
 			if(DataReader::getType(line).CompareTo("ScaleX") == 0) //ScaleX
 			{
 				uString scaleXStr;
 				scaleXStr.SetStr(DataReader::getValue(line));
 
-				scaleX = atof(scaleXStr);
+				scaleX = float( atof(scaleXStr) );
 			}
 			if(DataReader::getType(line).CompareTo("ScaleY") == 0) //ScaleY
 			{
 				uString scaleYStr;
 				scaleYStr.SetStr(DataReader::getValue(line));
 
-				scaleY = atof(scaleYStr);
+				scaleY = float( atof(scaleYStr) );
 			}
 			if(DataReader::getType(line).CompareTo("Projectile") == 0) //Projectile type
 			{
@@ -79,21 +79,21 @@ void Weapon::loadWeaponByName(uString name)
 			}
 			if(DataReader::getType(line).CompareTo("RateOfFire") == 0) //Rate of fire
 			{
-				rateOfFire = atoi(DataReader::getValue(line));
+				rateOfFire = float( atof(DataReader::getValue(line)) );
 			}
 			if(DataReader::getType(line).CompareTo("BarrelX") == 0) //BarrelX
 			{
 				uString barrelXstr;
 				barrelXstr.Append(DataReader::getValue(line));
 
-				barrelX = atof(barrelXstr);
+				barrelX = float( atof(barrelXstr) );
 			}
 			if(DataReader::getType(line).CompareTo("BarrelY") == 0) //BarrelY
 			{
 				uString barrelYstr;
 				barrelYstr.Append(DataReader::getValue(line));
 
-				barrelY = atof(barrelYstr);
+				barrelY = float( atof(barrelYstr) );
 			}
 
 			delete[] line; //Deleting the string
@@ -167,7 +167,7 @@ void Weapon::shoot(ProjectileGroup* projGroup)
 		barrelYstr.Append(barrelY);
 		DebugConsole::addToLog(barrelYstr);
 
-		float projAngle = angle + ((rand() % 2000) - 1000) / 1000.0 * spread;
+		float projAngle = angle + ((rand() % 2000) - 1000) / 1000.0f * spread;
 
 		projGroup->addByName(projectile, projX, projY, projAngle, 0, 0);
 
