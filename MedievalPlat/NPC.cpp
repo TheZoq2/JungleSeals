@@ -7,6 +7,7 @@ char NPC_path[128] = "Data/Characters/";
 int NPC_noState = 0;
 int NPC_passiveState = 1;
 int NPC_walkingState = 2;
+int NPC_hasGoalState = 3;
 
 NPC::NPC(void)
 {
@@ -20,7 +21,7 @@ NPC::~NPC(void)
 void NPC::setup()
 {
 	formal = new std::vector< uString >;
-	waypoint = new std::deque< Waypoint >;
+	path = new std::deque< int >;
 
 	state = 0;
 }
@@ -39,80 +40,40 @@ void NPC::update(World* world)
 		}
 		if(state == NPC_passiveState)
 		{
-			float walkChanse = 100 / (frameTime*1000); //TODO: Fix this to a more reasonable value
+			/*float walkChanse = 100 / (frameTime*1000); //TODO: Fix this to a more reasonable value
 
 			int randVal = rand() % 100; //Selecting a random value which should be used to determine if the NPC should walk
+			randVal = 0;
 			if(randVal < floor(walkChanse))
 			{
-				//Clearing any old waypoints
-				waypoint->clear();
+				
+				//Finding a suitable path to the 
+				NodeLink closestPath = findClosestNodes(world);
 
-				//Finding a good place to walk to
-				float totMaxWalk = 50; //The max distance the character will walk
-				
-				//Selecting a direction to walk in
-				int walkDir = rand() % 2;
-				
-				if(walkDir == 0) //Converting the 0 to a -1 because a -1 is more usefull
+				//Making sure there was a node relativley nearby
+				if(closestPath.node[0] != -1)
 				{
-					walkDir = -1;
+					PathNode* node[2];
+					node[0] = world->findNodeById(closestPath.node[0]);
+					node[1] = world->findNodeById(closestPath.node[1]);
+					//Drawing the node link
+					
+					//agk::DrawLine(agk::WorldToScreenX(node[0]->getX()), agk::WorldToScreenY(node[0]->getY()), agk::WorldToScreenX(node[1]->getX()), agk::WorldToScreenY(node[1]->getY()), 255, 0, 0);
+
+					//Selecting a random node to walk to
+					int targetNode = agk::Random(0, 1);
+
+					path->push_back(closestPath.node[targetNode]);
+
+					state = NPC_walkingState;
 				}
-
-				//All data is gathered, figgure out how far the NPC can walk
-				float currentY = chr.getFeetY();
-
-				bool goalFound = false;
-
-				//Finding the current X and Y cordinates
-				float xPos = chr.getFeetX();
-				float baseY = chr.getFeetY();
 				
-				agk::DrawLine(agk::WorldToScreenX(x), agk::WorldToScreenY(y), x+1, y+1, 255, 0, 0);
+			}*/
 
-				bool pathFound = false;
-
-				while(goalFound == false)
-				{
-					//Checking if the x / y is ground
-					bool nodeFound = false; //True if a good node has been found for the current X cord
-
-					for(float height = 0; height <= 1 && nodeFound == false; height = height + 0.1f)
-					{
-						for(int offsetDir = - 1; offsetDir <= 1; offsetDir += 2) //Checking both + height and - height
-						{
-							float offset = height * offsetDir;
-							float yPos = baseY + offset;
-
-							if(world->isGround(xPos, yPos))
-							{
-								Waypoint tempWaypoint; //Temporary waypoint which we will store
-
-								tempWaypoint.setPosition(xPos, yPos); //Setting the position of the waypoint
-
-								//Adding the waypoint to the deque
-								waypoint->push_back(tempWaypoint);
-
-								xPos = xPos + (0.5f * walkDir);
-								baseY = yPos;
-
-								pathFound = true; //We managed to find atleast one waypoint, therefore path found is true
-								nodeFound = true;
-							}
-							else
-							{
-								
-							}
-						}
-					}
-
-					if(nodeFound == false) //No nodes were found for the current X cordinate, stop the pathfinder
-					{
-						goalFound = true;
-					}
-				}
-
-				//Something has been found, change the state to walking
-				if(pathFound == true)
+			
+			if(hasGoal == true)//Checking if the NPC has a goal
+			{
+				if(findPathToGoal(world) == true)
 				{
 					state = NPC_walkingState;
 				}
@@ -120,22 +81,44 @@ void NPC::update(World* world)
 		}
 		else if(state == NPC_walkingState)
 		{
-			if(waypoint->size() != 0)
+			if(path->size() != 0)
 			{
-				float lastX = waypoint->front().getX();
-				float lastY = waypoint->front().getY();
-				for(unsigned int i = 0; i < waypoint->size();i++) //Going thru the waypoints
-				{
-					//Drawing a line between the waypoints
-					float startX = agk::WorldToScreenX(lastX);
-					float startY = agk::WorldToScreenY(lastY);
-					float endX = agk::WorldToScreenX(waypoint->at(i).getX());
-					float endY = agk::WorldToScreenY(waypoint->at(i).getY());
-					agk::DrawLine(startX, startY, endX, endY, 255, 0, 0);
+				/*
+				//Getting the target node
+				PathNode* targetNode = world->findNodeById(path->at(0));
 
-					lastX = waypoint->at(i).getX();
-					lastY = waypoint->at(i).getY();
-				} //Outputting the path
+				float targetX = targetNode->getX();
+
+				float targetDiff = targetX - this->x;
+
+				if(targetDiff < 0)
+				{
+					chr.walkLeft();
+				}
+				else if(targetDiff > 0)
+				{
+					chr.walkRight();
+				}
+				*/
+
+				//Highlight the path
+				for(unsigned int i = 0; i < path->size(); i++)
+				{
+					PathNode* cNode = world->findNodeById(path->at(i));
+
+					float xPos = cNode->getX();
+					float yPos = cNode->getY();
+
+					for(unsigned int n = 0; n < cNode->getLinkAmount(); n++)
+					{
+						PathNode* lNode = world->findNodeById(cNode->getLinkID(n));
+
+						float xPos2 = lNode->getX();
+						float yPos2 = lNode->getY();
+
+						agk::DrawLine(agk::WorldToScreenX(xPos), agk::WorldToScreenY(yPos), agk::WorldToScreenX(xPos2), agk::WorldToScreenY(yPos2), 255, 0, 0);
+					}
+				}
 			}
 		}
 	}
@@ -147,6 +130,13 @@ void NPC::updateChars(std::vector< NPC >* npc, Player* player)
 	float plrYDist = y - player->getY();
 
 	float plrDist = sqrt(pow(plrXDist, 2) + pow(plrYDist, 2));
+
+	if(state == NPC_passiveState) //The NPC has nothing to do, lets follow the player
+	{
+		setGoal(player->getX(), player->getY() + 2);
+
+		hasGoal = true;
+	}
 }
 
 void NPC::createFromName(uString name)
@@ -253,6 +243,312 @@ void NPC::setPosition(float x, float y)
 
 	chr.setPosition(x, y);
 }
+
+void NPC::setGoal(float goalX, float goalY)
+{
+	this->goalX = goalX;
+	this->goalY = goalY;
+}
+bool NPC::findPathToGoal(World* world)
+{
+	//Finding the closest nodes to the goal
+	NodeLink goalLink;
+	
+	goalLink = world->getClosestLink(goalX, goalY);
+
+	//Getting the current link
+	NodeLink cLink;
+	cLink = world->getClosestLink(chr.getFeetX(), chr.getFeetY());
+
+	//If one of the positions are to far away
+	if(cLink.isBadLink() || goalLink.isBadLink())
+	{
+		return false; //Exiting the function
+	}
+
+	//No nodes were bad, start to look for a path between the nodes
+	float lowestDist = 1000000000;
+
+	PathNode* goalNode;
+	PathNode* startNode;
+
+	//Finding a good starting node
+	for(int i = 0; i < 2; i++)
+	{
+		PathNode* cGoalNode = world->findNodeById(goalLink.getNode(i));
+		for(int n = 0; n < 2; n++)
+		{
+			PathNode* cStartNode = world->findNodeById(cLink.getNode(n));
+
+			float xDist = cGoalNode->getX() - cStartNode->getX();
+			float yDist = cGoalNode->getY() - cStartNode->getY();
+
+			float dist = sqrt(pow(xDist, 2) + pow(yDist, 2));
+
+			//If these nodes are closer than the old ones
+			if(dist < lowestDist)
+			{
+				//Saving the new nodes
+				lowestDist = dist;
+				goalNode = cGoalNode;
+				startNode = cStartNode;
+			}
+		}
+	}
+
+	//Making sure nothing weird happned
+	if(goalNode == NULL || startNode == NULL)
+	{
+		return false;
+	}
+
+	//Everything is good, lets start looking for a good node
+	int openState = 1;
+	int closedState = 2;
+	
+
+	std::vector< listElement >* nodeList;
+	nodeList = new std::vector< listElement >;
+
+	//Adding the starting node to the open list
+	listElement tempElement;
+	tempElement.node = startNode->getID();
+	tempElement.state = openState;
+	tempElement.FScore = 0; //Total score
+	tempElement.HScore = 0; //Estemated distance left
+	tempElement.GScore = 0; //Walk cost
+	tempElement.parent = -1;
+
+	nodeList->push_back(tempElement); //Add the first node to the list
+
+	bool pathFound = false;
+	int finalNode = -1; //The final node in the chain
+
+	while(pathFound == false) //Running the actual pathfinder
+	{
+		float lowestFScore = 100000000;
+
+		int nextNode = -1;
+		int listSlot = -1;
+		//Finding the node with the lowest FScore
+		for(unsigned int i = 0; i < nodeList->size(); i++)
+		{
+			if(nodeList->at(i).state == openState && nodeList->at(i).FScore < lowestFScore)
+			{
+				lowestFScore = nodeList->at(i).FScore;
+
+				nextNode = nodeList->at(i).node;
+				listSlot = i;
+			}
+		}
+
+		if(nextNode == -1) //No open nodes left, a path could not be found
+		{
+			//Removing garbage
+			nodeList->clear();
+			delete nodeList;
+			return false;
+		}
+
+		PathNode* cNode = world->findNodeById(nextNode);
+		//PathNode* cNode = goalNode;
+
+		//Open the nodes linked to the current node
+		for(unsigned int i = 0; i < cNode->getLinkAmount(); i++)
+		{
+			int node = cNode->getLinkID(i);
+
+			//Checking if the node is already on the list
+			bool onList = false;
+			int listIndex;
+			int listState = 0;
+			for(unsigned int n = 0; n < nodeList->size(); n++)
+			{
+				if(nodeList->at(n).node == node) //If the node is on the list
+				{
+					onList = true;
+
+					listIndex = n;
+					listState = nodeList->at(n).state;
+				}
+			}
+			
+			//This is a new node or it is open
+			//if(onList == false)
+			//{
+				//Calculating the walk cost between this and the next node
+				PathNode* thisNode = world->findNodeById(node);
+
+				float xDist = thisNode->getX() - cNode->getX();
+				float yDist = thisNode->getY() - cNode->getY();
+				float hScore = sqrt(pow(xDist, 2) + pow(yDist, 2)) + nodeList->at(listSlot).HScore;
+				
+				//If the node was on the list already
+				if(onList == true && listState == openState)
+				{
+					//Checking if this has a better HScore
+					if(hScore < nodeList->at(listIndex).HScore)
+					{
+						//Making this node the parent instead
+						nodeList->at(listIndex).HScore = hScore;
+						nodeList->at(listIndex).FScore = hScore + nodeList->at(listSlot).GScore;
+
+						nodeList->at(listIndex).parent = listSlot;
+					}
+				}
+				else if(listState == closedState) //Ignoring closed nodes
+				{}
+				else
+				{
+					thisNode = world->findNodeById(node);;
+					//Calculating the score
+					float xDist = thisNode->getX() - cNode->getX();
+					float yDist = thisNode->getY() - cNode->getY();
+					float hScore = sqrt(pow(xDist, 2) + pow(yDist, 2)) + nodeList->at(listSlot).HScore;
+
+					float xLeft = thisNode->getX() - goalNode->getX();
+					float yLeft = thisNode->getY() - goalNode->getY();
+					float gScore = sqrt(pow(xLeft, 2) + pow(yLeft, 2));
+
+					//Add it to the list
+					listElement tempNode;
+				
+					tempNode.node = node;
+					tempNode.parent = listSlot;
+					
+					tempNode.HScore = hScore;
+					tempNode.FScore = hScore;
+
+					//Opening the node
+					tempNode.state = openState;
+
+					//Add the new node to the list
+					nodeList->push_back(tempNode);
+				}
+			//}
+		}
+
+		//Close the current node
+		nodeList->at(listSlot).state = closedState;
+
+		//Checking if the goal node has been added to the open list
+		for(unsigned int i = 0; i < nodeList->size(); i++)
+		{
+			if(nodeList->at(i).node == goalNode->getID() && nodeList->at(i).state == closedState) //The goal has been added to the closed list
+			{
+				pathFound = true;
+
+				finalNode = i; //SAving the location of the final node
+			}
+		}
+	}
+	
+	if(finalNode == -1)
+	{
+		return false;
+	}
+	else
+	{
+		bool pathSaved = false;
+		
+		//Selecting the last node
+		int thisNode = finalNode;
+
+		//adding the node to the path deque
+		path->push_front(nodeList->at(thisNode).node);
+		while(pathSaved == false)
+		{
+			thisNode = nodeList->at(thisNode).parent;
+
+			if(thisNode == -1) //If this is the final node
+			{
+				pathSaved = true;
+			}
+			else
+			{
+				//add the node to the path deque
+				path->push_front(nodeList->at(thisNode).node);
+			}
+		}
+	}
+	//Everything is done, the path has been saved properly
+
+	//Removing garbage
+	nodeList->clear();
+	delete nodeList;
+	return true;
+}
+
+/*
+NodeLink NPC::findClosestNodes(World* world)
+{
+	float xOrigin = chr.getFeetX();
+	float yOrigin = chr.getFeetY();
+
+	float lowestDist = 100000000;
+
+	NodeLink closestLink;
+	closestLink.setNode(0, -1); //node[0] = -1;
+	closestLink.setNode(1, -1); //node[1] = -1;
+
+	int nodeAmount = world->getNodeAmount();
+
+	//Going through all the nodes
+	for(unsigned int i = 0; i < nodeAmount; i++)
+	{
+		PathNode* node = world->findNodeById(i);
+
+		float xPos = node->getX();
+		float yPos = node->getY();
+
+		//Going thru all of the links
+		for(unsigned int n = 0; n < node->getLinkAmount(); n++)
+		{
+			//Getting the second node
+			PathNode* linkNode = world->findNodeById( node->getLinkID(n) );
+			
+			//Calculating a function for the angle of the line
+			float xDiff = linkNode->getX() - xPos;
+			float yDiff = linkNode->getY() - yPos;
+
+			float kVal = yDiff / xDiff;
+			
+			//Calculating lots of points of the line
+			for(float xChk = 0; xChk < xDiff; xChk += 1.0f)
+			{
+				float yChk = xChk * kVal; //Calculating the y cordinate of 
+
+				float xPosChk = xChk + xPos;
+				float yPosChk = yChk + yPos;
+
+				//Calculating the distance between the NPC and the point
+				float NPCDistX = xPosChk - xOrigin;
+				float NPCDistY = yPosChk - yOrigin;
+				float NPCDist = sqrt(pow(NPCDistX, 2) + pow(NPCDistY, 2));
+				
+				if(NPCDist < lowestDist)
+				{
+					//Saving the new closest link
+					lowestDist = NPCDist;
+
+					closestLink.node[0] = node->getID();
+					closestLink.node[1] = linkNode->getID();
+				}
+			}
+		}
+	}
+
+	if(lowestDist > 2) //If no suitable node was found
+	{
+		closestLink.node[0] = -1;
+		closestLink.node[1] = -1;
+	}
+
+	agk::Print(lowestDist);
+
+	return closestLink;
+}
+*/
 ///////////////////////////////////////////////////////////////////////////////////////////////d////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -277,6 +573,11 @@ void Character::create(uString colSprite)
 	agk::SetSpritePhysicsMass(colSID, 0.1f);
 	agk::SetSpriteDepth(colSID, 15);
 
+	//Preventing collisioin between this and other characters
+	agk::SetSpriteCategoryBit(colSID, 1, 0);
+	agk::SetSpriteCategoryBit(colSID, GF_charGroup, 1);
+	agk::SetSpriteCollideBit(colSID, GF_charGroup, 0);
+
 	jumpHeight = 3;
 }
 void Character::update(World* world)
@@ -289,6 +590,17 @@ void Character::update(World* world)
 	//Updating the position of the sprite
 	x = agk::GetSpriteXByOffset(colSID);
 	y = agk::GetSpriteYByOffset(colSID);
+
+	//Making sure that the left/right speed is not to big
+	float chkSpeed = 15.0f;
+	if(agk::GetSpritePhysicsVelocityX(colSID) > chkSpeed)
+	{
+		agk::SetSpritePhysicsVelocity(colSID, chkSpeed, agk::GetSpritePhysicsVelocityY(colSID));
+	}
+	if(agk::GetSpritePhysicsVelocityX(colSID) < -chkSpeed)
+	{
+		agk::SetSpritePhysicsVelocity(colSID, -chkSpeed, agk::GetSpritePhysicsVelocityY(colSID));
+	}
 }
 
 void Character::setPosition(float x, float y)
@@ -328,6 +640,17 @@ void Character::jump()
 
 		lastJump = globaltime;
 	}
+}
+void Character::walkLeft()
+{
+	float moveForce = 30.0f;
+	//agk::SetSpritePhysicsImpulse(SID, x, y, -0.5f, 0);
+	agk::SetSpritePhysicsForce(colSID, x, y, -moveForce, 0);
+}
+void Character::walkRight()
+{
+	float moveForce = 30.0f;
+	agk::SetSpritePhysicsForce(colSID, x, y, moveForce, 0);
 }
 
 bool Character::checkOnGround(World* world)

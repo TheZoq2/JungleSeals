@@ -3,6 +3,8 @@
 //Defining static variables
 char GF::sdPath[128] = "media/";
 int GF::quality = 1;
+int GF_BaseDepth = 100;
+int GF_charGroup = 2;
 
 GF::GF(void)
 {

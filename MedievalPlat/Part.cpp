@@ -138,3 +138,12 @@ bool Part::getHit(float x, float y)
 	}
 	return false;
 }
+float Part::getEdgeRadius()
+{
+	float xSize = agk::GetImageWidth(agk::GetSpriteImageID(SID)) * scaleX;
+	float ySize = agk::GetImageHeight(agk::GetSpriteImageID(SID)) * scaleY;
+
+	float diameter = sqrt(pow(xSize,2) + pow(ySize,2));
+
+	return diameter/2;
+}

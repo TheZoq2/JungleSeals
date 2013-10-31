@@ -75,7 +75,7 @@ void app::Loop (void)
 		agk::SetViewZoom(15);
 
 		uString cWorldName;
-		cWorldName.SetStr("levels/snow1");
+		cWorldName.SetStr("levels/forest3");
 
 		world.load(cWorldName);
 		world.loadBaseMedia();

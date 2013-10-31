@@ -28,6 +28,8 @@ public:
 
 	//These functions should be called if the character should do something
 	void jump();
+	void walkLeft();
+	void walkRight();
 
 	void setPosition(float x, float y);
 	
@@ -77,6 +79,11 @@ public:
 
 	void setPosition(float x, float y);
 
+	void setGoal(float goalX, float goalY);
+	
+	bool findPathToGoal(World* world);
+
+	//NodeLink findClosestNodes(World* world);
 private:
 	bool exists;
 
@@ -91,7 +98,25 @@ private:
 
 	int state; //The current state of the NPC
 
-	std::deque< Waypoint >* waypoint;
+	std::deque< int >* path;
+
+	float goalX;
+	float goalY;
+
+	bool hasGoal;
+};
+
+class listElement
+{
+public:
+	int node;
+
+	int state;
+	int parent;
+
+	float FScore;
+	float HScore;
+	float GScore;
 };
 
 class NPCGroup
@@ -106,3 +131,4 @@ public:
 private:
 	std::vector< NPC >* npc;
 };
+

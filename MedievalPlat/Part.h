@@ -37,6 +37,7 @@ public:
 	uString getUseMsg();
 	uString getLabel(int slot);
 	bool getHit(float x, float y);
+	float getEdgeRadius();
 private:
 	int SID;
 	uString file;

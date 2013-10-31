@@ -3,8 +3,50 @@
 #include "agk.h"
 
 #include "Part.h"
+#include "DebugConsole.h"
 
 #include <vector>
+
+class NodeLink
+{
+public:
+	void setNode(int index, int ID);
+
+	int getNode(int index);
+	
+	bool isBadLink();
+private:
+	int node[2];
+};
+
+
+class PathNode
+{
+public:
+	void create(int ID, float x, float y);
+	void setPos(float x, float y);
+
+	void addLink(int ID, int type);
+
+	int getID();
+	float getX();
+	float getY();
+	unsigned int getLinkAmount();
+	int getLinkID(unsigned int slot);
+private:
+	int ID;
+
+	float x;
+	float y;
+
+	struct Link
+	{
+		int ID;
+		int type;
+	};
+
+	std::vector< Link >* links;
+};
 
 class World
 {
@@ -39,6 +81,8 @@ public:
 	void update(float playerX, float playerY);
 	void clear();
 
+	void loadV3(char* p, int fileID);
+
 	void setOvercast(float overcast);
 	void setTime(float time);
 	void setCloudLayers(int cloudLayers);
@@ -53,7 +97,13 @@ public:
 	float getPartY(int partID);
 	int getSkyID();
 	float getTime();
+	float getWidth();
+	float getHeight();
+	float getLeftEdge();
+	float getBottomEdge();
+
 	bool isGround(float x, float y);
+	
 	//int getEntryAmount();
 	//Entry* getEntry(int entryID);
 
@@ -66,6 +116,15 @@ public:
 
 	void setLightModeOn(); //Set to one will set the world in a mode for making light calculations
 	void setLightModeOff();
+
+	//Pathfinding functions
+	void generateNodes();
+	void displayNodes();
+	PathNode* findNodeById(int ID);
+	unsigned int getNodeAmount();
+	PathNode* findNodeBySlot(unsigned int slot);
+
+	NodeLink getClosestLink(float x, float y);
 private:
 	struct Cloud
 	{
@@ -133,4 +192,7 @@ private:
 	float time;
 
 	int lightSky;
+
+	//Pathfinding variables
+	std::vector< PathNode >* node;
 };

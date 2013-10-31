@@ -10,6 +10,8 @@ extern float globaltime;
 extern float oldTime;
 extern float frameTime;
 extern float speedMod;
+extern int GF_BaseDepth;
+extern int GF_charGroup;
 
 #endif
 

@@ -1,6 +1,7 @@
 #include "Player.h"
 
 #include "Script.h"
+
 Player::Player(void)
 {
 }
@@ -33,7 +34,12 @@ void Player::load(uString name)
 	agk::SetSpritePhysicsFriction(SID, 1.0f);
 	agk::SetSpritePhysicsRestitution(SID, 0);
 	agk::SetSpritePhysicsMass(SID, 0.1f);
-	agk::SetSpriteDepth(SID, 15);
+	agk::SetSpriteDepth(SID, GF_BaseDepth);
+
+	//Preventing collisioin between this and other characters
+	agk::SetSpriteCategoryBit(SID, 1, 0);
+	agk::SetSpriteCategoryBit(SID, GF_charGroup, 1);
+	agk::SetSpriteCollideBit(SID, GF_charGroup, 0);
 
 	speed = 15;
 	jumpHeight = 3;
@@ -162,74 +168,13 @@ void Player::update()
 		agk::SetSpritePhysicsVelocity(SID, -chkSpeed, agk::GetSpritePhysicsVelocityY(SID));
 	}
 
-	/*
-	//Going thru the entrances to check if any are close
-	bool closeToEntry = false;
-
-	for(int i = 0; i < world->getEntryAmount(); i++)
-	{
-		World::Entry* cEntry = world->getEntry(i);
-
-		//Getting the distances
-		float xDist = x - cEntry->x;
-		float yDist = y - cEntry->y;
-
-		float dist = agk::Sqrt(xDist*xDist + yDist*yDist);
-
-		if(dist < 6)
-		{
-			agk::SetTextPosition(activateText, agk::WorldToScreenX(cEntry->x), agk::WorldToScreenY(cEntry->y));
-
-			//Showing the text
-			agk::SetTextVisible(activateText, 1);
-
-			//Giving the text a value
-			uString actString;
-			actString.SetStr("E) Go to ");actString.Append(cEntry->name);
-			agk::SetTextString(activateText, actString);
-
-			closeToEntry = true;
-
-			//Checking if the user wants to travel to the new area
-			if(i_activate == true && justLoaded == false)
-			{
-				uString oldName = world->getName();
-
-				world->clear(); //Clearing the old world to make room for a new
-
-				uString newName;
-
-				newName.SetStr("levels/");
-				newName.Append(cEntry->name.GetStr());
-
-				if(agk::GetFileExists(newName) == 1 )
-				{
-					world->load(newName);
-
-					this->spawn(oldName); //Making the player respawn at the new world
-
-					justLoaded = true;
-				}
-			}
-		}
-	}
-
-	if(closeToEntry == false) //There were no nearby entries, hide the text
-	{
-		agk::SetTextVisible(activateText, 0);
-	}
-
-	agk::Print(x);
-	agk::Print(y);
-	*/
-
 	//
 
 	activation(); //Function for looking thru all the parts to find close usable parts
 
 	//Positioning the camera
-	cameraX = x - (agk::GetDeviceWidth() / agk::GetViewZoom() / 2);
-	cameraY = y - (agk::GetDeviceHeight() / agk::GetViewZoom() / 2);
+	cameraX = x - (agk::GetVirtualWidth() / agk::GetViewZoom() / 2);
+	cameraY = y - (agk::GetVirtualHeight() / agk::GetViewZoom() / 2);
 
 	agk::SetViewOffset(cameraX, cameraY);
 }
