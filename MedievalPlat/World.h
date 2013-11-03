@@ -15,6 +15,7 @@ public:
 	int getNode(int index);
 	
 	bool isBadLink();
+	bool compareTo(NodeLink link);
 private:
 	int node[2];
 };
@@ -80,6 +81,7 @@ public:
 	void load(uString name);
 	void update(float playerX, float playerY);
 	void clear();
+	void generateBackgroundTextures();
 
 	void loadV3(char* p, int fileID);
 
@@ -148,6 +150,8 @@ private:
 	unsigned int skyB;*/
 	int skyShader;
 	int cloudLayers;
+
+	int bgTexture[8];
 
 	int starAmount;
 

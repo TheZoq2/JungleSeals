@@ -130,6 +130,7 @@ void app::Loop (void)
 		agk::PrintC("Active keystate: "); agk::Print(Input::activate());
 		agk::PrintC("Pointer x: ");agk::PrintC(i_mx);agk::PrintC("   PointerY: ");agk::Print(i_my);
 		agk::PrintC("View zoom: ");agk::Print(agk::GetViewZoom());
+		agk::PrintC("Global time: ");agk::Print(globaltime);
 	}
 
 	if(physDebug == true)

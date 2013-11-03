@@ -83,7 +83,7 @@ void NPC::update(World* world)
 		{
 			if(path->size() != 0)
 			{
-				/*
+				
 				//Getting the target node
 				PathNode* targetNode = world->findNodeById(path->at(0));
 
@@ -99,7 +99,18 @@ void NPC::update(World* world)
 				{
 					chr.walkRight();
 				}
-				*/
+				
+				//Checking if the node has been reached
+
+				float xDist = chr.getFeetX() - targetNode->getX();
+				float yDist = chr.getFeetY() - targetNode->getY();
+				float totDist = sqrt(pow(xDist, 2) + pow(yDist, 2));
+
+				if(totDist < 2)
+				{
+					//Remove this node
+					path->pop_front();
+				}
 
 				//Highlight the path
 				for(unsigned int i = 0; i < path->size(); i++)
@@ -118,6 +129,29 @@ void NPC::update(World* world)
 
 						agk::DrawLine(agk::WorldToScreenX(xPos), agk::WorldToScreenY(yPos), agk::WorldToScreenX(xPos2), agk::WorldToScreenY(yPos2), 255, 0, 0);
 					}
+				}
+			}
+			else
+			{
+				//The last node has been reached, move the final distance to the goal node
+				if(chr.getFeetX() > goalX)
+				{
+					chr.walkLeft();
+				}
+				else
+				{
+					chr.walkRight();
+				}
+
+				//Checking if the goal has been reached
+				float xDist = goalX - chr.getFeetX();
+				float yDist = goalY - chr.getFeetY();
+				float totDist = sqrt(pow(xDist, 2) + pow(yDist, 2));
+
+				if(totDist < 3.5)
+				{
+					//Exiting walk state
+					state = NPC_passiveState;
 				}
 			}
 		}
@@ -266,6 +300,12 @@ bool NPC::findPathToGoal(World* world)
 		return false; //Exiting the function
 	}
 
+	//Checking if the links are the same
+	if(goalLink.compareTo(cLink) == true)
+	{
+		return true;
+	}
+
 	//No nodes were bad, start to look for a path between the nodes
 	float lowestDist = 1000000000;
 
@@ -330,6 +370,7 @@ bool NPC::findPathToGoal(World* world)
 
 		int nextNode = -1;
 		int listSlot = -1;
+
 		//Finding the node with the lowest FScore
 		for(unsigned int i = 0; i < nodeList->size(); i++)
 		{
@@ -362,6 +403,7 @@ bool NPC::findPathToGoal(World* world)
 			bool onList = false;
 			int listIndex;
 			int listState = 0;
+
 			for(unsigned int n = 0; n < nodeList->size(); n++)
 			{
 				if(nodeList->at(n).node == node) //If the node is on the list

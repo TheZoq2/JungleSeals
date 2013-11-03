@@ -250,6 +250,71 @@ void World::clear()
 	stars->clear();
 }
 
+void World::loadBG()
+{
+	overcast = 0.75;
+
+	skyID = agk::CreateObjectPlane(100, 100);
+	agk::SetObjectLookAt(skyID, 0, 5, 0, 0);
+	agk::SetObjectColor(skyID, 255, 0, 0, 255);
+
+	agk::SetCameraPosition(1, 0, 5, 0);
+	agk::SetCameraLookAt(1, 0, 0, 0, 0);
+
+	skyShader = agk::LoadShader("shaders/sky.vs", "shaders/sky.fs");
+	agk::SetShaderConstantByName(skyShader, "iResolution", float( agk::GetVirtualWidth() ), float( agk::GetVirtualHeight() ), 0, 0);
+
+	float dSkyR = 0.62f;
+	float dSkyG = 0.78f;
+	float dSkyB = 1.0f;
+
+	float nSkyR = 0.05f;
+	float nSkyG = 0.05f;
+	float nSkyB = 0.39f;
+
+	agk::SetShaderConstantByName(skyShader, "dSky", dSkyR, dSkyG, dSkyB, 1.0f);
+	agk::SetShaderConstantByName(skyShader, "nSky", nSkyR, nSkyG, nSkyB, 1.0f);
+	
+	float dCloudR = 1.0f;
+	float dCloudG = 1.0f;
+	float dCloudB = 1.0f;
+	
+	float nCloudR = 0.05f;
+	float nCloudG = 0.05f;
+	float nCloudB = 0.05f;
+
+	agk::SetShaderConstantByName(skyShader, "dCloud", dCloudR, dCloudG, dCloudB, 1.0f);
+	agk::SetShaderConstantByName(skyShader, "nCloud", nCloudR, nCloudG, nCloudB, 1.0f);
+
+	agk::SetObjectShader(skyID, skyShader);
+
+	
+}
+void World::generateBackgroundTextures()
+{
+	int bgTextureAmount = 8;
+
+	//Creating a 3d plane to generate things on
+	int plane = agk::CreateObjectPlane(100, 100);
+	agk::SetObjectLookAt(plane, 0, 5, 0, 0);
+	agk::SetObjectColor(plane, 255, 0, 0, 255);
+
+	agk::SetCameraPosition(1, 0, 5, 0);
+	agk::SetCameraLookAt(1, 0, 0, 0, 0);
+
+	//Moving the 2d camera away from everything
+	float oldOffsetX = agk::GetViewOffsetX(); float oldOffsetY = agk::GetViewOffsetY();
+	agk::SetViewOffset(-100000, -100000);
+
+	for(int i = 0; i < 6; i++) //Generating cloud textures
+	{
+		
+	}
+
+	//Resetting the offset
+	agk::SetViewOffset(oldOffsetX, oldOffsetY);
+}
+
 void World::loadV3(char* p, int fileID)
 {
 	if(strcmp(p, "3") == 0) //This is version 0, continue reading the file
@@ -648,105 +713,6 @@ void World::loadBaseMedia() //Loads media that is used in all worlds
 	//Adding the new cloud to the vector
 	cloudBase->push_back(tempCB);
 
-}
-void World::loadBG()
-{
-	overcast = 0.75;
-
-	/*skyR = 160;
-	skyG = 200;
-	skyB = 255;*/
-
-	/*int skyImg = agk::LoadImage(GF::getPath("Background/Sky.png"));
-	skyID = agk::CreateSprite(skyImg);
-	agk::SetSpriteDepth(skyID, 1000); //Placing the sky at the back
-
-	//White sky image
-	lightSky = agk::CloneSprite(1);
-	agk::FixSpriteToScreen(lightSky, 1);
-	agk::SetSpriteScale(lightSky, agk::GetVirtualWidth(), agk::GetVirtualHeight());
-	agk::SetSpriteColor(lightSky, 255, 255, 255, 255);
-	agk::SetSpriteDepth(lightSky, 1000);
-
-	//Filling the screen with the sprite
-	agk::SetSpriteScale(skyID, (float)agk::GetDeviceWidth(), 1.0f);
-
-	agk::SetSpriteColor(skyID, skyR, skyG, skyB, 255);
-
-	//Calculating the size of the world
-	
-	minX = 0.0; //The part cordinate with the lowest x
-	maxX = 0.0; //The part cordinate with the highest x
-	//Calculating the width of the world
-	for(unsigned int i = 0; i < part->size(); i++)
-	{
-		if(part->at(i).getX() < minX) //If this is the lowest part found
-		{
-			minX = part->at(i).getX(); //Update the lowest variable
-		}
-
-		if(part->at(i).getX() > maxX) //If this is the highest part found
-		{
-			maxX = part->at(i).getX(); //Update the lowest variable
-		}
-	}
-
-	xDist = maxX - minX;
-
-	//Creating stars
-	int starAmount = 500;
-
-	for(int i = 0; i < starAmount; i++)
-	{
-		//Creating a temporary star
-		Star tempStar;
-		tempStar.SID = agk::CloneSprite(1);
-		agk::SetSpriteScale(tempStar.SID, 1 / agk::GetViewZoom(), 1 / agk::GetViewZoom());
-		float maxX = float( agk::GetVirtualWidth() / agk::GetViewZoom() );
-		float maxY = float( agk::GetVirtualHeight() / agk::GetViewZoom() );
-		tempStar.x = agk::Random(0, maxX);
-		tempStar.y = agk::Random(0, maxY);
-		agk::SetSpriteDepth(tempStar.SID, 999);
-		agk::SetSpriteVisible(tempStar.SID, 1);
-
-		stars->push_back(tempStar); //Adding the star to the star array
-	}*/
-
-	skyID = agk::CreateObjectPlane(100, 100);
-	agk::SetObjectLookAt(skyID, 0, 5, 0, 0);
-	agk::SetObjectColor(skyID, 255, 0, 0, 255);
-
-	agk::SetCameraPosition(1, 0, 5, 0);
-	agk::SetCameraLookAt(1, 0, 0, 0, 0);
-
-	skyShader = agk::LoadShader("shaders/sky.vs", "shaders/sky.fs");
-	agk::SetShaderConstantByName(skyShader, "iResolution", float( agk::GetVirtualWidth() ), float( agk::GetVirtualHeight() ), 0, 0);
-
-	float dSkyR = 0.62f;
-	float dSkyG = 0.78f;
-	float dSkyB = 1.0f;
-
-	float nSkyR = 0.05f;
-	float nSkyG = 0.05f;
-	float nSkyB = 0.39f;
-
-	agk::SetShaderConstantByName(skyShader, "dSky", dSkyR, dSkyG, dSkyB, 1.0f);
-	agk::SetShaderConstantByName(skyShader, "nSky", nSkyR, nSkyG, nSkyB, 1.0f);
-	
-	float dCloudR = 1.0f;
-	float dCloudG = 1.0f;
-	float dCloudB = 1.0f;
-	
-	float nCloudR = 0.05f;
-	float nCloudG = 0.05f;
-	float nCloudB = 0.05f;
-
-	agk::SetShaderConstantByName(skyShader, "dCloud", dCloudR, dCloudG, dCloudB, 1.0f);
-	agk::SetShaderConstantByName(skyShader, "nCloud", nCloudR, nCloudG, nCloudB, 1.0f);
-
-	agk::SetObjectShader(skyID, skyShader);
-
-	
 }
 void World::updateBG(float playerX, float playerY)
 {
@@ -1246,7 +1212,7 @@ NodeLink World::getClosestLink(float x, float y)
 	closestLink.setNode(0, -1); //node[0] = -1;
 	closestLink.setNode(1, -1); //node[1] = -1;
 
-	int nodeAmount = this->getNodeAmount();
+	unsigned int nodeAmount = this->getNodeAmount();
 
 	//Going through all the nodes
 	for(unsigned int i = 0; i < nodeAmount; i++)
@@ -1379,4 +1345,19 @@ bool NodeLink::isBadLink()
 		return true;
 	}
 	else return false;
+}
+bool NodeLink::compareTo(NodeLink link)
+{
+	if( node[0] == link.getNode(0) && node[1] == link.getNode(1) )
+	{
+		return true;
+	}
+	else if(node[1] == link.getNode(0) && node[0] == link.getNode(1))
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
