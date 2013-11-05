@@ -72,7 +72,7 @@ void app::Loop (void)
 	}
 	else if(programState == 2)
 	{
-		agk::SetViewZoom(15);
+		agk::SetViewZoom(20);
 
 		uString cWorldName;
 		cWorldName.SetStr("levels/forest3");

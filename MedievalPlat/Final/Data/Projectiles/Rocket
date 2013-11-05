@@ -1,0 +1,11 @@
+
+Name:Bullet
+//Sprite:Weapons/Bullet1.png
+Sprite:Weapons/Rocket.png
+ScaleX:0.035
+ScaleY:0.035
+Speed:1.5
+ColorR:255
+ColorG:255
+ColorB:255
+Trail:SmokeTrail

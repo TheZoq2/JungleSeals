@@ -13,7 +13,7 @@ Projectile::~Projectile(void)
 {
 }
 
-void Projectile::createFromBase(ProjectileBase* projBase, float x, float y, float angle, float speedX, float speedY)
+void Projectile::createFromBase(ProjectileBase* projBase, float x, float y, float angle, float speedX, float speedY, ParticleGroup* partGroup)
 {
 	this->x = x;
 	this->y = y;
@@ -43,6 +43,8 @@ void Projectile::createFromBase(ProjectileBase* projBase, float x, float y, floa
 		if(projBase->getFriction() != -1) agk::SetSpritePhysicsFriction(SID, projBase->getFriction());
 		agk::SetSpritePhysicsMass(SID, agk::GetSpritePhysicsMass(SID) * projBase->getRelativeMass());//Setting the mass based on the generated mass
 	}
+
+	partID = partGroup->addFromClone(projBase->getPartID());
 }
 
 void Projectile::update()
@@ -70,6 +72,13 @@ void Projectile::update()
 		y = agk::GetSpriteY(SID);
 	}
 }
+void Projectile::updateParticle(ParticleGroup* partGroup)
+{
+	if(partGroup->findByID(partID) != NULL)
+	{
+		partGroup->setParticlePosition(partID, x, y);
+	}
+}
 void Projectile::remove()
 {
 	agk::DeleteSprite(SID);
@@ -91,7 +100,7 @@ bool Projectile::shouldBeRemoved(float centerX, float centerY, float removalDist
 }
 
 /////////////////////////////////////////////////////////////
-void ProjectileBase::loadFromName(uString name)
+void ProjectileBase::loadFromName(uString name, ParticleGroup* partGroup)
 {
 	uString filename;
 	filename.SetStr(projPath);
@@ -110,6 +119,8 @@ void ProjectileBase::loadFromName(uString name)
 		type = 0;
 		friction = -1;
 		RelativeMass = 1;
+		uString partName;
+		partName.SetStr("NONE");
 
 		//Starting to read the file
 		int fileID = agk::OpenToRead(filename);
@@ -165,6 +176,10 @@ void ProjectileBase::loadFromName(uString name)
 			{
 				RelativeMass = float(atof(DataReader::getValue(line)));
 			}
+			if(dataType.CompareTo("Trail") == 0)
+			{
+				partName.SetStr(DataReader::getValue(line));
+			}
 
 			delete[] line; //Removing the string from memory
 		}
@@ -199,6 +214,12 @@ void ProjectileBase::loadFromName(uString name)
 				}
 
 				agk::SetSpriteVisible(SID, 0);
+
+				if(partName.CompareTo("NONE") || partName.CompareTo("")) //If the bullet has a trail
+				{
+					partID = partGroup->addFromFile(partName, 20, 20);
+					partGroup->setParticleVisible(partID, 0);
+				}
 			}
 			else
 			{
@@ -241,6 +262,10 @@ int ProjectileBase::getSID()
 {
 	return SID;
 }
+int ProjectileBase::getPartID()
+{
+	return partID;
+}
 float ProjectileBase::getSpeed()
 {
 	return speed;
@@ -264,6 +289,8 @@ void ProjectileGroup::setup()
 	projBase = new std::vector< ProjectileBase >;
 
 	projDist = 2000;
+
+	partGroup.setup();
 }
 
 void ProjectileGroup::update( float centerX, float centerY )
@@ -276,6 +303,8 @@ void ProjectileGroup::update( float centerX, float centerY )
 	for(it = projs->begin(); it != projs->end(); it++)
 	{
 		it->update();
+
+		it->updateParticle(&partGroup);
 
 		//Checking if the projectile needs removing
 		if(it->shouldBeRemoved(centerX, centerY, projDist))
@@ -290,7 +319,7 @@ void ProjectileGroup::update( float centerX, float centerY )
 		removal->at(i)->remove();
 		projs->erase(removal->at(i));
 	}
-	
+
 	removal->clear();
 	delete removal;
 }
@@ -314,7 +343,7 @@ void ProjectileGroup::addByName(uString name, float x, float y, float angle, flo
 	{
 		//Create a new projectile from the base
 		Projectile tempProj;
-		tempProj.createFromBase(&projBase->at(baseIndex), x, y, angle, speedX, speedY);
+		tempProj.createFromBase(&projBase->at(baseIndex), x, y, angle, speedX, speedY, &partGroup);
 
 		//Add the new projectile to the list
 		projs->push_back(tempProj);
@@ -323,7 +352,7 @@ void ProjectileGroup::addByName(uString name, float x, float y, float angle, flo
 	{
 		//Creating a new projectile base for the projectile
 		ProjectileBase tempBase;
-		tempBase.loadFromName(name);
+		tempBase.loadFromName(name, &partGroup);
 
 		if(tempBase.getExists() == true)
 		{
@@ -331,7 +360,7 @@ void ProjectileGroup::addByName(uString name, float x, float y, float angle, flo
 			projBase->push_back(tempBase);
 
 			Projectile tempProj;
-			tempProj.createFromBase(&projBase->back(), x, y, angle, speedX, speedY);
+			tempProj.createFromBase(&projBase->back(), x, y, angle, speedX, speedY, &partGroup);
 
 			//Add the new projectile to the list
 			projs->push_back(tempProj);

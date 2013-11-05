@@ -35,6 +35,7 @@ void Player::load(uString name)
 	agk::SetSpritePhysicsRestitution(SID, 0);
 	agk::SetSpritePhysicsMass(SID, 0.1f);
 	agk::SetSpriteDepth(SID, GF_BaseDepth);
+	agk::SetSpriteVisible(SID, 0);
 
 	//Preventing collisioin between this and other characters
 	agk::SetSpriteCategoryBit(SID, 1, 0);
@@ -56,6 +57,143 @@ void Player::load(uString name)
 
 	weapOffsetX = 0;
 	weapOffsetY = -1.5;
+
+	//Loading animation stuff, based on spritesheets untill we get spine support
+	
+	//Reading the animation file
+	int fileID = agk::OpenToRead("Data/Player/Animation");
+	
+	uString idleImg;
+
+	uString walkImg;
+	int walkFPS = 30;
+	int walkW;
+	int walkH;
+	int walkStart;
+	int walkEnd;
+
+	uString upperArm;
+	uString lowerArm;
+	int upperOffsetX;
+	int upperOffsetY;
+	int lowerOffsetX;
+	int lowerOffsetY;
+	int limbX;
+	int limbY;
+	int handX;
+	int handY;
+
+	while(agk::FileEOF(fileID) == 0)
+	{
+		char* line = agk::ReadLine(fileID);
+
+		uString dataType;
+		dataType.SetStr(DataReader::getType(line));
+
+		if(dataType.CompareTo("Idle") == 0)
+		{
+			idleImg.SetStr(DataReader::getValue(line));
+		}
+		if(dataType.CompareTo("WalkImg") == 0)
+		{
+			walkImg.SetStr(DataReader::getValue(line));
+		}
+		if(dataType.CompareTo("WalkFPS") == 0)
+		{
+			walkFPS = atoi(DataReader::getValue(line));
+		}
+		if(dataType.CompareTo("WalkW") == 0)
+		{
+			walkW = atoi(DataReader::getValue(line));
+		}
+		if(dataType.CompareTo("WalkH") == 0)
+		{
+			walkH = atoi(DataReader::getValue(line));
+		}
+		if(dataType.CompareTo("WalkStart") == 0)
+		{
+			walkStart = atoi(DataReader::getValue(line));
+		}
+		if(dataType.CompareTo("WalkEnd") == 0)
+		{
+			walkEnd = atoi(DataReader::getValue(line));
+		}
+
+		//Arm stuff
+		if(dataType.CompareTo("UpperArm") == 0)
+		{
+			upperArm.SetStr(DataReader::getValue(line));
+		}
+		if(dataType.CompareTo("LowerArm") == 0)
+		{
+			lowerArm.SetStr(DataReader::getValue(line));
+		}
+		
+		if(dataType.CompareTo("UpperArmOffsetX") == 0)
+		{
+			upperOffsetX = atoi(DataReader::getValue(line));
+		}
+		if(dataType.CompareTo("UpperArmOffsetY") == 0)
+		{
+			upperOffsetY = atoi(DataReader::getValue(line));
+		}
+		if(dataType.CompareTo("LowerArmOffsetX") == 0)
+		{
+			lowerOffsetX = atoi(DataReader::getValue(line));
+		}
+		if(dataType.CompareTo("LowerArmOffsetX") == 0)
+		{
+			lowerOffsetY = atoi(DataReader::getValue(line));
+		}
+
+		if(dataType.CompareTo("ArmLimbX") == 0)
+		{
+			limbX = atoi(DataReader::getValue(line));
+		}
+		if(dataType.CompareTo("ArmLimbY") == 0)
+		{
+			limbY = atoi(DataReader::getValue(line));
+		}
+		if(dataType.CompareTo("HandX") == 0)
+		{
+			handX = atoi(DataReader::getValue(line));
+		}
+		if(dataType.CompareTo("HandY") == 0)
+		{
+			handY = atoi(DataReader::getValue(line));
+		}
+
+		delete[] line;
+	}
+
+	//Saving those animations
+	anim[0].animated = false;
+	anim[0].imgID = agk::LoadImage(GF::getPath(idleImg));
+	anim[0].SID = agk::CreateSprite(anim[0].imgID);
+	agk::SetSpriteScale(anim[0].SID, 0.012f, 0.012f);
+	agk::SetSpriteDepth(anim[0].SID, 100);
+
+	float walkScale = 0.019f;
+
+
+	/*anim[1].animated = true;
+	anim[1].imgID = agk::LoadImage(GF::getPath(walkImg));
+	anim[1].SID = agk::CreateSprite(anim[1].imgID);
+	agk::SetSpriteAnimation(anim[1].SID, walkW, walkH, walkEnd);
+	agk::SetSpriteScale(anim[1].SID, walkScale, walkScale);
+	agk::SetSpriteDepth(anim[1].SID, 100);
+
+	anim[1].start = walkStart;
+	anim[1].end = walkEnd;
+	anim[1].FPS = walkFPS;*/
+	
+	///////////////////////////////
+	//		   Arm stuff
+	///////////////////////////////
+/*	arm.create(upperArm, lowerArm, upperOffsetX, upperOffsetY, lowerOffsetX, lowerOffsetY);
+	arm.setLimbPos(limbX, limbY);
+	arm.setHandPos(handX, handY);
+	*/
 }
 
 void Player::spawn(uString name)
@@ -177,6 +315,37 @@ void Player::update()
 	cameraY = y - (agk::GetVirtualHeight() / agk::GetViewZoom() / 2);
 
 	agk::SetViewOffset(cameraX, cameraY);
+
+	/////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////
+	//Animation
+	agk::SetSpritePositionByOffset(anim[0].SID, x, y - 0.5f);
+
+	/*
+	arm.setPosition(x, y - 1.2);
+	arm.setHolding(cWeapon.getHandleWorldX(), cWeapon.getHandleWorldY());
+	arm.updateHolding();
+	*/
+	
+	/*if(moving == true) //When walking
+	{
+		agk::SetSpritePositionByOffset(anim[1].SID, x, y - 0.5f);
+
+		//Starting the animation if its not playing already
+		if(agk::GetSpritePlaying(anim[1].SID) == 0)
+		{
+			agk::PlaySprite(anim[1].SID, anim[1].FPS, 0);
+		}
+
+		agk::SetSpriteVisible(anim[0].SID, 0);
+		agk::SetSpriteVisible(anim[1].SID, 1);
+	}
+	else
+	{
+		agk::SetSpriteVisible(anim[0].SID, 1);
+		agk::SetSpriteVisible(anim[1].SID, 0);
+	}*/
+	
 }
 void Player::updateWeapon(ProjectileGroup* projGroup)
 {
@@ -191,6 +360,16 @@ void Player::updateWeapon(ProjectileGroup* projGroup)
 	if(Input::shoot() == true)
 	{
 		cWeapon.shoot(projGroup);
+	}
+
+	//Checking where the target is and if the player sprite should be flipped
+	if(targetX > x)
+	{
+		agk::SetSpriteFlip(anim[0].SID, 0, 0);
+	}
+	else
+	{
+		agk::SetSpriteFlip(anim[0].SID, 1, 0);
 	}
 }
 
@@ -344,3 +523,103 @@ void Player::setCurrentWeaponByName(uString weaponName)
 {
 	cWeapon.loadWeaponByName(weaponName);
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////////////////////////////
+/*
+void Arm::create(uString limb1, uString limb2, int offsetX1, int offsetX2, int offsetY1, int offsetY2)
+{
+	float limbScale = 0.005f;
+	limb[0].imgID = agk::LoadImage(GF::getPath(limb1));
+	limb[0].SID = agk::CreateSprite(limb[0].imgID);
+	agk::SetSpriteDepth(limb[0].SID, GF_BaseDepth);
+	agk::SetSpriteOffset(limb[0].SID, offsetX1, offsetY1);
+	agk::SetSpriteScale(limb[0].SID, limbScale, limbScale);
+	limb[0].scale = limbScale;
+
+	limb[1].imgID = agk::LoadImage(GF::getPath(limb2));
+	limb[1].SID = agk::CreateSprite(limb[1].imgID);
+	agk::SetSpriteDepth(limb[1].SID, GF_BaseDepth);
+	agk::SetSpriteOffset(limb[1].SID, offsetX2, offsetY2);
+	agk::SetSpriteScale(limb[1].SID, limbScale, limbScale);
+	limb[1].scale = limbScale;
+
+	limb[0].offsetX = offsetX1;
+	limb[0].offsetY = offsetY1;
+	limb[1].offsetX = offsetX2;
+	limb[1].offsetY = offsetY2;
+}
+
+void Arm::setPosition(float x, float y)
+{
+	this->x = x;
+	this->y = y;
+	
+	agk::SetSpritePositionByOffset(limb[0].SID, x, y);
+	float upperX = agk::GetSpriteX(limb[0].SID);
+	float upperY = agk::GetSpriteY(limb[0].SID);
+	agk::SetSpritePositionByOffset(limb[1].SID, upperX + limb[0].limbX * limb[0].scale, upperY + limb[0].limbY * limb[0].scale);
+}
+void Arm::setHolding(float holdX, float holdY)
+{
+	this->holdX = holdX;
+	this->holdY = holdY;
+
+	agk::SetSpritePositionByOffset(limb[1].SID, holdX, holdY);
+}
+
+void Arm::setLimbPos(float limbX, float limbY)
+{
+	limb[0].limbX = limbX;
+	limb[0].limbY = limbY;
+}
+void Arm::setHandPos(float handX, float handY)
+{
+	limb[1].limbX = handX;
+	limb[1].limbY = handY;
+}
+
+void Arm::updateHolding()
+{
+	//Using the law of cosines
+	float uL = sqrt(pow(limb[0].offsetX * limb[0].scale - limb[0].limbX * limb[0].scale, 2) + pow(limb[0].offsetY * limb[0].scale - limb[0].limbY * limb[0].scale, 2));
+	float lL = sqrt(pow(limb[1].offsetX * limb[1].scale - limb[1].limbX * limb[1].scale, 2) + pow(limb[1].offsetY * limb[1].scale - limb[1].limbY * limb[1].scale, 2));
+
+	float weapDist = sqrt(pow(holdX - x, 2) + pow(holdY - y, 2));
+
+	//calculating the cosine value of the limb angle
+	float cosVal = (pow(lL, 2) - pow(uL, 2) - pow(weapDist, 2)) / (2 * uL * weapDist);
+	
+	float angle = agk::ACos(cosVal);
+
+	//limb[0].setAngle(angle);
+	//Setting the position of the lower arm based on the angle of the upper
+	updateLowerPos();
+} 
+
+void Arm::updateLowerPos()
+{
+	float xPos = agk::GetSpriteX(limb[0].SID) + agk::Cos(limb[0].getAngle() - 90) * limb[0].offsetX * limb[0].scale;
+	xPos = xPos + agk::Cos(limb[0].getAngle() + 90) * limb[0].offsetY * limb[0].scale;
+
+	float yPos = agk::GetSpriteY(limb[0].SID) + agk::Sin(limb[0].getAngle() - 90) * limb[0].offsetX * limb[0].scale;
+	yPos = yPos + agk::Sin(limb[0].getAngle() + 90) * limb[0].offsetY * limb[0].scale;
+
+	agk::SetSpritePositionByOffset(limb[1].SID, xPos, yPos);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+
+void Limb::setAngle(float angle)
+{
+	this->angle = angle;
+
+	agk::SetSpriteAngle(SID, angle);
+}
+
+float Limb::getAngle()
+{
+	return angle;
+}
+*/

@@ -17,6 +17,7 @@
 #include "DebugInput.h"
 #include "NPC.h"
 #include "Projectile.h"
+#include "Particle.h"
 
 #include "Enemy.h"
 
@@ -50,6 +51,7 @@ class app
 
 		NPCGroup npcGroup;
 		ProjectileGroup projGroup;
+		ParticleGroup partGroup;
 
 		bool initLoaded;
 

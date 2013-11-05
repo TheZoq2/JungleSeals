@@ -25,6 +25,9 @@ public:
 	void targetPos(float targetX, float targetY);
 
 	void shoot(ProjectileGroup* projGroup);
+
+	float getHandleWorldX();
+	float getHandleWorldY();
 private:
 	uString name;
 	uString projectile;
@@ -43,6 +46,8 @@ private:
 	float offsetY;
 	float barrelX;
 	float barrelY;
+	float handleX;
+	float handleY;
 
 	float x;
 	float y;

@@ -24,6 +24,9 @@ void Weapon::loadWeaponByName(uString name)
 		//Reading the file
 		int fileID = agk::OpenToRead(filename);
 
+		handleX = 0;
+		handleY = 0;
+
 		while(agk::FileEOF(fileID) == 0) //Looping thru all the lines of the file
 		{
 			char* line; //Char pointer for storing the lines
@@ -95,6 +98,14 @@ void Weapon::loadWeaponByName(uString name)
 
 				barrelY = float( atof(barrelYstr) );
 			}
+			if(DataReader::getType(line).CompareTo("HandleX") == 0)
+			{
+				handleX = float(atof(DataReader::getValue(line)));
+			}
+			if(DataReader::getType(line).CompareTo("HandleY") == 0)
+			{
+				handleY = float(atof(DataReader::getValue(line)));
+			}
 
 			delete[] line; //Deleting the string
 		}
@@ -116,7 +127,7 @@ void Weapon::loadWeaponByName(uString name)
 
 				agk::SetSpriteOffset(SID, offsetX, offsetY); //Setting the offset of the weapon sprite
 				agk::SetSpriteScale(SID, scaleX, scaleY);
-				agk::SetSpriteDepth(SID, 15);
+				agk::SetSpriteDepth(SID, GF_BaseDepth);
 				exists = true;
 			}
 			else //The file didn't exist, alert the user
@@ -216,4 +227,21 @@ void Weapon::targetPos(float targetX, float targetY)
 			agk::SetSpriteFlip(SID, 0, 0);
 		}
 	}
+}
+
+float Weapon::getHandleWorldX()
+{
+	//Calculating the offset on the xAxis
+	float xPos = x + agk::Cos(angle - 90) * (handleX * scaleX);
+	xPos = xPos + agk::Cos(angle + 90) * (handleY * scaleY);
+
+	return xPos;
+}
+float Weapon::getHandleWorldY()
+{
+	//Based on the offset on the x axis
+	float yPos = y + agk::Sin(angle - 90) * (handleX * scaleX);
+	yPos = yPos + agk::Sin(angle + 90) * (handleY * scaleY);
+
+	return yPos;
 }

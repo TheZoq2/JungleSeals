@@ -7,7 +7,51 @@
 #include "Input.h"
 #include "Item.h"
 #include "Weapon.h"
+
 //#include "Script.h"
+
+/*class Limb
+{
+public:
+	float getAngle();
+
+	void setAngle(float angle);
+
+	int imgID;
+	int SID;
+	float scale;
+
+	float offsetX;
+	float offsetY;
+
+	float limbX;
+	float limbY;
+
+private:
+	float angle;
+};
+
+class Arm
+{
+public:
+	void create(uString limb1, uString limb2, int offsetX1, int offsetX2, int offsetY1, int offsetY2);
+
+	void setPosition(float x, float y);
+	void setHolding(float holdX, float holdY);
+	void setLimbPos(float limbX, float limbY);
+	void setHandPos(float handX, float handY);
+
+	void updateLowerPos();
+	void updateHolding();
+private:
+	Limb limb[2];
+
+	float x;
+	float y;
+
+	float holdX;
+	float holdY;
+};*/
 
 class Player
 {
@@ -74,5 +118,20 @@ private:
 	std::vector< Item >* inventory;
 
 	Weapon cWeapon;
+
+	struct Animation
+	{
+		int SID;
+		int imgID;
+		bool animated;
+
+		int FPS;
+		int start;
+		int end;
+	};
+
+	Animation anim[2];
+
+	//Arm arm;
 };
 

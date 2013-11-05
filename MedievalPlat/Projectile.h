@@ -5,6 +5,7 @@
 #include "DebugConsole.h"
 #include "GF.h"
 #include "DataReader.h"
+#include "Particle.h"
 
 #include <list>
 #include <vector>
@@ -19,11 +20,12 @@
 class ProjectileBase //Base used to clone projectiles from
 {
 public:
-	void loadFromName(uString name);
+	void loadFromName(uString name, ParticleGroup* partGroup);
 
 	uString getName();
 	bool getExists(); //Will return true if the projectile was loaded successfully
 	int getSID();
+	int getPartID();
 	float getSpeed();
 	int getType();
 	float getRelativeMass();
@@ -33,6 +35,7 @@ private:
 
 	int imgID;
 	int SID;
+	int partID;
 
 	float scaleX;
 	float scaleY;
@@ -60,13 +63,15 @@ public:
 	Projectile(void);
 	~Projectile(void);
 
-	void createFromBase(ProjectileBase* projBase, float x, float y, float angle, float speedX, float speedY);
+	void createFromBase(ProjectileBase* projBase, float x, float y, float angle, float speedX, float speedY, ParticleGroup* partGroup);
 	void update();
+	void updateParticle(ParticleGroup* partGroup);
 	void remove();
 
 	bool shouldBeRemoved( float centerX, float centerY, float removalDist );
 private:
 	int SID;
+	int partID;
 
 	float x;
 	float y;
@@ -92,4 +97,6 @@ private:
 	std::vector< ProjectileBase >* projBase;
 
 	float projDist; //The diameter of the sphere where projectiles can be alive centered around the centerX and centerY cordinates passed in update
+
+	ParticleGroup partGroup;
 };
