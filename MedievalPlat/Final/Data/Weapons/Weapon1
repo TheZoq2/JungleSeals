@@ -10,4 +10,4 @@ BarrelY:63
 ScaleX:0.06
 ScaleY:0.06
 Projectile:Bullet1
-RateOfFire:10
+RateOfFire:100

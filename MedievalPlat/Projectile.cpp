@@ -46,7 +46,10 @@ void Projectile::createFromBase(ProjectileBase* projBase, float x, float y, floa
 		agk::SetSpritePhysicsMass(SID, agk::GetSpritePhysicsMass(SID) * projBase->getRelativeMass());//Setting the mass based on the generated mass
 	}
 
-	partID = partGroup->addFromClone(projBase->getPartID());
+	if(projBase->getPartID() != -1)
+	{
+		partID = partGroup->addFromClone(projBase->getPartID());
+	}
 
 	//Impact particles
 	impactPartName = new std::vector< uString >;
@@ -114,16 +117,34 @@ void Projectile::updateParticle(ParticleGroup* partGroup)
 		//Stopping the creation
 		impactState = 2;
 	}
+
+	if(impactState == 2)
+	{
+		bool removeProjectile = true;
+		for(unsigned int i = 0;i < impactPart->size(); i++)
+		{
+			//Checking if those particles are finished
+			if(partGroup->findByID(impactPart->at(i))->getFinished() == false)
+			{
+				removeProjectile = false;
+			}
+		}
+
+		if(removeProjectile == true)
+		{
+			impactState = 4;
+		}
+	}
 }
 void Projectile::updateWorld(World* world)
 {
 	//Checking for collision with the world
 	if(flying == true)
 	{
-		for(unsigned int i = 0; i < world->getPartAmount(); i++)
+		for(int i = 0; i < world->getPartAmount(); i++)
 		{
 			//Checking many points of the trajectory
-			for(float chk = 0; chk < 1; chk+=0.025)
+			for(float chk = 0; chk < 1; chk+=0.025f)
 			{
 				float xDiff = x - oldX;
 				float yDiff = y - oldY;
@@ -145,8 +166,18 @@ void Projectile::updateWorld(World* world)
 		}
 	}
 }
-void Projectile::remove()
+void Projectile::remove(ParticleGroup* partGroup)
 {
+	//Removing all particles
+	if(partID != -1)
+	{
+		partGroup->removeParticles(partID);
+	}
+	for(unsigned int i = 0; i < impactPart->size(); i++)
+	{
+		partGroup->removeParticles(impactPart->at(i));
+	}
+	
 	//Removing garbage
 	impactPartName->clear();
 	delete impactPartName;
@@ -173,6 +204,10 @@ bool Projectile::shouldBeRemoved(float centerX, float centerY, float removalDist
 		return true;
 	}
 
+	if(impactState == 4)
+	{
+		return true;
+	}
 	return false;
 }
 void Projectile::setPosition(float x, float y)
@@ -206,6 +241,7 @@ void ProjectileBase::loadFromName(uString name, ParticleGroup* partGroup)
 		uString partName;
 		partName.SetStr("NONE");
 		impactPart = new std::vector< uString >;
+		partID = -1;
 
 		//Starting to read the file
 		int fileID = agk::OpenToRead(filename);
@@ -269,7 +305,7 @@ void ProjectileBase::loadFromName(uString name, ParticleGroup* partGroup)
 			{
 				int dataAmount = DataReader::getValueAmount(line);
 
-				for(unsigned int i = 0; i < dataAmount; i++)
+				for(int i = 0; i < dataAmount; i++)
 				{
 					uString tempVal;
 					tempVal.SetStr(DataReader::getValue(line, 1));
@@ -418,7 +454,7 @@ void ProjectileGroup::update( float centerX, float centerY )
 	//Going thru and removing all projectiles that should be removed
 	for(unsigned int i = 0; i < removal->size(); i++)
 	{
-		removal->at(i)->remove();
+		removal->at(i)->remove(&partGroup);
 		projs->erase(removal->at(i));
 	}
 

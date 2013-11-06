@@ -40,6 +40,7 @@ public:
 	float getSize();
 	float getStartX();
 	float getStartY();
+	bool getFinished();
 
 	struct Keyframe
 	{
@@ -75,6 +76,7 @@ private:
 	float timeout;
 
 	float createdAt;
+	bool isFinished;
 
 	std::vector< Keyframe >* colorFrame;
 };

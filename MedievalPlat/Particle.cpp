@@ -29,6 +29,8 @@ void Particle::update()
 		{
 			agk::SetParticlesActive(PID, 0);
 			agk::SetParticlesVisible(PID, 0);
+
+			isFinished = true;
 		}
 	}
 }
@@ -196,6 +198,7 @@ void Particle::addFromFile(int ID, uString filename, float x, float y)
 		agk::SetParticlesVisible(PID, 1);
 
 		createdAt = globaltime;
+		isFinished = false;
 
 		//Checking forcolor keyframes keyframes
 		for(unsigned int i = 0; i < frameT->size(); i++)
@@ -330,6 +333,8 @@ void Particle::cloneParticle(int ID, Particle* clonePart, float x, float y)
 	{
 		agk::AddParticlesColorKeyFrame(PID, colorFrame->at(i).t, colorFrame->at(i).r, colorFrame->at(i).g, colorFrame->at(i).b, colorFrame->at(i).a);
 	}
+
+	isFinished = false;
 }
 void Particle::remove()
 {
@@ -395,6 +400,10 @@ float Particle::getStartY()
 {
 	return startY;
 }
+bool Particle::getFinished()
+{
+	return isFinished;
+}
 std::vector< Particle::Keyframe >* Particle::getKeyframes()
 {
 	return this->colorFrame;
@@ -455,6 +464,19 @@ void ParticleGroup::removeParticles(int ID)
 	if(part != NULL)
 	{
 		part->remove();
+
+		//Creating an iterator to go though the particles array
+		std::vector< Particle >::iterator it;
+		for(it = particles->begin(); it != particles->end(); it++)
+		{
+			if(it->getID() == ID)
+			{
+				//Removing that element
+				particles->erase(it);
+
+				break;
+			}
+		}
 	}
 }
 

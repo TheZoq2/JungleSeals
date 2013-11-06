@@ -72,7 +72,7 @@ public:
 	void update();
 	void updateWorld(World* world);
 	void updateParticle(ParticleGroup* partGroup);
-	void remove();
+	void remove(ParticleGroup* partGroup);
 	void createImpactParticles();
 
 	void setFlying(bool state);
