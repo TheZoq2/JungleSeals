@@ -6,6 +6,7 @@
 #include "GF.h"
 #include "DataReader.h"
 #include "Particle.h"
+#include "World.h"
 
 #include <list>
 #include <vector>
@@ -30,6 +31,7 @@ public:
 	int getType();
 	float getRelativeMass();
 	float getFriction();
+	std::vector< uString >* getImpactPartNames();
 private:
 	uString name;
 
@@ -55,6 +57,9 @@ private:
 
 	float friction;
 	float RelativeMass;
+
+	//End particle
+	std::vector< uString >* impactPart;
 };
 
 class Projectile //Actual projectiles
@@ -65,14 +70,21 @@ public:
 
 	void createFromBase(ProjectileBase* projBase, float x, float y, float angle, float speedX, float speedY, ParticleGroup* partGroup);
 	void update();
+	void updateWorld(World* world);
 	void updateParticle(ParticleGroup* partGroup);
 	void remove();
+	void createImpactParticles();
+
+	void setFlying(bool state);
+	void setPosition(float x, float y);
 
 	bool shouldBeRemoved( float centerX, float centerY, float removalDist );
 private:
 	int SID;
 	int partID;
 
+	float oldX;
+	float oldY;
 	float x;
 	float y;
 	float angle;
@@ -82,6 +94,13 @@ private:
 	float speed;
 
 	int type;
+
+	bool flying;
+	int impactState;
+
+	//Impact particles
+	std::vector< uString >* impactPartName;
+	std::vector< int >* impactPart;
 };
 
 class ProjectileGroup //Group of projectiles and bases
@@ -89,6 +108,7 @@ class ProjectileGroup //Group of projectiles and bases
 public:
 	void setup();
 	void update(float centerX, float centerY); //Center x and y are the center of the sphere which projectiles will be removed outside
+	void updateWorld(World* world);
 
 	void addByName(uString name, float x, float y, float angle, float speedX, float speedY);
 private:

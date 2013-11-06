@@ -173,7 +173,7 @@ void Player::load(uString name)
 	agk::SetSpriteScale(anim[0].SID, 0.012f, 0.012f);
 	agk::SetSpriteDepth(anim[0].SID, 100);
 
-	float walkScale = 0.019f;
+	float walkScale = 0.018f;
 
 
 	/*anim[1].animated = true;

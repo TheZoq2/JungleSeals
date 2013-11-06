@@ -20,6 +20,7 @@ public:
 	~Particle(void);
 	
 	void setup();
+	void update();
 
 	void addFromFile(int ID, uString filename, float x, float y);
 	void cloneParticle(int ID, Particle* clonePart, float x, float y);
@@ -71,6 +72,9 @@ private:
 	float size;
 	float startX;
 	float startY;
+	float timeout;
+
+	float createdAt;
 
 	std::vector< Keyframe >* colorFrame;
 };
@@ -79,6 +83,7 @@ class ParticleGroup
 {
 public:
 	void setup();
+	void update();
 
 	int addFromFile(uString filename, float x, float y);
 	int addFromClone(int cloneID);

@@ -15,6 +15,8 @@ Projectile::~Projectile(void)
 
 void Projectile::createFromBase(ProjectileBase* projBase, float x, float y, float angle, float speedX, float speedY, ParticleGroup* partGroup)
 {
+	oldX = 0;
+	oldY = 0;
 	this->x = x;
 	this->y = y;
 	this->angle = angle;
@@ -45,25 +47,48 @@ void Projectile::createFromBase(ProjectileBase* projBase, float x, float y, floa
 	}
 
 	partID = partGroup->addFromClone(projBase->getPartID());
+
+	//Impact particles
+	impactPartName = new std::vector< uString >;
+	impactPart = new std::vector< int >;
+	std::vector< uString >* basePartNames = projBase->getImpactPartNames();
+
+	for(unsigned int i = 0; i < basePartNames->size(); i++)
+	{
+		impactPartName->push_back(basePartNames->at(i));
+	}
+
+	flying = true;
+}
+
+void Projectile::setFlying(bool state)
+{
+	flying = false;
 }
 
 void Projectile::update()
 {
 	if(type == 0)
 	{
-		x = x + 0;
-		y = y + 0;
-		//Adding the speed to the position of the projectile
-		float xAdd = agk::Cos(angle - 90) * speed * speedMod;
-		float yAdd = agk::Sin(angle - 90) * speed * speedMod;
-
-		x = x + xAdd;
-		y = y + yAdd;
-
-		//Making sure the sprite exists before actually modifying it
-		if(agk::GetSpriteExists(SID))
+		if(flying == true)
 		{
-			agk::SetSpritePositionByOffset(SID, x, y);
+			oldX = x;
+			oldY = y;
+
+			x = x + 0;
+			y = y + 0;
+			//Adding the speed to the position of the projectile
+			float xAdd = agk::Cos(angle - 90) * speed * speedMod;
+			float yAdd = agk::Sin(angle - 90) * speed * speedMod;
+
+			x = x + xAdd;
+			y = y + yAdd;
+
+			//Making sure the sprite exists before actually modifying it
+			if(agk::GetSpriteExists(SID))
+			{
+				agk::SetSpritePositionByOffset(SID, x, y);
+			}
 		}
 	}
 	else if(type == proj_physType)
@@ -78,10 +103,62 @@ void Projectile::updateParticle(ParticleGroup* partGroup)
 	{
 		partGroup->setParticlePosition(partID, x, y);
 	}
+	
+	if(impactState == 1)
+	{
+		for(unsigned int i = 0; i < impactPartName->size(); i++)
+		{
+			impactPart->push_back(partGroup->addFromFile(impactPartName->at(i), x, y));
+		}
+
+		//Stopping the creation
+		impactState = 2;
+	}
+}
+void Projectile::updateWorld(World* world)
+{
+	//Checking for collision with the world
+	if(flying == true)
+	{
+		for(unsigned int i = 0; i < world->getPartAmount(); i++)
+		{
+			//Checking many points of the trajectory
+			for(float chk = 0; chk < 1; chk+=0.025)
+			{
+				float xDiff = x - oldX;
+				float yDiff = y - oldY;
+
+				Part* part = world->getPartFromID(i);
+				if(part->getHit(oldX + xDiff*chk, oldY + yDiff*chk) && part->getPhysState() == 1)
+				{
+					setPosition(oldX + xDiff*chk, oldY + yDiff*chk);
+					setFlying(false);
+
+					//Hiding the sprite
+					agk::SetSpriteVisible(SID, 0);
+
+					impactState = 1;
+
+					break;
+				}
+			}
+		}
+	}
 }
 void Projectile::remove()
 {
+	//Removing garbage
+	impactPartName->clear();
+	delete impactPartName;
+	impactPart->clear();
+	delete impactPart;
+
 	agk::DeleteSprite(SID);
+}
+
+void Projectile::createImpactParticles()
+{
+
 }
 
 bool Projectile::shouldBeRemoved(float centerX, float centerY, float removalDist)
@@ -97,6 +174,13 @@ bool Projectile::shouldBeRemoved(float centerX, float centerY, float removalDist
 	}
 
 	return false;
+}
+void Projectile::setPosition(float x, float y)
+{
+	this->x = x;
+	this->y = y;
+
+	agk::SetSpritePositionByOffset(SID, x, y);
 }
 
 /////////////////////////////////////////////////////////////
@@ -121,6 +205,7 @@ void ProjectileBase::loadFromName(uString name, ParticleGroup* partGroup)
 		RelativeMass = 1;
 		uString partName;
 		partName.SetStr("NONE");
+		impactPart = new std::vector< uString >;
 
 		//Starting to read the file
 		int fileID = agk::OpenToRead(filename);
@@ -180,9 +265,22 @@ void ProjectileBase::loadFromName(uString name, ParticleGroup* partGroup)
 			{
 				partName.SetStr(DataReader::getValue(line));
 			}
+			if(dataType.CompareTo("ImpactPart") == 0)
+			{
+				int dataAmount = DataReader::getValueAmount(line);
 
+				for(unsigned int i = 0; i < dataAmount; i++)
+				{
+					uString tempVal;
+					tempVal.SetStr(DataReader::getValue(line, 1));
+
+					impactPart->push_back(tempVal);
+				}
+			}
 			delete[] line; //Removing the string from memory
 		}
+
+		DebugConsole::addToLog(filename);
 
 		agk::CloseFile(fileID);
 
@@ -215,7 +313,7 @@ void ProjectileBase::loadFromName(uString name, ParticleGroup* partGroup)
 
 				agk::SetSpriteVisible(SID, 0);
 
-				if(partName.CompareTo("NONE") || partName.CompareTo("")) //If the bullet has a trail
+				if(partName.CompareTo("NONE")) //If the bullet has a trail
 				{
 					partID = partGroup->addFromFile(partName, 20, 20);
 					partGroup->setParticleVisible(partID, 0);
@@ -282,6 +380,10 @@ float ProjectileBase::getRelativeMass()
 {
 	return RelativeMass;
 }
+std::vector< uString >* ProjectileBase::getImpactPartNames()
+{
+	return this->impactPart;
+}
 /////////////////////////////////////////////////////////////
 void ProjectileGroup::setup()
 {
@@ -320,8 +422,18 @@ void ProjectileGroup::update( float centerX, float centerY )
 		projs->erase(removal->at(i));
 	}
 
+	partGroup.update();
+
 	removal->clear();
 	delete removal;
+}
+void ProjectileGroup::updateWorld( World* world)
+{
+	std::list< Projectile >::iterator it; //Looping thru the list
+	for(it = projs->begin(); it != projs->end(); it++)
+	{
+		it->updateWorld(world);
+	}
 }
 
 void ProjectileGroup::addByName(uString name, float x, float y, float angle, float speedX, float speedY)

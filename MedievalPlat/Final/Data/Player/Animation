@@ -15,7 +15,7 @@ LowerArmOffsetY:145
 Idle:Char/heavy2_resized.png
 
 WalkImg:Char/walking_resized.png
-WalkFPS:5
+WalkFPS:30
 WalkW:204
 WalkH:381
 WalkStart:0

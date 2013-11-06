@@ -69,6 +69,7 @@ void app::Loop (void)
 		npcGroup.updateChars(&npcGroup, &player);
 
 		projGroup.update( player.getX(), player.getY());
+		projGroup.updateWorld(&world);
 	}
 	else if(programState == 2)
 	{

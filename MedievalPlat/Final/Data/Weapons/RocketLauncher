@@ -2,7 +2,7 @@
 Name:Rocket launcher
 Sprite:Weapons/Base1.png
 MagCap:30
-Spread:1
+Spread:180
 OffsetX:11
 OffsetY:63
 BarrelX:0
@@ -12,4 +12,4 @@ HandleY:-27
 ScaleX:0.04
 ScaleY:0.04
 Projectile:Rocket
-RateOfFire: 1
+RateOfFire: 10000

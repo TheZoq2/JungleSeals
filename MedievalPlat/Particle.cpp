@@ -15,6 +15,23 @@ void Particle::setup()
 {
 	colorFrame = new std::vector< Keyframe >;
 }
+void Particle::update()
+{
+	if(timeout != -1)
+	{
+		if(createdAt + timeout < globaltime)
+		{
+			agk::SetParticlesFrequency(PID, 0);
+		}
+
+		//Checking if the particle should still be updated
+		if(createdAt + timeout + life < globaltime)
+		{
+			agk::SetParticlesActive(PID, 0);
+			agk::SetParticlesVisible(PID, 0);
+		}
+	}
+}
 
 void Particle::addFromFile(int ID, uString filename, float x, float y)
 {
@@ -33,6 +50,7 @@ void Particle::addFromFile(int ID, uString filename, float x, float y)
 		dirY = 1;
 		frequency = 10;
 		life = 2;
+		timeout = -1;
 		size = 1.0f;
 		startX = 0;
 		startY = 0;
@@ -100,6 +118,10 @@ void Particle::addFromFile(int ID, uString filename, float x, float y)
 			if(dataType.CompareTo("startY") == 0)
 			{
 				startY = float(atof(DataReader::getValue(line)));
+			}
+			if(dataType.CompareTo("Timeout") == 0)
+			{
+				timeout = float(atof(DataReader::getValue(line)));
 			}
 
 			if(dataType.CompareTo("KeyframeT") == 0)
@@ -172,6 +194,8 @@ void Particle::addFromFile(int ID, uString filename, float x, float y)
 		agk::SetParticlesSize(PID, size);
 		//Hiding the particle
 		agk::SetParticlesVisible(PID, 1);
+
+		createdAt = globaltime;
 
 		//Checking forcolor keyframes keyframes
 		for(unsigned int i = 0; i < frameT->size(); i++)
@@ -383,6 +407,13 @@ void ParticleGroup::setup()
 	particles = new std::vector< Particle >;
 
 	nextID = 0;
+}
+void ParticleGroup::update()
+{
+	for(unsigned int i = 0; i < particles->size();i++)
+	{
+		particles->at(i).update();
+	}
 }
 
 int ParticleGroup::addFromFile(uString filename, float x, float y)

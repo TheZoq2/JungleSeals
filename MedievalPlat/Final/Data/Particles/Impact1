@@ -1,0 +1,16 @@
+
+Angle:180
+DirectionX:0
+DirectionY:-5
+Frequency:50
+Image:Particles/Smoke1.png
+Life:0.25
+Timeout:0.1
+Size:0.5
+StartX:0.5
+startY:0.5
+KeyframeT:0,0.3,
+KeyframeR:114,114,
+KeyframeG:89,89,
+KeyframeB:68,67,
+KeyframeA:255,0,
