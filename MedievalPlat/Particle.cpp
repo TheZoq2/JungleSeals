@@ -423,6 +423,28 @@ void ParticleGroup::update()
 	{
 		particles->at(i).update();
 	}
+
+	//Creating a vector if iterators to remove particles
+	std::vector< std::vector< Particle >::iterator >* removal;
+	removal = new std::vector< std::vector< Particle >::iterator >;
+
+	std::vector< Particle >::iterator it;
+	for(it = particles->begin(); it != particles->end(); it++)
+	{
+		if(it->getFinished() == true) //The particle is done playing, remove it
+		{
+			removal->push_back(it);
+		}
+	}
+
+	for(unsigned int i = 0; i < removal->size(); i++)
+	{
+		particles->erase(removal->at(i));
+	}
+
+	//Clearing garbage
+	removal->clear();
+	delete removal;
 }
 
 int ParticleGroup::addFromFile(uString filename, float x, float y)

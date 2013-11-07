@@ -124,9 +124,14 @@ void Projectile::updateParticle(ParticleGroup* partGroup)
 		for(unsigned int i = 0;i < impactPart->size(); i++)
 		{
 			//Checking if those particles are finished
-			if(partGroup->findByID(impactPart->at(i))->getFinished() == false)
+			Particle* part = partGroup->findByID(impactPart->at(i));
+
+			if(part != NULL)
 			{
-				removeProjectile = false;
+				if(part->getFinished() == false)
+				{
+					removeProjectile = false;
+				}
 			}
 		}
 
@@ -166,7 +171,7 @@ void Projectile::updateWorld(World* world)
 		}
 	}
 }
-void Projectile::remove(ParticleGroup* partGroup)
+void Projectile::remove(ParticleGroup* partGroup) //Part group is not necessariy anymore since the projectile is not allowed to remove its own particle
 {
 	//Removing all particles
 	if(partID != -1)
@@ -175,7 +180,7 @@ void Projectile::remove(ParticleGroup* partGroup)
 	}
 	for(unsigned int i = 0; i < impactPart->size(); i++)
 	{
-		partGroup->removeParticles(impactPart->at(i));
+		//partGroup->removeParticles(impactPart->at(i));
 	}
 	
 	//Removing garbage
@@ -458,6 +463,7 @@ void ProjectileGroup::update( float centerX, float centerY )
 		projs->erase(removal->at(i));
 	}
 
+	//Updating particles
 	partGroup.update();
 
 	removal->clear();
