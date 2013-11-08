@@ -14,6 +14,8 @@ Particle::~Particle(void)
 void Particle::setup()
 {
 	colorFrame = new std::vector< Keyframe >;
+
+
 }
 void Particle::update()
 {
@@ -286,6 +288,8 @@ void Particle::addFromFile(int ID, uString filename, float x, float y)
 		DebugConsole::addC("Particle file did not exist: "); DebugConsole::addC(filePath);
 		DebugConsole::addC(" -- "); DebugConsole::addToLog(filename);
 	}
+
+	isFinished = true;
 }
 void Particle::cloneParticle(int ID, Particle* clonePart, float x, float y)
 {
@@ -358,6 +362,10 @@ void Particle::setVisible(int visible)
 
 	agk::SetParticlesVisible(PID, visible);
 }
+void Particle::setFinished(bool finished)
+{
+	this->isFinished = finished;
+}
 
 int Particle::getID()
 {
@@ -424,29 +432,37 @@ void ParticleGroup::update()
 		particles->at(i).update();
 	}
 
+	
 	//Creating a vector if iterators to remove particles
 	std::vector< int >* removal;
 	removal = new std::vector< int >;
 
-	std::vector< Particle >::iterator it;
-	for(it = particles->begin(); it != particles->end(); it++)
+	if(particles->size() > 0)
 	{
-		if(it->getFinished() == true) //The particle is done playing, remove it
+		std::vector< Particle >::iterator it;
+		for(it = particles->begin(); it != particles->end(); it++)
 		{
-			removal->push_back(it->getID());
+			if(it->getFinished() == true) //The particle is done playing, remove it
+			{
+				removal->push_back(it->getID());
+			}
 		}
 	}
 
 	for(unsigned int i = 0; i < removal->size(); i++)
 	{
+		std::vector< Particle >::iterator it;
 		//Finding the particle with the ID
-		for(it = particles->begin(); it != particles->end(); it++)
+		if(particles->size() != 0)
 		{
-			if(it->getID() == removal->at(i))
+			for(it = particles->begin(); it != particles->end(); it++)
 			{
-				particles->erase(it);
+				if(it->getID() == removal->at(i))
+				{
+					particles->erase(it);
 
-				break; //Exiting the first loop
+					break; //Exiting the first loop
+				}
 			}
 		}
 		break;
@@ -455,6 +471,7 @@ void ParticleGroup::update()
 	//Clearing garbage
 	removal->clear();
 	delete removal;
+	
 }
 
 int ParticleGroup::addFromFile(uString filename, float x, float y)
@@ -495,6 +512,14 @@ void ParticleGroup::removeParticles(int ID)
 
 	if(part != NULL)
 	{
+		part->setFinished(true);
+	}
+
+	/*
+	Particle* part = findByID(ID);
+
+	if(part != NULL)
+	{
 		part->remove();
 
 		//Creating an iterator to go though the particles array
@@ -510,6 +535,7 @@ void ParticleGroup::removeParticles(int ID)
 			}
 		}
 	}
+	*/
 }
 
 void ParticleGroup::setParticlePosition(int ID, float x, float y)

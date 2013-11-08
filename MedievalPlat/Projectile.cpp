@@ -11,6 +11,7 @@ Projectile::Projectile(void)
 
 Projectile::~Projectile(void)
 {
+	int a = 0;
 }
 
 void Projectile::createFromBase(ProjectileBase* projBase, float x, float y, float angle, float speedX, float speedY, ParticleGroup* partGroup)
@@ -144,7 +145,7 @@ void Projectile::updateParticle(ParticleGroup* partGroup)
 void Projectile::updateWorld(World* world)
 {
 	//Checking for collision with the world
-	if(flying == true)
+	if(flying == true && this->type != proj_physType)
 	{
 		for(int i = 0; i < world->getPartAmount(); i++)
 		{
@@ -155,17 +156,25 @@ void Projectile::updateWorld(World* world)
 				float yDiff = y - oldY;
 
 				Part* part = world->getPartFromID(i);
-				if(part->getHit(oldX + xDiff*chk, oldY + yDiff*chk) && part->getPhysState() == 1)
+				//Checking if the part is close enough
+				float partDistX = x - part->getX();
+				float partDistY = y - part->getY();
+				float partDist = sqrt(pow(partDistX, 2) + pow(partDistY, 2));
+
+				if(partDist < part->getEdgeRadius()) //If there is a possibility of collision with the part
 				{
-					setPosition(oldX + xDiff*chk, oldY + yDiff*chk);
-					setFlying(false);
+					if(part->getHit(oldX + xDiff*chk, oldY + yDiff*chk) && part->getPhysState() == 1)
+					{
+						setPosition(oldX + xDiff*chk, oldY + yDiff*chk);
+						setFlying(false);
 
-					//Hiding the sprite
-					agk::SetSpriteVisible(SID, 0);
+						//Hiding the sprite
+						agk::SetSpriteVisible(SID, 0);
 
-					impactState = 1;
+						impactState = 1;
 
-					break;
+						break;
+					}
 				}
 			}
 		}
@@ -431,7 +440,7 @@ void ProjectileGroup::setup()
 	projs = new std::list< Projectile >;
 	projBase = new std::vector< ProjectileBase >;
 
-	projDist = 2000;
+	projDist = 200;
 
 	partGroup.setup();
 }

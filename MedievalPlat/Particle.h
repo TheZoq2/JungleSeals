@@ -28,6 +28,7 @@ public:
 
 	void setPosition(float x, float y);
 	void setVisible(int visible);
+	void setFinished(bool finished);
 
 	int getID();
 

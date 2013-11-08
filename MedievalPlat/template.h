@@ -23,8 +23,13 @@
 
 #include <vector>
 
-#define DEVICE_WIDTH 1600
-#define DEVICE_HEIGHT 900
+#ifdef DEVICE_BIG
+	#define DEVICE_WIDTH 1600
+	#define DEVICE_HEIGHT 900
+#else
+	#define DEVICE_WIDTH 1280
+	#define DEVICE_HEIGHT 720
+#endif
 #define DEVICE_POS_X 32
 #define DEVICE_POS_Y 32
 #define FULLSCREEN false

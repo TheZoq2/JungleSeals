@@ -345,7 +345,6 @@ void Player::update()
 		agk::SetSpriteVisible(anim[0].SID, 1);
 		agk::SetSpriteVisible(anim[1].SID, 0);
 	}*/
-	
 }
 void Player::updateWeapon(ProjectileGroup* projGroup)
 {
