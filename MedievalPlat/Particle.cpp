@@ -425,21 +425,31 @@ void ParticleGroup::update()
 	}
 
 	//Creating a vector if iterators to remove particles
-	std::vector< std::vector< Particle >::iterator >* removal;
-	removal = new std::vector< std::vector< Particle >::iterator >;
+	std::vector< int >* removal;
+	removal = new std::vector< int >;
 
 	std::vector< Particle >::iterator it;
 	for(it = particles->begin(); it != particles->end(); it++)
 	{
 		if(it->getFinished() == true) //The particle is done playing, remove it
 		{
-			removal->push_back(it);
+			removal->push_back(it->getID());
 		}
 	}
 
 	for(unsigned int i = 0; i < removal->size(); i++)
 	{
-		particles->erase(removal->at(i));
+		//Finding the particle with the ID
+		for(it = particles->begin(); it != particles->end(); it++)
+		{
+			if(it->getID() == removal->at(i))
+			{
+				particles->erase(it);
+
+				break; //Exiting the first loop
+			}
+		}
+		break;
 	}
 
 	//Clearing garbage
