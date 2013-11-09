@@ -57,7 +57,6 @@ void app::Loop (void)
 	else if(programState == 1)
 	{
 		//Main game loop
-		//agk::SetViewZoomMode(1);
 		player.update();
 		player.updateWeapon(&projGroup);
 
@@ -76,7 +75,7 @@ void app::Loop (void)
 		agk::SetViewZoom(20);
 
 		uString cWorldName;
-		cWorldName.SetStr("levels/forest3");
+		cWorldName.SetStr("levels/forest1");
 
 		world.load(cWorldName);
 		world.loadBaseMedia();
@@ -161,7 +160,6 @@ void app::Loop (void)
 	//Syncing
 
 	agk::Update2D(); //Updating the game
-
 	/////////////////////////////////////////////////////////////////////////
 	//							Light calculation
 	/////////////////////////////////////////////////////////////////////////'
@@ -196,7 +194,7 @@ void app::Loop (void)
 
 	//agk::Render();
 
-	agk::Render2DBack();
+	//agk::Render2DBack();
 	agk::Render3D();
 	agk::Render2DFront();
 	agk::Swap();

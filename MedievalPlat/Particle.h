@@ -7,6 +7,7 @@
 #include "DataReader.h"
 
 #include <vector>
+#include <string>
 
 #ifndef P_GLOBALS
 #define P_GLOBALS
@@ -25,6 +26,7 @@ public:
 	void addFromFile(int ID, uString filename, float x, float y);
 	void cloneParticle(int ID, Particle* clonePart, float x, float y);
 	void remove();
+	void removeParticle();
 
 	void setPosition(float x, float y);
 	void setVisible(int visible);
@@ -32,7 +34,8 @@ public:
 
 	int getID();
 
-	uString getImage();
+	//uString getImage();
+	std::string getImage();
 	float getAngle();
 	float getDirX();
 	float getDirY();
@@ -65,7 +68,8 @@ private:
 	int visible;
 
 	//Particle properties
-	uString image;
+	//uString image;
+	std::string image;
 	float angle;
 	float dirX;
 	float dirY;

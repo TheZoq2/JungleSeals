@@ -47,8 +47,8 @@ void Particle::addFromFile(int ID, uString filename, float x, float y)
 	if(agk::GetFileExists(filePath))
 	{
 		//Setting default values for the particle
-		image;
-		image.SetStr(GF::getPath("1x1.png"));
+		image = GF::getPath("1x1.png");
+		//image.SetStr(GF::getPath("1x1.png"));
 		angle = 180;
 		dirX = 1;
 		dirY = 1;
@@ -77,16 +77,16 @@ void Particle::addFromFile(int ID, uString filename, float x, float y)
 
 			if(dataType.CompareTo("Image") == 0)
 			{
-				uString imgName;
-				imgName.SetStr(GF::getPath( DataReader::getValue(line) ));
+				std::string imgName;
+				imgName = GF::getPath( DataReader::getValue(line) );
 
-				if(agk::GetFileExists(imgName))
+				if(agk::GetFileExists(imgName.data()))
 				{
-					image.SetStr(GF::getPath(DataReader::getValue(line)));	
+					image = (GF::getPath(DataReader::getValue(line)));	
 				}
 				else
 				{
-					DebugConsole::addC("Image: "); DebugConsole::addC(imgName);
+					DebugConsole::addC("Image: "); DebugConsole::addC(imgName.data());
 					DebugConsole::addC(" for particle "); DebugConsole::addC(filename);
 					DebugConsole::addC(" --- "); DebugConsole::addToLog(filePath);
 				}
@@ -193,7 +193,7 @@ void Particle::addFromFile(int ID, uString filename, float x, float y)
 		agk::SetParticlesLife(PID, life);
 		agk::SetParticlesStartZone(PID, -startX, -startY, startX, startY);
 
-		imgID = agk::LoadImage(image);
+		imgID = agk::LoadImage(image.data());
 		agk::SetParticlesImage(PID, imgID);
 		agk::SetParticlesSize(PID, size);
 		//Hiding the particle
@@ -289,13 +289,13 @@ void Particle::addFromFile(int ID, uString filename, float x, float y)
 		DebugConsole::addC(" -- "); DebugConsole::addToLog(filename);
 	}
 
-	isFinished = true;
+	isFinished = false;
 }
 void Particle::cloneParticle(int ID, Particle* clonePart, float x, float y)
 {
 	this->groupID = ID;
 
-	image.SetStr(clonePart->getImage());
+	image = (clonePart->getImage());
 
 	this->angle = clonePart->getAngle();
 	this->dirX = clonePart->getDirX();
@@ -307,7 +307,7 @@ void Particle::cloneParticle(int ID, Particle* clonePart, float x, float y)
 	this->startY = clonePart->getStartY();
 
 	PID = agk::CreateParticles(x, y);
-	imgID = agk::LoadImage(image);
+	imgID = agk::LoadImage(image.data());
 	agk::SetParticlesImage(PID, imgID);
 
 	agk::SetParticlesAngle(PID, angle);
@@ -348,6 +348,10 @@ void Particle::remove()
 
 	agk::DeleteParticles(PID);
 }
+void Particle::removeParticle()
+{
+	agk::DeleteParticles(PID);
+}
 
 void Particle::setPosition(float x, float y)
 {
@@ -372,7 +376,7 @@ int Particle::getID()
 	return groupID;
 }
 
-uString Particle::getImage()
+std::string Particle::getImage()
 {
 	return image;
 }
@@ -459,6 +463,8 @@ void ParticleGroup::update()
 			{
 				if(it->getID() == removal->at(i))
 				{
+					it->removeParticle();
+
 					particles->erase(it);
 
 					break; //Exiting the first loop

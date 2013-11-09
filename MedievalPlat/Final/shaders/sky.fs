@@ -278,7 +278,7 @@ void main(void)
 		finalColor = mix(finalColor, cloud, cloud.a);
 	}*/
 	
-	for(int i = -1; i >= 0; i--)
+	for(int i = 2; i >= 0; i--)
 	{
 		//clouds( (15.0 * float(i)) + gl_FragCoord.xy / iResolution.xy + posX * float(i + 1));
 		/*vec4 cloud = clouds( vec2((15. * float(i)) + gl_FragCoord.x / iResolution.x + posX * float(i + 1)),
