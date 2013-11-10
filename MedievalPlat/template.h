@@ -18,6 +18,7 @@
 #include "NPC.h"
 #include "Projectile.h"
 #include "Particle.h"
+#include "UI.h"
 
 #include "Enemy.h"
 
@@ -57,6 +58,8 @@ class app
 		NPCGroup npcGroup;
 		ProjectileGroup projGroup;
 		ParticleGroup partGroup;
+
+		UI mainUI;
 
 		bool initLoaded;
 

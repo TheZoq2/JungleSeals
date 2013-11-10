@@ -31,6 +31,8 @@ void app::Begin(void)
 
 	projGroup.setup();
 
+	mainUI.setup();
+
 	//Setting up the item generator
 	ItemGen::setup();
 
@@ -93,6 +95,9 @@ void app::Loop (void)
 		programState = 1;
 
 		player.addItem(ItemGen::generate(1));
+
+		int window = mainUI.addWindow("1x1.png", 5, 5, 200, 150);
+		mainUI.setWindowColor(window, 150, 150, 150, 150); 
 	}
 
 

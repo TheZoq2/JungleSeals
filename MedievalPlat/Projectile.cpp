@@ -8,7 +8,6 @@ Projectile::Projectile(void)
 {
 }
 
-
 Projectile::~Projectile(void)
 {
 	int a = 0;
