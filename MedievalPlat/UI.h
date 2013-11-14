@@ -7,30 +7,78 @@
 #include "GF.h"
 #include "DebugConsole.h"
 
+
+//A cell in a list
+class ListCell
+{
+public:
+	void create(std::string value, float width, float x, float y);
+	void setScissor(float x1, float y1, float x2, float y2);
+private:
+	int TID;
+
+	float x;
+	float y;
+	
+	std::string value;
+};
+//One row of data for a list view
 class ListItem
 {
 public:
-	int bgID;
-private:
+	void create(std::vector< float >* colWidth, std::vector< std::string >* values, float x, float y);
 
-}
+	void setScissor(float x1, float y1, float x2, float y2);
+private:
+	int bgID;
+
+	std::vector< ListCell >* cells;
+};
+//A list view that contains rows of data
 class List
 {
 public:
+	void create(std::string ID, float x, float y, float width, float height, std::vector< float >* colWidth, std::vector< std::string >* colHeaders);
+	void updateScissors();
 
+	int addItem(std::vector< std::string >* values);
+	
+	std::string getID();
 private:
-	std::vector< ListItem >* listItems;
-	65
+	std::string vecID;
 
+	std::vector< ListItem >* listItems;
+	std::vector< float >* colWidth;
+	ListItem header;
+
+	int cellAmount;
+
+	float x;
+	float y;
+	float width;
+	float height;
+
+	float rowHeight;
+	float nextItemY;
+};
+
+//////////////////////////////////////////////////
 class Window
 {
 public:
-	int create(int vecID, std::string bgImg, float x, float y, float sizeX, float sizeY);
+	void create(std::string vecID, std::string bgImg, float x, float y, float sizeX, float sizeY);
 	void setBgColor(int r, int g, int b, int a); //Set the color of the window background
+	void remove();
 
-	int getID();
+	void updateScissors();
+
+	std::string getID();
+
+	//UI elements
+	void addList(std::string listID, float offsetX, float offsetY, float width, float height, std::vector< float >* colWidth, std::vector< std::string >* colHeaders);
+	void addToList(std::string listID, std::vector< std::string >* values);
 private:
-	int vecID;
+	std::string vecID;
 
 	int bgSID;
 	int bgImg;
@@ -47,6 +95,12 @@ private:
 	int g;
 	int b;
 	int a;
+
+	//UI elements
+	std::vector< List >* lists;
+	int nextList;
+
+	List* findListByID(std::string ID);
 };
 
 //Group that cointains UI elements
@@ -58,11 +112,17 @@ public:
 
 	void setup();
 
-	int addWindow(std::string bgName, float x, float y, float sizeX, float sizeY); //Creates a window which can be referened by the ID returned
-	void setWindowColor(int ID, int r, int g, int b, int a);
+	void updateScissors();
+
+	void addWindow(std::string ID, std::string bgName, float offsetX, float offsetY, float sizeX, float sizeY); //Creates a window which can be referened by the ID returned
+	void setWindowColor(std::string ID, int r, int g, int b, int a);
+
+	//UI elements
+	void addListToWindow(std::string windowID, std::string listID, float x, float y, float width, float height, std::vector< float >* colWidth, std::vector< std::string >* colHeaders);
+	void addToList(std::string windowID, std::string listID, std::vector< std::string >* values);
 private:
 	int nextWindow;
 	std::vector< Window >* windows;
 
-	Window* getWindowByID(int ID);
+	Window* getWindowByID(std::string ID);
 };

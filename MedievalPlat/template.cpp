@@ -71,6 +71,8 @@ void app::Loop (void)
 
 		projGroup.update( player.getX(), player.getY());
 		projGroup.updateWorld(&world);
+
+		mainUI.updateScissors();
 	}
 	else if(programState == 2)
 	{
@@ -96,8 +98,42 @@ void app::Loop (void)
 
 		player.addItem(ItemGen::generate(1));
 
-		int window = mainUI.addWindow("1x1.png", 5, 5, 200, 150);
-		mainUI.setWindowColor(window, 150, 150, 150, 150); 
+		mainUI.addWindow("testWindow", "1x1.png", 5, 5, 500, 300);
+		mainUI.setWindowColor("testWindow", 150, 150, 150, 150);
+
+		//Creating vectors with data for the list
+		std::vector< float >* colWidth;
+		colWidth = new std::vector< float >;
+		colWidth->push_back(340.0f);colWidth->push_back(75.0f);colWidth->push_back(75.0f);
+		
+		std::vector< std::string >* colHeaders = new std::vector< std::string >;
+		colHeaders->push_back("Name");colHeaders->push_back("Prop1");colHeaders->push_back("Prop2");
+
+		//adding the list to the window
+		mainUI.addListToWindow("testWindow", "testList", 5, 5, 490, 290, colWidth, colHeaders);
+		
+		//Adding some random values to the list
+		for(unsigned int i = 0; i < 250; i++)
+		{
+			std::vector< std::string > values; 
+
+			values.push_back("Element");
+			char val[20];
+			sprintf(val, "%d", rand() % 20);
+			values.push_back(val);
+			sprintf(val, "%d", rand() % 20);
+			values.push_back(val);
+
+			mainUI.addToList("testWindow", "testList", &values);
+		}
+
+		//Removing the vectors
+		colWidth->clear();
+		colHeaders->clear();
+		delete colWidth;
+		delete colHeaders;
+		colWidth = NULL;
+		colHeaders = NULL;
 	}
 
 

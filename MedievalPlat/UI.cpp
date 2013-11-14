@@ -14,29 +14,43 @@ void UI::setup()
 	windows = new std::vector< Window >;
 }
 
-int UI::addWindow(std::string bgName, float x, float y, float sizeX, float sizeY)
+void UI::updateScissors()
+{
+	for(unsigned int i = 0; i < windows->size(); i++)
+	{
+		windows->at(i).updateScissors();
+	}
+}
+
+void UI::addWindow(std::string ID, std::string bgName, float x, float y, float sizeX, float sizeY)
 {
 	Window tempWindow;
-	int success = tempWindow.create(nextWindow, bgName, x, y, sizeX, sizeY);
-	
-	if(success == 0) //If the window was created sucessfully
+	tempWindow.create(ID, bgName, x, y, sizeX, sizeY);
+
+	windows->push_back(tempWindow);
+}
+void UI::addListToWindow(std::string window, std::string listID, float offsetX, float offsetY, float width, float height, std::vector< float >* colWidth, std::vector< std::string >* colHeaders)
+{
+	//Adding the list
+	getWindowByID(window)->addList(listID, offsetX, offsetY, width, height, colWidth, colHeaders);
+}
+void UI::addToList(std::string windowID, std::string listID, std::vector< std::string >* values)
+{
+	//Finding the window
+	Window* window = getWindowByID(windowID);
+
+	if(window != NULL)
 	{
-		windows->push_back(tempWindow);
-
-		//Increasing the window amount
-		nextWindow++;
-
-		return nextWindow - 1;
+		window->addToList(listID, values);
 	}
 	else
 	{
-
+		DebugConsole::addC("Failed to add item to list, window: ");DebugConsole::addC(windowID.data());
+		DebugConsole::addToLog(" did not exist");
 	}
-
-	return  - 1;
 }
 
-void UI::setWindowColor(int ID, int r, int g, int b, int a)
+void UI::setWindowColor(std::string ID, int r, int g, int b, int a)
 {
 	Window* window = getWindowByID(ID); //Getting a pointer to the window
 	
@@ -46,12 +60,12 @@ void UI::setWindowColor(int ID, int r, int g, int b, int a)
 	}
 }
 
-Window* UI::getWindowByID(int ID)
+Window* UI::getWindowByID(std::string ID)
 {
 	std::vector< Window >::iterator it;
 	for(it = windows->begin(); it != windows->end(); it++) //Going through all the windows
 	{
-		if(it->getID() == ID) //Checking if the window has the correct ID
+		if(strcmp(it->getID().data(), ID.data()) == 0) //Checking if the window has the correct ID
 		{
 			return it._Ptr; //Return the pointer for the window
 		}
@@ -62,9 +76,9 @@ Window* UI::getWindowByID(int ID)
 /////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
 
-int Window::create(int ID, std::string bgName, float x, float y, float sizeX, float sizeY)
+void Window::create(std::string vecID, std::string bgName, float x, float y, float sizeX, float sizeY)
 {
-	this->vecID = ID;
+	this->vecID = vecID;
 
 	this->bgName = bgName.data();
 	this->x = x;
@@ -86,14 +100,55 @@ int Window::create(int ID, std::string bgName, float x, float y, float sizeX, fl
 
 		agk::SetSpritePosition(bgSID, x, y);
 		agk::SetSpriteScale(bgSID, sizeX / agk::GetImageWidth(bgImg), sizeY / agk::GetImageHeight(bgImg));
-
-		return 0;
 	}
 	else
 	{
 		DebugConsole::addC("Failed to create window, background image did not exist: ");DebugConsole::addToLog(bgPath.data());
+	}
 
-		return 1;
+	nextList = 0;
+
+	//Initialising vectors
+	lists = new std::vector< List >;
+}
+void Window::remove()
+{
+	//Removing vectors
+	lists->clear();
+	delete lists;
+}
+void Window::updateScissors()
+{
+	for(unsigned int i = 0; i < lists->size(); i++)
+	{
+		lists->at(i).updateScissors();
+	}
+}
+
+void Window::addList(std::string listID, float offsetX, float offsetY, float width, float height, std::vector< float >* colWidth, std::vector< std::string >* colHeaders)
+{
+	//Caluclating the position of the list
+	float listX = x + offsetX;
+	float listY = y + offsetY;
+
+	List tempList;
+	tempList.create(listID, listX, listY, width, height, colWidth, colHeaders);
+	
+	lists->push_back(tempList);
+	
+}
+void Window::addToList(std::string listID, std::vector< std::string >* values)
+{
+	List* list = findListByID(listID);
+	
+	if(list != NULL) //Making sure the list exists before modifying it
+	{
+		list->addItem(values);
+	}
+	else
+	{
+		DebugConsole::addC("Failed to add item to the list: ");DebugConsole::addC(listID.data());
+		DebugConsole::addToLog(". List did not exist");
 	}
 }
 
@@ -107,9 +162,124 @@ void Window::setBgColor(int r, int g, int b, int a)
 	agk::SetSpriteColor(bgSID, r, g, b, a);
 }
 
-int Window::getID()
+std::string Window::getID()
 {
 	return vecID;
 }
+
+List* Window::findListByID(std::string ID)
+{
+	//Looping thru the list vector
+	for(unsigned int i = 0; i < lists->size(); i++)
+	{
+		if(strcmp(lists->at(i).getID().data(), ID.data()) == 0)
+		{
+			return &lists->at(i);
+		}
+	}
+	
+	return NULL;
+}
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
+
+void List::create(std::string vecID, float x, float y, float width, float height, std::vector< float >* colWidth, std::vector< std::string >* colHeaders)
+{
+	this->vecID = vecID;
+
+	this->x = x;
+	this->y = y;
+	this->width = width;
+	this->height = height;
+
+	//Initialising vectors
+	listItems = new std::vector< ListItem >;
+	this->colWidth = new std::vector< float > (*colWidth); //Cloning the colWidth vector
+
+	//Creating the header
+	header.create(colWidth, colHeaders, x, y);
+
+	rowHeight = 13;
+	nextItemY = y + rowHeight;
+}
+
+int List::addItem(std::vector< std::string >* values)
+{
+	ListItem tempItem; //Creating a tempororary item
+
+	tempItem.create(colWidth, values, x, nextItemY);
+
+	listItems->push_back(tempItem);
+
+	nextItemY = nextItemY + rowHeight;
+
+	return 0;
+}
+void List::updateScissors()
+{
+	for(unsigned int i = 0; i < listItems->size(); i++)
+	{
+		listItems->at(i).setScissor(agk::ScreenToWorldX(x), agk::ScreenToWorldY(y), agk::ScreenToWorldX(x + width), agk::ScreenToWorldY(y + height));
+	}
+}
+
+std::string List::getID()
+{
+	return vecID;
+}
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+void ListItem::create(std::vector< float >* colWidth, std::vector< std::string >* values, float x, float y)
+{
+	//initialising vectors
+	cells = new std::vector< ListCell >;
+
+	float nextXPos = x; //The next position to create a cell at
+	//Going thru the colWidth vector and creating cells
+	for(unsigned int i = 0; i < colWidth->size(); i++)
+	{
+		ListCell tempCell; //Temorary cell
+
+		std::string slotValue;
+		if(values->size() > i) //Making sure there is a value for the slot
+		{
+			slotValue = values->at(i);
+		}
+		else
+		{
+			slotValue = "";
+		}
+
+		tempCell.create(slotValue, colWidth->at(i), nextXPos, y);
+
+		cells->push_back(tempCell);
+		//Calculating the position of the next element
+		nextXPos = nextXPos + colWidth->at(i);
+	}
+}
+
+void ListItem::setScissor(float x1, float y1, float x2, float y2)
+{
+	for(unsigned int i = 0; i < cells->size(); i++)
+	{
+		cells->at(i).setScissor(x1, y1, x2, y2); //Setting the scissor for the cell
+	}
+}
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+void ListCell::create(std::string value, float width, float x, float y)
+{
+	TID = agk::CreateText( value.data() );
+	agk::FixTextToScreen(TID, 1);
+	agk::SetTextPosition(TID, x, y);
+	agk::SetTextSize(TID, 16);
+}
+
+void ListCell::setScissor(float x1, float y1, float x2, float y2)
+{
+	if(agk::GetTextExists(TID))
+	{
+		agk::SetTextScissor(TID, x1, y1, x2, y2);
+	}
+}
