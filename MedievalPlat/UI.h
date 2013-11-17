@@ -6,7 +6,7 @@
 #include "agk.h"
 #include "GF.h"
 #include "DebugConsole.h"
-
+#include "Input.h"
 
 //A cell in a list
 class ListCell
@@ -39,6 +39,7 @@ class List
 {
 public:
 	void create(std::string ID, float x, float y, float width, float height, std::vector< float >* colWidth, std::vector< std::string >* colHeaders);
+	void updateInput(float mx, float my);
 	void updateScissors();
 
 	int addItem(std::vector< std::string >* values);
@@ -70,6 +71,8 @@ public:
 	void setBgColor(int r, int g, int b, int a); //Set the color of the window background
 	void remove();
 
+	int update(float mx, float my);
+	void updateInput(float mx, float my);
 	void updateScissors();
 
 	std::string getID();
@@ -113,6 +116,7 @@ public:
 	void setup();
 
 	void updateScissors();
+	void update();
 
 	void addWindow(std::string ID, std::string bgName, float offsetX, float offsetY, float sizeX, float sizeY); //Creates a window which can be referened by the ID returned
 	void setWindowColor(std::string ID, int r, int g, int b, int a);
@@ -120,6 +124,8 @@ public:
 	//UI elements
 	void addListToWindow(std::string windowID, std::string listID, float x, float y, float width, float height, std::vector< float >* colWidth, std::vector< std::string >* colHeaders);
 	void addToList(std::string windowID, std::string listID, std::vector< std::string >* values);
+
+	bool getWindowExists(std::string ID);
 private:
 	int nextWindow;
 	std::vector< Window >* windows;

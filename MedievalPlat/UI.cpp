@@ -14,6 +14,28 @@ void UI::setup()
 	windows = new std::vector< Window >;
 }
 
+void UI::update()
+{
+	std::vector< Window >::iterator windowIt;
+	std::vector< Window >::iterator hitIt;
+
+	bool windowHit = false;
+	for(windowIt = windows->begin(); windowIt != windows->end(); windowIt++) //Going thru all the windows
+	{
+		if(windowIt->update(i_mx, i_my))
+		{
+			//The mouse is on this window
+			hitIt = windowIt;
+
+			windowHit = true;
+		}
+	}
+
+	if(windowHit == true) //If a window was hit
+	{
+		hitIt->updateInput(i_mx, i_my);
+	}
+}
 void UI::updateScissors()
 {
 	for(unsigned int i = 0; i < windows->size(); i++)
@@ -60,6 +82,19 @@ void UI::setWindowColor(std::string ID, int r, int g, int b, int a)
 	}
 }
 
+bool UI::getWindowExists(std::string ID)
+{
+	Window* window = getWindowByID(ID);
+
+	if(window != NULL) //Checking if the window did exist
+	{
+		return true;
+	}
+
+	return false;
+}
+
+//Private function
 Window* UI::getWindowByID(std::string ID)
 {
 	std::vector< Window >::iterator it;
@@ -110,6 +145,30 @@ void Window::create(std::string vecID, std::string bgName, float x, float y, flo
 
 	//Initialising vectors
 	lists = new std::vector< List >;
+}
+int Window::update(float mx, float my)
+{
+	//Converting the cordinates to world cordinates
+	float startX = agk::ScreenToWorldX(x);
+	float endX = agk::ScreenToWorldX(x + sizeX);
+	float startY = agk::ScreenToWorldY(y);
+	float endY = agk::ScreenToWorldY(y + sizeY);
+
+	if(mx > startX && mx < endX && my > startY && my < endY) //If the mouse is on the window
+	{
+		return true; 
+	}
+	return false;
+}
+void Window::updateInput(float mx, float my)
+{
+	//Updating individual UI elements
+
+	//Lists
+	for(unsigned int i = 0; i < lists->size(); i++)
+	{
+		lists->at(i).updateInput(mx, my);
+	}
 }
 void Window::remove()
 {
@@ -214,6 +273,21 @@ int List::addItem(std::vector< std::string >* values)
 	nextItemY = nextItemY + rowHeight;
 
 	return 0;
+}
+void List::updateInput(float mx, float my)
+{
+	//Checking if the list is hit
+	//Converting the cordinates to world coords
+	float startX = agk::ScreenToWorldX(x);
+	float startY = agk::ScreenToWorldY(y);
+	float endX = agk::ScreenToWorldX(x + width);
+	float endY = agk::ScreenToWorldY(y + height);
+
+	//Checking for collision
+	if(mx > startX && my > startY && mx < endX && my < endY)
+	{
+		
+	}
 }
 void List::updateScissors()
 {

@@ -19,6 +19,7 @@
 #include "Projectile.h"
 #include "Particle.h"
 #include "UI.h"
+#include "WorldSim.h"
 
 #include "Enemy.h"
 
@@ -55,6 +56,7 @@ class app
 	private:
 		int programState;
 
+		WorldSim worldSim;
 		World world;
 		Player player;
 

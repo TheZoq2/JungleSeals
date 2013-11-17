@@ -174,10 +174,6 @@ void Weapon::shoot(ProjectileGroup* projGroup)
 		projX = projX + agk::Cos(angle) * (barrelX * scaleX);
 		projY = projY + agk::Sin(angle) * (barrelX * scaleX);
 
-		uString barrelYstr;
-		barrelYstr.Append(barrelY);
-		DebugConsole::addToLog(barrelYstr);
-
 		float projAngle = angle + ((rand() % 2000) - 1000) / 1000.0f * spread;
 
 		projGroup->addByName(projectile, projX, projY, projAngle, 0, 0);
