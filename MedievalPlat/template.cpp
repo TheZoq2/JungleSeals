@@ -75,7 +75,9 @@ void app::Loop (void)
 		projGroup.updateWorld(&world);
 
 		mainUI.updateScissors();
+		worldSim.simulateOnce();
 		worldSim.viewRegions(&mainUI);
+		worldSim.viewFactions(&mainUI);
 	}
 	else if(programState == 2)
 	{

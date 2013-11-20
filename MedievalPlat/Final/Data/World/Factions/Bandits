@@ -1,3 +1,7 @@
 
 Name:Bandits
 Enemies:State,Civilians,Rebels,
+Taxrate:0.45
+Foodmod:0.5
+Wealthmod:0.75
+Wealth:5000
