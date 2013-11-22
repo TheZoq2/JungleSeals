@@ -290,6 +290,23 @@ void Region::simulateOnce(float taxrate, float foodMod, float wealthMod)
 	float foodPerPop = 1;
 	//Calculating the food change
 	
+	//Calculating how much food each person gets in the region
+	float foodPerPerson = food / (population * foodPerPop);
+	//Removing the food
+	float newFood = food - (foodPerPop * population);
+
+	//Calculating the population
+	float newPop = population * foodPerPerson;
+	
+	//Calculating the food production
+	newFood = newFood = population * (wealth / 5000);
+
+	//Calculating the wealth
+	float newWealth = wealth + (population * 100);
+
+	//Saving the gathered values
+	food = newFood;
+	population = newPop;
 }
 
 void Region::setName(std::string name)

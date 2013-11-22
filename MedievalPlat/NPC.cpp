@@ -78,6 +78,29 @@ void NPC::update(World* world)
 					state = NPC_walkingState;
 				}
 			}
+
+			
+			//Finding somewhere to walk
+			//Gettingt the nodes that the NPC is currently standing on
+			NodeLink* cLink = &world->getClosestLink(chr.getFeetX(), chr.getFeetY());
+
+			//Selecting a direction to walk in
+			int walkDir = rand() % 2;
+
+			bool targetFound = false;
+			while(targetFound == false)
+			{
+				//Nodes that has already been seen
+				std::vector< int >* searchedNodes = new std::vector< int >;
+
+				
+
+				targetFound = true;
+
+				//Clearing garbage
+				searchedNodes->clear();
+				delete searchedNodes;
+			}
 		}
 		else if(state == NPC_walkingState)
 		{
@@ -167,9 +190,9 @@ void NPC::updateChars(std::vector< NPC >* npc, Player* player)
 
 	if(state == NPC_passiveState) //The NPC has nothing to do, lets follow the player
 	{
-		setGoal(player->getX(), player->getY() + 2);
+		//setGoal(player->getX(), player->getY() + 2);
 
-		hasGoal = true;
+		//hasGoal = true;
 	}
 }
 
@@ -521,76 +544,6 @@ bool NPC::findPathToGoal(World* world)
 	return true;
 }
 
-/*
-NodeLink NPC::findClosestNodes(World* world)
-{
-	float xOrigin = chr.getFeetX();
-	float yOrigin = chr.getFeetY();
-
-	float lowestDist = 100000000;
-
-	NodeLink closestLink;
-	closestLink.setNode(0, -1); //node[0] = -1;
-	closestLink.setNode(1, -1); //node[1] = -1;
-
-	int nodeAmount = world->getNodeAmount();
-
-	//Going through all the nodes
-	for(unsigned int i = 0; i < nodeAmount; i++)
-	{
-		PathNode* node = world->findNodeById(i);
-
-		float xPos = node->getX();
-		float yPos = node->getY();
-
-		//Going thru all of the links
-		for(unsigned int n = 0; n < node->getLinkAmount(); n++)
-		{
-			//Getting the second node
-			PathNode* linkNode = world->findNodeById( node->getLinkID(n) );
-			
-			//Calculating a function for the angle of the line
-			float xDiff = linkNode->getX() - xPos;
-			float yDiff = linkNode->getY() - yPos;
-
-			float kVal = yDiff / xDiff;
-			
-			//Calculating lots of points of the line
-			for(float xChk = 0; xChk < xDiff; xChk += 1.0f)
-			{
-				float yChk = xChk * kVal; //Calculating the y cordinate of 
-
-				float xPosChk = xChk + xPos;
-				float yPosChk = yChk + yPos;
-
-				//Calculating the distance between the NPC and the point
-				float NPCDistX = xPosChk - xOrigin;
-				float NPCDistY = yPosChk - yOrigin;
-				float NPCDist = sqrt(pow(NPCDistX, 2) + pow(NPCDistY, 2));
-				
-				if(NPCDist < lowestDist)
-				{
-					//Saving the new closest link
-					lowestDist = NPCDist;
-
-					closestLink.node[0] = node->getID();
-					closestLink.node[1] = linkNode->getID();
-				}
-			}
-		}
-	}
-
-	if(lowestDist > 2) //If no suitable node was found
-	{
-		closestLink.node[0] = -1;
-		closestLink.node[1] = -1;
-	}
-
-	agk::Print(lowestDist);
-
-	return closestLink;
-}
-*/
 ///////////////////////////////////////////////////////////////////////////////////////////////d////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

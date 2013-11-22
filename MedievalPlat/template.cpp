@@ -75,9 +75,8 @@ void app::Loop (void)
 		projGroup.updateWorld(&world);
 
 		mainUI.updateScissors();
-		worldSim.simulateOnce();
-		worldSim.viewRegions(&mainUI);
-		worldSim.viewFactions(&mainUI);
+		//worldSim.viewRegions(&mainUI);
+		//worldSim.viewFactions(&mainUI);
 	}
 	else if(programState == 2)
 	{
@@ -87,6 +86,7 @@ void app::Loop (void)
 		cWorldName.SetStr("levels/forest1");
 
 		worldSim.load();
+		worldSim.simulateOnce();
 		world.load(cWorldName);
 		world.loadBaseMedia();
 		world.setTime(800);
