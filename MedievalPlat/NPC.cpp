@@ -80,26 +80,28 @@ void NPC::update(World* world)
 			}
 
 			
+			//Clearing the path
+			path->clear();
+
 			//Finding somewhere to walk
 			//Gettingt the nodes that the NPC is currently standing on
 			NodeLink* cLink = &world->getClosestLink(chr.getFeetX(), chr.getFeetY());
 
-			//Selecting a direction to walk in
-			int walkDir = rand() % 2;
-
-			bool targetFound = false;
-			while(targetFound == false)
+			if(cLink->getNode(0) != -1 && cLink->getNode(1) != -1) //Making sure that the AI has a node nearby before doing any pathfinding
 			{
-				//Nodes that has already been seen
-				std::vector< int >* searchedNodes = new std::vector< int >;
+				//Selecting a direction to walk in
+				int walkDir = rand() % 2;
 
-				
+				int targetNode = cLink->getNode(walkDir);
 
-				targetFound = true;
+				path->push_back(targetNode);
 
-				//Clearing garbage
-				searchedNodes->clear();
-				delete searchedNodes;
+				hasGoal = true;
+				state = NPC_walkingState;
+
+				//Calculating the goal
+				goalX = world->findNodeById(targetNode)->getX();
+				goalY = world->findNodeById(targetNode)->getY();
 			}
 		}
 		else if(state == NPC_walkingState)
@@ -574,6 +576,7 @@ void Character::create(uString colSprite)
 	agk::SetSpriteCollideBit(colSID, GF_charGroup, 0);
 
 	jumpHeight = 3;
+	cSpeed = 1.0f;
 }
 void Character::update(World* world)
 {
@@ -587,7 +590,7 @@ void Character::update(World* world)
 	y = agk::GetSpriteYByOffset(colSID);
 
 	//Making sure that the left/right speed is not to big
-	float chkSpeed = 15.0f;
+	float chkSpeed = 15.0f * cSpeed;
 	if(agk::GetSpritePhysicsVelocityX(colSID) > chkSpeed)
 	{
 		agk::SetSpritePhysicsVelocity(colSID, chkSpeed, agk::GetSpritePhysicsVelocityY(colSID));
@@ -641,11 +644,15 @@ void Character::walkLeft()
 	float moveForce = 30.0f;
 	//agk::SetSpritePhysicsImpulse(SID, x, y, -0.5f, 0);
 	agk::SetSpritePhysicsForce(colSID, x, y, -moveForce, 0);
+
+	cSpeed = 0.5f;
 }
 void Character::walkRight()
 {
 	float moveForce = 30.0f;
 	agk::SetSpritePhysicsForce(colSID, x, y, moveForce, 0);
+
+	cSpeed = 0.5f;
 }
 
 bool Character::checkOnGround(World* world)

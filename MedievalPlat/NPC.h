@@ -32,7 +32,7 @@ public:
 	void walkRight();
 
 	void setPosition(float x, float y);
-	
+
 	float getX();
 	float getY();
 	float getFeetY();
@@ -52,6 +52,8 @@ private:
 	float lastJump;
 	float jumpHeight;
 	bool isOnGround;
+
+	float cSpeed;
 };
 
 class Waypoint
