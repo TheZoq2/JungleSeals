@@ -8,6 +8,8 @@
 #include "Item.h"
 #include "Weapon.h"
 
+#include "LUA/lua.hpp"
+
 //#include "Script.h"
 
 class Player
@@ -19,6 +21,7 @@ public:
 	void begin(World* world);
 
 	void load(uString name);
+	void setupLuaFunctions();
 
 	void spawn(uString point);
 

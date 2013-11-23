@@ -6,6 +6,7 @@
 #include "DebugConsole.h"
 
 #include <vector>
+#include <string>
 
 class NodeLink
 {
@@ -88,6 +89,7 @@ public:
 	void setOvercast(float overcast);
 	void setTime(float time);
 	void setCloudLayers(int cloudLayers);
+	void setLastActive(int lastActive);
 
 	Part* getPartFromName(uString name); //This function goes thru all the parts and looks for one with the name specified //It will return the first part with the name
 	Part* getPartFromID(int partID);
@@ -103,6 +105,7 @@ public:
 	float getHeight();
 	float getLeftEdge();
 	float getBottomEdge();
+	int getLastActive();
 
 	bool isGround(float x, float y);
 	
@@ -199,4 +202,6 @@ private:
 
 	//Pathfinding variables
 	std::vector< PathNode >* node;
+
+	int lastActive; //The name of the part that was activated last
 };

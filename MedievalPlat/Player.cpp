@@ -1,6 +1,7 @@
 #include "Player.h"
 
 #include "Script.h"
+#include "LuaHandler.h"
 
 Player::Player(void)
 {
@@ -377,6 +378,7 @@ void Player::activation()
 	float lowestDist = 6;
 	bool partFound = false;
 	Part* closestPart;
+	int closestPartID;
 
 	//Looping thru all of the parts
 	for(int i = 0; i < world->getPartAmount(); i++)
@@ -400,6 +402,7 @@ void Player::activation()
 					lowestDist = dist; //Changing the lowest distance
 
 					closestPart = world->getPartFromID(i); //Changing the lowest part we have found
+					closestPartID = i;
 				}
 			}
 		}
@@ -432,8 +435,19 @@ void Player::activation()
 			actScript.SetStr("scripts/");
 			actScript.Append(closestPart->getActScript());
 
-			//Starting the script
-			Script::run(actScript, closestPart, world, this);
+			//Saving the part that was activated last for use with labels in lua
+			world->setLastActive(closestPartID);
+
+			//Checking if this is a lua script or an old script
+			if(actScript.FindStr(".lua") != -1)
+			{
+				LuaHandler::runScript(actScript.GetStr());
+			}
+			else
+			{
+				//Starting the script
+				Script::run(actScript, closestPart, world, this);
+			}
 		}
 	}
 	else //No parts where found, hide the text
@@ -522,7 +536,6 @@ void Player::setCurrentWeaponByName(uString weaponName)
 {
 	cWeapon.loadWeaponByName(weaponName);
 }
-
 /////////////////////////////////////////////////////////////////////////////////////////
 
 /////////////////////////////////////////////////////////////////////////////////////////

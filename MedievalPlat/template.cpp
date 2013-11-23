@@ -8,6 +8,8 @@ app App;
 
 void app::Begin(void)
 {
+	LuaHandler::setupLua();
+
 	//Setting a random seed for the c++ random function
 	srand(unsigned int( time(NULL) ));
 
@@ -45,6 +47,10 @@ void app::Begin(void)
 	agk::SetSpriteVisible(1, 0);
 
 	DebugConsole::setup();
+
+	//Registering LUA functions
+	l_defaultPlr = &player;
+	l_defaultWorld = &world;
 }
 
 void app::Loop (void)
@@ -80,10 +86,11 @@ void app::Loop (void)
 	}
 	else if(programState == 2)
 	{
+		//LuaHandler::runScript("scripts/test.lua");
 		agk::SetViewZoom(20);
 
 		uString cWorldName;
-		cWorldName.SetStr("levels/forest1");
+		cWorldName.SetStr("levels/lab1");
 
 		worldSim.load();
 		worldSim.simulateOnce();
@@ -98,7 +105,8 @@ void app::Loop (void)
 
 		//player.spawn("start");
 		//Running the first spawn script
-		Script::run("scripts/firstSpawn", 0, &world, &player);
+		//Script::run("scripts/firstSpawn", 0, &world, &player);
+		LuaHandler::runScript("scripts/firstSpawn.lua");
 
 		programState = 1;
 
@@ -215,7 +223,7 @@ void app::Loop (void)
 
 void app::End (void)
 {
-
+	
 }
 
 void app::calculateLight()

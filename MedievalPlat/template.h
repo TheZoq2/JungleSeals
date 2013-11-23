@@ -6,6 +6,8 @@
 // Link to GDK libraries
 #include "AGK.h"
 
+#include "LuaHandler.h"
+
 #include "GF.h"
 #include "Input.h"
 #include "world.h"
@@ -26,7 +28,7 @@
 #include <vector>
 #include <string>
 
-//#define DEVICE_BIG
+#define DEVICE_BIG
 
 #ifdef DEVICE_BIG
 	#define DEVICE_WIDTH 1600

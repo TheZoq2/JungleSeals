@@ -528,6 +528,10 @@ void World::setCloudLayers(int cloudLayers)
 {
 	this->cloudLayers = cloudLayers;
 }
+void World::setLastActive(int lastActive)
+{
+	this->lastActive = lastActive;
+}
 
 Part* World::getPartFromName(uString name) //This function goes thru all the parts and looks for one with the name specified //It will return the first part with the name
 {
@@ -654,6 +658,10 @@ float World::getHeight()
 	float height = max - min;
 
 	return height;
+}
+int World::getLastActive()
+{
+	return lastActive;
 }
 
 bool World::isGround(float x, float y)
