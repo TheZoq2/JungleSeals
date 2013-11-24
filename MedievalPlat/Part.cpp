@@ -3,6 +3,7 @@
 
 Part::Part(void)
 {
+	operations = NULL;
 }
 
 
@@ -70,6 +71,14 @@ void Part::remove()
 	{
 		agk::DeleteSprite(SID);
 	}
+
+	if(operations != NULL) //If the list of operations exists
+	{
+		//Clean it up
+		operations->clear();
+		delete operations;
+		operations = NULL;
+	}
 }
 
 int Part::getSID()
@@ -109,6 +118,15 @@ void Part::setLabel(int slot, uString label)
 {
 	this->label[slot].SetStr(label);
 }
+void Part::setTarget(float targetX, float targetY)
+{
+	this->targetX = targetX;
+	this->targetY = targetY;
+}
+void Part::setSpeed(float speed)
+{
+	this->speed = speed;
+}
 
 uString Part::getActScript()
 {
@@ -146,4 +164,57 @@ float Part::getEdgeRadius()
 	float diameter = sqrt(pow(xSize,2) + pow(ySize,2));
 
 	return diameter/2;
+}
+
+void Part::update()
+{
+	std::list< std::string >::iterator it; //Iterator for going thru all of the operations
+
+	for(it = operations->begin(); it != operations->end(); it++)
+	{
+		if(strcmp(it->data(), "moveToTarget") == 0) //If the part should move towards something
+		{
+			//Calculating the distance to the target
+			float xDist = targetX - x;
+			float yDist = targetY - y;
+			float totDist = sqrt(pow(xDist, 2) + pow(yDist, 2));
+
+			if(totDist < speed * 0.6) //If the target has been reached
+			{
+				//Add it to a vector of elements to be removed
+			}
+			else
+			{
+				//Calculating the angle to the target
+				float angle = agk::ATanFull(xDist, yDist);
+				float xAdd = agk::Cos(angle - 90) * speed * speedMod;
+				float yAdd = agk::Sin(angle - 90) * speed * speedMod;
+
+				setPosition(x + xAdd, y + yAdd);
+			}
+		}
+	}
+}
+void Part::addOperation(std::string operation)
+{
+	if(operations == NULL) //If the operations list has not been initiated
+	{
+		operations = new std::list< std::string >;
+	}
+
+	//Checking if that operation already exists
+	bool exists = false;
+	std::list< std::string >::iterator it;
+	for(it = operations->begin(); it != operations->end(); it++)
+	{
+		if(strcmp(it->data(), operation.data()) == 0)
+		{
+			exists = true;
+		}
+	}
+
+	if(exists == false) //The operation didnt already exist
+	{
+		operations->push_back(operation); //Add it
+	}
 }

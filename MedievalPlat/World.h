@@ -6,6 +6,7 @@
 #include "DebugConsole.h"
 
 #include <vector>
+#include <list>
 #include <string>
 
 class NodeLink
@@ -130,6 +131,8 @@ public:
 	PathNode* findNodeBySlot(unsigned int slot);
 
 	NodeLink getClosestLink(float x, float y);
+
+	void addPartToUpdate(Part* part);
 private:
 	struct Cloud
 	{
@@ -142,6 +145,7 @@ private:
 	uString name;
 
 	std::vector< Part >* part;
+	std::list< Part* >* partsToUpdate;
 
 	std::vector< worldSprite >* wS;
 

@@ -29,6 +29,7 @@ void World::begin()
 
 void World::load(uString filename)
 {
+	partsToUpdate = new std::list< Part* >;
 	//Starting to read the level file
 	int fileID = agk::OpenToRead(filename);
 		//Reading the version of the file
@@ -208,6 +209,18 @@ void World::update(float playerX, float playerY)
 	updateBG(playerX, playerY);
 
 	displayNodes();
+
+	//Updating parts that should be updated
+	//making sure the list has atleast one element
+	if(partsToUpdate->size() != 0)
+	{
+		std::list< Part* >::iterator it; //Iterator for looping thru parts
+		for(it = partsToUpdate->begin(); it != partsToUpdate->end(); it++)
+		{
+			Part* cPart = *it;
+			cPart->update();
+		}
+	}
 }
 void World::clear()
 {
@@ -237,6 +250,7 @@ void World::clear()
 	}
 
 	part->clear();
+	partsToUpdate->clear();
 
 	//Removing stars
 	for(unsigned int i = 0; i < stars->size(); i++)
@@ -550,7 +564,12 @@ Part* World::getPartFromName(uString name) //This function goes thru all the par
 }
 Part* World::getPartFromID(int partID)
 {
-	return &part->at(partID);
+	if(partID >= 0 && partID < part->size())
+	{
+		return &part->at(partID);
+	}
+	
+	return NULL;
 }
 
 int World::getPartAmount()
@@ -1093,6 +1112,22 @@ float World::paralaxOffset(int depth)
 	result = paralaxDepth / 900.0f;
 
 	return result;
+}
+
+void World::addPartToUpdate( Part* part)
+{
+	//Checking if the part is already in the update list
+	bool alreadyInList = false;
+	std::list< Part* >::iterator it;
+	for(it = partsToUpdate->begin(); it != partsToUpdate->end(); it++)
+	{
+		if(*it == part) alreadyInList = true;
+	}
+
+	if(alreadyInList == false) //If the part wasnt in the list already
+	{
+		partsToUpdate->push_back(part);
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////
