@@ -36,8 +36,7 @@ void World::load(uString filename)
 		char* p;//Char* to allow me to remove the string when done
 
 		p = agk::ReadString(fileID); //Reading the file version
-		
-		if(strcmp(p, "4") == 0) //This is version 0, continue reading the file
+		if(strcmp(p, "5") == 0)
 		{
 			delete[] p; //Removing the data pointed to by p
 
@@ -179,23 +178,33 @@ void World::load(uString filename)
 
 				tempNode.create(ID, xPos, yPos);
 
-				int linkAmount = agk::ReadInteger(fileID);
-				for(int n = 0; n < linkAmount; n++)
-				{
-					int linkID = agk::ReadInteger(fileID);
-					int linkType = agk::ReadInteger(fileID);
-
-					tempNode.addLink(linkID, linkType);
-				}
-
 				//Adding the new node to the vector
 				node->push_back(tempNode);
 			}
-		}
 
-		loadV3(p, fileID);
-		
-		
+			//Readin nodelinks
+			unsigned int nodeLinkAmount = agk::ReadInteger(fileID);
+			for(unsigned int i = 0; i < nodeLinkAmount; i++)
+			{
+				int wp1 = agk::ReadInteger(fileID);
+				int wp2 = agk::ReadInteger(fileID);
+				int type = agk::ReadInteger(fileID);
+			}
+		}
+		else if(strcmp(p, "4") == 0) //This is version 0, continue reading the file
+		{
+			loadV4(p, fileID);
+		}
+		else if(strcmp(p, "3") == 0)
+		{
+			loadV3(p, fileID);
+		}
+		else
+		{
+			DebugConsole::addC("Failed to load level: ");DebugConsole::addC(filename);
+			DebugConsole::addC(", invalid version: ");DebugConsole::addToLog(p);
+		}
+	
 	agk::CloseFile(fileID);
 
 	loadBG();
@@ -479,6 +488,161 @@ void World::loadV3(char* p, int fileID)
 			}
 			*/
 		}
+}
+void World::loadV4(char* p, int fileID)
+{
+	delete[] p; //Removing the data pointed to by p
+
+	p = agk::ReadString(fileID); //Reading the name of the level
+	name.SetStr(p);
+	delete[] p;
+	p = agk::ReadString(fileID); delete[] p; //Backgrounds -- Unused
+	p = agk::ReadString(fileID); delete[] p; //Backgrounds -- Unused
+
+	//Reading the fun stuff
+	p = agk::ReadString(fileID); //Reading the amount of parts in the world
+	int amount = atoi(p);
+	delete[] p;
+
+	for(int i = 0; i < amount; i++)
+	{
+		//Creating a temporary variable which will be pushed back into the vector once everything is set up
+		Part tempPart;
+		//Reading the filename
+		//uString filename = agk::ReadString(fileID);
+
+		uString filename;
+		filename.SetStr(agk::ReadString(fileID));
+
+		//Checking if the filename already exists
+		//Making sure the sprite we are trying to load actually exists
+
+		bool fileExist = true;
+		//Making sure that the file exists
+		if(agk::GetFileExists(filename) == 0)
+		{
+			fileExist = false;
+
+			//If it dosn't exist, write that to a debug file
+			int debugID = agk::OpenToWrite("debug.txt", 1);
+			agk::WriteString(debugID, "\n The sprite ");
+			agk::WriteString(debugID, filename.GetStr());
+			agk::WriteString(debugID, " didn't exist");
+			agk::CloseFile(debugID);
+		}
+
+		if(fileExist == true) //Making sure that the file we are loading exists
+		{
+			int cloneSprite = checkForWS(filename);
+			if(cloneSprite == 0) //Checking if the filename exists
+			{
+				//it didn't exist, we have to create it
+				int ID = createWS(filename);
+
+				tempPart.cloneSprite(wS->at(ID).SID);
+			}
+			else
+			{
+				//It existed, we can just clone the old sprite
+				tempPart.cloneSprite(wS->at(cloneSprite).SID);
+			}
+		}
+
+		//A sprite has been created, let's set some parameters for it
+		p = agk::ReadString(fileID); float x = agk::ValFloat(p); //Reading the x position
+		delete[] p;
+		p = agk::ReadString(fileID); float y = agk::ValFloat(p);
+		delete[] p;
+
+		p = agk::ReadString(fileID); int depth = agk::Val(p); //Reading the depth
+		delete[] p;
+
+		p = agk::ReadString(fileID); float scaleX = agk::ValFloat(p); //Reading the scale
+		delete[] p;
+		p = agk::ReadString(fileID); float scaleY = agk::ValFloat(p);
+		delete[] p;
+
+		p = agk::ReadString(fileID); float angle = agk::ValFloat(p); //Reading the angle
+		delete[] p;
+
+		p = agk::ReadString(fileID); int physState = agk::Val(p); //Reading the physics state
+		delete[] p;
+
+
+		////////////////////////////////////////////////////////////////////////////////////
+		char* name = agk::ReadString(fileID);//Reading the name
+
+		p = agk::ReadString(fileID); int usable = agk::Val(p); //Reading the usability
+		delete[] p;
+
+		char* actScript = agk::ReadString(fileID); //Reading the activation script
+
+		char* useMsg =  agk::ReadString(fileID); //Reading the use message
+				
+		char* labels[5];
+		//Reading the labels
+		for(int lbl = 0; lbl < 5; lbl++)
+		{
+			labels[lbl] = agk::ReadString(fileID);
+		}
+
+		if(fileExist == true) //Since the file existed, we will set data to the new sprite
+		{
+			tempPart.setScale(scaleX, scaleY);
+			tempPart.setPosition(x, y); //Setting the position
+			tempPart.setDepth(depth); //Setting the depth
+			tempPart.setAngle(angle);
+			tempPart.setPhysState(physState);
+			tempPart.setVisible(1);
+
+			//Setting script paramenters
+			tempPart.setName( name ); 
+			tempPart.setUsable( usable );
+			tempPart.setActScript(actScript);
+			tempPart.setUseMsg(useMsg);
+
+			for(int lbl = 0; lbl < 5; lbl++)
+			{
+				tempPart.setLabel(lbl, labels[lbl]);
+			}
+
+			part->push_back(tempPart);
+		}
+
+		//Cleaning up that garbage
+		delete[] name;
+		delete[] actScript;
+		delete[] useMsg;
+		for(int lbl = 0; lbl < 5; lbl++)
+		{
+			delete[] labels[lbl];
+		}
+	}
+
+	//Reading pathfinding nodes
+	int nodeAmount = agk::ReadInteger(fileID);
+	for(int i = 0; i < nodeAmount; i++)
+	{
+		PathNode tempNode;
+
+		int ID = agk::ReadInteger(fileID);
+		float xPos = agk::ReadFloat(fileID);
+		float yPos = agk::ReadFloat(fileID);
+
+		tempNode.create(ID, xPos, yPos);
+
+		int linkAmount = agk::ReadInteger(fileID);
+		for(int n = 0; n < linkAmount; n++)
+		{
+			int linkID = agk::ReadInteger(fileID);
+			int linkType = agk::ReadInteger(fileID);
+
+			tempNode.addLink(linkID, linkType);
+		}
+
+		//Adding the new node to the vector
+		node->push_back(tempNode);
+	}
 }
 
 int World::checkForWS(uString filename)
@@ -1246,6 +1410,7 @@ unsigned int World::getNodeAmount()
 
 NodeLink World::getClosestLink(float x, float y)
 {
+	
 	float xOrigin = x;
 	float yOrigin = y;
 

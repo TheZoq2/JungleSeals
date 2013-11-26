@@ -20,6 +20,8 @@ public:
 	bool compareTo(NodeLink link);
 private:
 	int node[2];
+
+	int type;
 };
 
 
@@ -86,6 +88,7 @@ public:
 	void generateBackgroundTextures();
 
 	void loadV3(char* p, int fileID);
+	void loadV4(char* p, int fileID);
 
 	void setOvercast(float overcast);
 	void setTime(float time);
