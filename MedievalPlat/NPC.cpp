@@ -38,7 +38,7 @@ void NPC::update(World* world)
 		{
 			state = NPC_passiveState;
 		}
-		if(state == NPC_passiveState)
+		else if(state == NPC_passiveState)
 		{
 			/*float walkChanse = 100 / (frameTime*1000); //TODO: Fix this to a more reasonable value
 
@@ -70,7 +70,6 @@ void NPC::update(World* world)
 				
 			}*/
 
-			
 			if(hasGoal == true)//Checking if the NPC has a goal
 			{
 				if(findPathToGoal(world) == true)
@@ -85,10 +84,11 @@ void NPC::update(World* world)
 
 			//Finding somewhere to walk
 			//Gettingt the nodes that the NPC is currently standing on
-			NodeLink* cLink = &world->getClosestLink(chr.getFeetX(), chr.getFeetY());
+			NodeLink* cLink = world->getClosestLink(chr.getFeetX(), chr.getFeetY());
 
 			if(cLink->getNode(0) != -1 && cLink->getNode(1) != -1) //Making sure that the AI has a node nearby before doing any pathfinding
 			{
+				/*
 				//Selecting a direction to walk in
 				int walkDir = rand() % 2;
 
@@ -102,11 +102,12 @@ void NPC::update(World* world)
 				//Calculating the goal
 				goalX = world->findNodeById(targetNode)->getX();
 				goalY = world->findNodeById(targetNode)->getY();
+				*/
 			}
 		}
 		else if(state == NPC_walkingState)
 		{
-			if(path->size() != 0)
+			/*if(path->size() != 0)
 			{
 				
 				//Getting the target node
@@ -155,9 +156,11 @@ void NPC::update(World* world)
 						agk::DrawLine(agk::WorldToScreenX(xPos), agk::WorldToScreenY(yPos), agk::WorldToScreenX(xPos2), agk::WorldToScreenY(yPos2), 255, 0, 0);
 					}
 				}
+				
 			}
 			else
 			{
+				/*
 				//The last node has been reached, move the final distance to the goal node
 				if(chr.getFeetX() > goalX)
 				{
@@ -178,7 +181,9 @@ void NPC::update(World* world)
 					//Exiting walk state
 					state = NPC_passiveState;
 				}
+				
 			}
+			*/
 		}
 	}
 }
@@ -192,9 +197,9 @@ void NPC::updateChars(std::vector< NPC >* npc, Player* player)
 
 	if(state == NPC_passiveState) //The NPC has nothing to do, lets follow the player
 	{
-		//setGoal(player->getX(), player->getY() + 2);
+		setGoal(player->getX(), player->getY() + 2);
 
-		//hasGoal = true;
+		hasGoal = true;
 	}
 }
 
@@ -310,243 +315,40 @@ void NPC::setGoal(float goalX, float goalY)
 }
 bool NPC::findPathToGoal(World* world)
 {
-	//Finding the closest nodes to the goal
-	NodeLink goalLink;
-	
-	goalLink = world->getClosestLink(goalX, goalY);
+	//Finding the liks that are closest to the start and goal
+	NodeLink* goalLink = world->getClosestLink(goalX, goalY);
+	NodeLink* startLink = world->getClosestLink(chr.getFeetX(), chr.getFeetY());
 
-	//Getting the current link
-	NodeLink cLink;
-	cLink = world->getClosestLink(chr.getFeetX(), chr.getFeetY());
-
-	//If one of the positions are to far away
-	if(cLink.isBadLink() || goalLink.isBadLink())
+	//Making sure none of the links are good
+	if(goalLink->isBadLink() || startLink->isBadLink())
 	{
-		return false; //Exiting the function
+		return false; //Exit the function
 	}
 
-	//Checking if the links are the same
-	if(goalLink.compareTo(cLink) == true)
+	//If the goal is the same lik as the start
+	if(goalLink->compareTo(*startLink))
 	{
-		return true;
+		return true; //Return a sucessfull path
 	}
 
-	//No nodes were bad, start to look for a path between the nodes
-	float lowestDist = 1000000000;
-
-	PathNode* goalNode;
-	PathNode* startNode;
+	//Both the goal and start are reachable
+	float lowestDist = 10000000;
+	PathNode* startNode; //The link tos art the search from
 
 	//Finding a good starting node
 	for(int i = 0; i < 2; i++)
 	{
-		PathNode* cGoalNode = world->findNodeById(goalLink.getNode(i));
-		for(int n = 0; n < 2; n++)
-		{
-			PathNode* cStartNode = world->findNodeById(cLink.getNode(n));
 
-			float xDist = cGoalNode->getX() - cStartNode->getX();
-			float yDist = cGoalNode->getY() - cStartNode->getY();
-
-			float dist = sqrt(pow(xDist, 2) + pow(yDist, 2));
-
-			//If these nodes are closer than the old ones
-			if(dist < lowestDist)
-			{
-				//Saving the new nodes
-				lowestDist = dist;
-				goalNode = cGoalNode;
-				startNode = cStartNode;
-			}
-		}
 	}
 
-	//Making sure nothing weird happned
-	if(goalNode == NULL || startNode == NULL)
-	{
-		return false;
-	}
+	char* p = agk::Str(goalLink->getID());
+	DebugConsole::addC("Links have been found: ");DebugConsole::addC(p);
+	delete[] p;
 
-	//Everything is good, lets start looking for a good node
-	int openState = 1;
-	int closedState = 2;
-	
-
-	std::vector< listElement >* nodeList;
-	nodeList = new std::vector< listElement >;
-
-	//Adding the starting node to the open list
-	listElement tempElement;
-	tempElement.node = startNode->getID();
-	tempElement.state = openState;
-	tempElement.FScore = 0; //Total score
-	tempElement.HScore = 0; //Estemated distance left
-	tempElement.GScore = 0; //Walk cost
-	tempElement.parent = -1;
-
-	nodeList->push_back(tempElement); //Add the first node to the list
-
-	bool pathFound = false;
-	int finalNode = -1; //The final node in the chain
-
-	while(pathFound == false) //Running the actual pathfinder
-	{
-		float lowestFScore = 100000000;
-
-		int nextNode = -1;
-		int listSlot = -1;
-
-		//Finding the node with the lowest FScore
-		for(unsigned int i = 0; i < nodeList->size(); i++)
-		{
-			if(nodeList->at(i).state == openState && nodeList->at(i).FScore < lowestFScore)
-			{
-				lowestFScore = nodeList->at(i).FScore;
-
-				nextNode = nodeList->at(i).node;
-				listSlot = i;
-			}
-		}
-
-		if(nextNode == -1) //No open nodes left, a path could not be found
-		{
-			//Removing garbage
-			nodeList->clear();
-			delete nodeList;
-			return false;
-		}
-
-		PathNode* cNode = world->findNodeById(nextNode);
-		//PathNode* cNode = goalNode;
-
-		//Open the nodes linked to the current node
-		for(unsigned int i = 0; i < cNode->getLinkAmount(); i++)
-		{
-			int node = cNode->getLinkID(i);
-
-			//Checking if the node is already on the list
-			bool onList = false;
-			int listIndex;
-			int listState = 0;
-
-			for(unsigned int n = 0; n < nodeList->size(); n++)
-			{
-				if(nodeList->at(n).node == node) //If the node is on the list
-				{
-					onList = true;
-
-					listIndex = n;
-					listState = nodeList->at(n).state;
-				}
-			}
-			
-			//This is a new node or it is open
-			//if(onList == false)
-			//{
-				//Calculating the walk cost between this and the next node
-				PathNode* thisNode = world->findNodeById(node);
-
-				float xDist = thisNode->getX() - cNode->getX();
-				float yDist = thisNode->getY() - cNode->getY();
-				float hScore = sqrt(pow(xDist, 2) + pow(yDist, 2)) + nodeList->at(listSlot).HScore;
-				
-				//If the node was on the list already
-				if(onList == true && listState == openState)
-				{
-					//Checking if this has a better HScore
-					if(hScore < nodeList->at(listIndex).HScore)
-					{
-						//Making this node the parent instead
-						nodeList->at(listIndex).HScore = hScore;
-						nodeList->at(listIndex).FScore = hScore + nodeList->at(listSlot).GScore;
-
-						nodeList->at(listIndex).parent = listSlot;
-					}
-				}
-				else if(listState == closedState) //Ignoring closed nodes
-				{}
-				else
-				{
-					thisNode = world->findNodeById(node);;
-					//Calculating the score
-					float xDist = thisNode->getX() - cNode->getX();
-					float yDist = thisNode->getY() - cNode->getY();
-					float hScore = sqrt(pow(xDist, 2) + pow(yDist, 2)) + nodeList->at(listSlot).HScore;
-
-					float xLeft = thisNode->getX() - goalNode->getX();
-					float yLeft = thisNode->getY() - goalNode->getY();
-					float gScore = sqrt(pow(xLeft, 2) + pow(yLeft, 2));
-
-					//Add it to the list
-					listElement tempNode;
-				
-					tempNode.node = node;
-					tempNode.parent = listSlot;
-					
-					tempNode.HScore = hScore;
-					tempNode.FScore = hScore;
-
-					//Opening the node
-					tempNode.state = openState;
-
-					//Add the new node to the list
-					nodeList->push_back(tempNode);
-				}
-			//}
-		}
-
-		//Close the current node
-		nodeList->at(listSlot).state = closedState;
-
-		//Checking if the goal node has been added to the open list
-		for(unsigned int i = 0; i < nodeList->size(); i++)
-		{
-			if(nodeList->at(i).node == goalNode->getID() && nodeList->at(i).state == closedState) //The goal has been added to the closed list
-			{
-				pathFound = true;
-
-				finalNode = i; //SAving the location of the final node
-			}
-		}
-	}
-	
-	if(finalNode == -1)
-	{
-		return false;
-	}
-	else
-	{
-		bool pathSaved = false;
-		
-		//Selecting the last node
-		int thisNode = finalNode;
-
-		//adding the node to the path deque
-		path->push_front(nodeList->at(thisNode).node);
-		while(pathSaved == false)
-		{
-			thisNode = nodeList->at(thisNode).parent;
-
-			if(thisNode == -1) //If this is the final node
-			{
-				pathSaved = true;
-			}
-			else
-			{
-				//add the node to the path deque
-				path->push_front(nodeList->at(thisNode).node);
-			}
-		}
-	}
-	//Everything is done, the path has been saved properly
-
-	//Removing garbage
-	nodeList->clear();
-	delete nodeList;
 	return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////d////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void Character::create(uString colSprite)

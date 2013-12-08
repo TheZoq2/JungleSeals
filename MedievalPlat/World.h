@@ -13,12 +13,17 @@ class NodeLink
 {
 public:
 	void setNode(int index, int ID);
+	void setType(int type);
+	void setID(int ID);
 
 	int getNode(int index);
+	int getID();
+	int getType();
 	
 	bool isBadLink();
 	bool compareTo(NodeLink link);
 private:
+	int ID;
 	int node[2];
 
 	int type;
@@ -31,7 +36,7 @@ public:
 	void create(int ID, float x, float y);
 	void setPos(float x, float y);
 
-	void addLink(int ID, int type);
+	void addLink(int ID);
 
 	int getID();
 	float getX();
@@ -44,13 +49,7 @@ private:
 	float x;
 	float y;
 
-	struct Link
-	{
-		int ID;
-		int type;
-	};
-
-	std::vector< Link >* links;
+	std::vector< int >* linkIDs;
 };
 
 class World
@@ -133,7 +132,7 @@ public:
 	unsigned int getNodeAmount();
 	PathNode* findNodeBySlot(unsigned int slot);
 
-	NodeLink getClosestLink(float x, float y);
+	NodeLink* getClosestLink(float x, float y);
 
 	void addPartToUpdate(Part* part);
 private:
@@ -209,6 +208,7 @@ private:
 
 	//Pathfinding variables
 	std::vector< PathNode >* node;
+	std::vector< NodeLink >* nodeLinks;
 
 	int lastActive; //The name of the part that was activated last
 };

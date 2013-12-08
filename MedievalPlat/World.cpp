@@ -23,6 +23,7 @@ void World::begin()
 	stars = new std::vector< Star >;
 
 	node = new std::vector< PathNode >;
+	nodeLinks = new std::vector< NodeLink >;
 
 	cloudLayers = 4;
 }
@@ -182,16 +183,39 @@ void World::load(uString filename)
 				node->push_back(tempNode);
 			}
 
-			//Readin nodelinks
+			//Reading nodelinks
 			unsigned int nodeLinkAmount = agk::ReadInteger(fileID);
 			for(unsigned int i = 0; i < nodeLinkAmount; i++)
 			{
 				int wp1 = agk::ReadInteger(fileID);
 				int wp2 = agk::ReadInteger(fileID);
 				int type = agk::ReadInteger(fileID);
+
+				NodeLink tempLink;
+				tempLink.setNode(0, wp1);
+				tempLink.setNode(1, wp2);
+				tempLink.setType(type);
+				tempLink.setID(i);
+
+				nodeLinks->push_back(tempLink);
+			}
+
+			//Giving the nodes that are in a link the ID for that link
+			for(unsigned int i = 0; i < nodeLinks->size(); i++)
+			{
+				//Finding the nodes liked by this node
+				int node1 = nodeLinks->at(i).getNode(0);
+				int node2 = nodeLinks->at(i).getNode(1);
+
+				//finding those nodes
+				PathNode* pNode1 = findNodeById(node1);
+				PathNode* pNode2 = findNodeById(node2);
+				pNode1->addLink(nodeLinks->at(i).getID());
+				pNode2->addLink(nodeLinks->at(i).getID());
+				
 			}
 		}
-		else if(strcmp(p, "4") == 0) //This is version 0, continue reading the file
+		else if(strcmp(p, "4") == 0) //This is version 4, continue reading the file
 		{
 			loadV4(p, fileID);
 		}
@@ -637,7 +661,7 @@ void World::loadV4(char* p, int fileID)
 			int linkID = agk::ReadInteger(fileID);
 			int linkType = agk::ReadInteger(fileID);
 
-			tempNode.addLink(linkID, linkType);
+			//tempNode.addLink(linkID, linkType);
 		}
 
 		//Adding the new node to the vector
@@ -1359,7 +1383,7 @@ void World::displayNodes()
 	}
 	*/
 
-	for(unsigned int i = 0; i < node->size(); i++) //Going thru all the path nodes
+	/*for(unsigned int i = 0; i < node->size(); i++) //Going thru all the path nodes
 	{
 		float xPos = node->at(i).getX();
 		float yPos = node->at(i).getY();
@@ -1377,6 +1401,34 @@ void World::displayNodes()
 				//agk::DrawLine(agk::WorldToScreenX(xPos), agk::WorldToScreenY(yPos), agk::WorldToScreenX(linkNode->getX()), agk::WorldToScreenY(linkNode->getY()), 255, 0, 0);
 			}
 		}
+	}*/
+
+	//Going through all the node links
+	for(unsigned int i = 0; i < nodeLinks->size(); i++)
+	{
+		//Getting the ID of the nodes
+		int nodeID1 = nodeLinks->at(i).getNode(0);
+		int nodeID2 = nodeLinks->at(i).getNode(1);
+
+		PathNode* node1 = findNodeById(nodeID1);
+		PathNode* node2 = findNodeById(nodeID2);
+
+		float x1 = agk::WorldToScreenX(node1->getX());
+		float y1 = agk::WorldToScreenY(node1->getY());
+		float x2 = agk::WorldToScreenX(node2->getX());
+		float y2 = agk::WorldToScreenY(node2->getY());
+
+		int r = 255;
+		int g = 0;
+		int b = 0;
+
+		if(nodeLinks->at(i).getType() == 1)
+		{
+			r = 0;
+			g = 0;
+			b = 255;
+		}
+		agk::DrawLine(x1, y1, x2, y2, r, g, b);
 	}
 }
 PathNode* World::findNodeById(int ID)
@@ -1408,9 +1460,9 @@ unsigned int World::getNodeAmount()
 	return node->size();
 }
 
-NodeLink World::getClosestLink(float x, float y)
+NodeLink* World::getClosestLink(float x, float y)
 {
-	
+	/*
 	float xOrigin = x;
 	float yOrigin = y;
 
@@ -1472,8 +1524,46 @@ NodeLink World::getClosestLink(float x, float y)
 		closestLink.setNode(0, -1); //node[0] = -1;
 		closestLink.setNode(1, -1); //node[1] = -1;
 	}
-
+	*/
 	//agk::Print(lowestDist);
+	
+	float lowestDist = 222222.0f;
+	NodeLink* closestLink;
+	for(unsigned int i = 0; i < nodeLinks->size(); i++)
+	{
+		PathNode* cNodes[2];
+		cNodes[0] = findNodeById( nodeLinks->at(i).getNode(0) );
+		cNodes[1] = findNodeById( nodeLinks->at(i).getNode(1) );
+
+		//Making sure both nodes exist
+		if(cNodes[0] != NULL && cNodes[1] != NULL)
+		{
+			//Calculating the k-value of the line between the nodes
+			float xDiff = cNodes[1]->getX() - cNodes[0]->getX();
+			float yDiff = cNodes[1]->getY() - cNodes[0]->getY();
+			
+			float kVal = yDiff/xDiff;
+			
+			for(float chk = 0; chk < xDiff; chk += 0.5f)
+			{
+				float xChk = cNodes[1]->getX() + chk;
+				float yChk = cNodes[1]->getY() + chk*kVal;
+
+				//Calculating the distance between the point and the location passed to the function
+				float xDist = xChk - x;
+				float yDist = yChk - y;
+
+				float totDist = sqrt(pow(xDist, 2) + pow(yDist, 2));
+
+				if(totDist < lowestDist) //If this point is closer
+				{
+					lowestDist = totDist;
+
+					closestLink = &nodeLinks->at(i);
+				}
+			}
+		}
+	}
 
 	return closestLink;
 }
@@ -1486,16 +1576,12 @@ void PathNode::create(int ID, float x, float y)
 	this->x = x;
 	this->y = y;
 
-	this->links = new std::vector< Link >;
+	this->linkIDs = new std::vector< int >;
 }
 
-void PathNode::addLink(int ID, int type)
+void PathNode::addLink(int ID)
 {
-	Link tempLink;
-	tempLink.ID = ID;
-	tempLink.type = type;
-
-	links->push_back(tempLink);
+	linkIDs->push_back(ID);
 }
 
 void PathNode::setPos(float x, float y)
@@ -1518,19 +1604,11 @@ float PathNode::getY()
 }
 unsigned int PathNode::getLinkAmount()
 {
-	return links->size();
+	return this->linkIDs->size();
 }
 int PathNode::getLinkID(unsigned int slot)
 {
-	if(slot >= 0 && slot < links->size())
-	{
-		return links->at(slot).ID;
-	}
-	else
-	{
-		DebugConsole::addToLog("Invalid link ID passed to 'getLinkByID'");
-		return -1;
-	}
+	return 0;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -1540,9 +1618,26 @@ void NodeLink::setNode(int index, int ID)
 {
 	node[index] = ID;
 }
+void NodeLink::setType(int type)
+{
+	this->type = type;
+}
+void NodeLink::setID(int ID)
+{
+	this->ID = ID;
+}
+
 int NodeLink::getNode(int index)
 {
 	return node[index];
+}
+int NodeLink::getID()
+{
+	return ID;
+}
+int NodeLink::getType()
+{
+	return type;
 }
 
 bool NodeLink::isBadLink()
