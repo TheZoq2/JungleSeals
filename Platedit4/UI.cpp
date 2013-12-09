@@ -74,18 +74,6 @@ void UI::addToList(std::string windowID, std::string listID, std::vector< std::s
 
 void UI::addColorButtonToWindow(std::string windowID, std::string buttonID, float x, float y, float width, float height)
 {
-	//Finding the window
-	Window window = this->getWindowByID(windowID);
-
-	if(window != NULL)
-	{
-		window.addButton(buttonID, x, y, width, height);
-	}
-	else
-	{
-		DebugConsole::addC("Failed to add button: ");DebugConsole::addC(buttonID);DebugConsole::addC(" to window: ");
-		DebugConsole::addC(windowID);DebugConsole::addToLog(" -- Window did not exist");
-	}
 	
 }
 
@@ -181,8 +169,6 @@ int Window::update(float mx, float my)
 void Window::updateInput(float mx, float my)
 {
 	//Updating individual UI elements
-
-	//Lists
 	for(unsigned int i = 0; i < lists->size(); i++)
 	{
 		lists->at(i).updateInput(mx, my);
@@ -381,4 +367,13 @@ void ListCell::setScissor(float x1, float y1, float x2, float y2)
 	{
 		agk::SetTextScissor(TID, x1, y1, x2, y2);
 	}
+}
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+void Button::createColorButton(std::string vecID, float x, float y, float width, float height)
+{
+	this->vecID = vecID;
+
+	SID = agk::CreateSprite(
 }
