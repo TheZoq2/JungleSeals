@@ -6,6 +6,7 @@
 
 #include "UI.h"
 #include "DebugConsole.h"
+#include "Editor.h"
 
 #define DEVICE_WIDTH 1600
 #define DEVICE_HEIGHT 900
@@ -26,9 +27,16 @@ class app
 		void Loop( void );
 		void End( void );
 
+		void toolInput();
+
 		int programState;
 
 		UI uiGroup;
+
+		Editor editor;
+		int selTool;
+		
+		std::string selectedFolder;
 
 		/////////////////////////////////////////////////////////////////////
 		//						Debug variables

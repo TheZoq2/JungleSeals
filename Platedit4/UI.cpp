@@ -20,6 +20,7 @@ void UI::update()
 	std::vector< Window >::iterator hitIt;
 
 	bool windowHit = false;
+	windowHitAmount = 0;
 	for(windowIt = windows->begin(); windowIt != windows->end(); windowIt++) //Going thru all the windows
 	{
 		if(windowIt->update(i_mx, i_my))
@@ -28,6 +29,8 @@ void UI::update()
 			hitIt = windowIt;
 
 			windowHit = true;
+
+			windowHitAmount++;
 		}
 	}
 
@@ -44,6 +47,15 @@ void UI::updateScissors()
 	}
 }
 
+bool UI::getUIActive()
+{
+	if(windowHitAmount == 0)
+	{
+		return false;
+	}
+	else return true;
+}
+
 void UI::addWindow(std::string ID, std::string bgName, float x, float y, float sizeX, float sizeY)
 {
 	Window tempWindow;
@@ -55,6 +67,22 @@ void UI::addListToWindow(std::string window, std::string listID, float offsetX, 
 {
 	//Adding the list
 	getWindowByID(window)->addList(listID, offsetX, offsetY, width, height, colWidth, colHeaders);
+}
+void UI::addSimpleListToWindow(std::string windowID, std::string listID, float x, float y, float width, float height, std::string header)
+{
+	//Finding the window
+	Window* window = getWindowByID(windowID);
+
+	if(window != NULL)
+	{
+		window->addSimpleList(listID, x, y, width, height, header);
+	}
+	else
+	{
+		DebugConsole::addC("Failed to add simple list: ");DebugConsole::addC(listID.data());
+		DebugConsole::addC(" to window: ");DebugConsole::addC(windowID.data());
+		DebugConsole::addC(" -- Window did not exist");
+	}
 }
 void UI::addToList(std::string windowID, std::string listID, std::vector< std::string >* values)
 {
@@ -68,6 +96,49 @@ void UI::addToList(std::string windowID, std::string listID, std::vector< std::s
 	else
 	{
 		DebugConsole::addC("Failed to add item to list, window: ");DebugConsole::addC(windowID.data());
+		DebugConsole::addToLog(" did not exist");
+	}
+}
+void UI::addToSimpleList(std::string windowID, std::string listID, std::string value)
+{
+	Window* window = getWindowByID(windowID);
+	if(window != NULL)
+	{
+		window->addToSimpleList(listID, value);
+	}
+	else
+	{
+		DebugConsole::addC("Failed to add item to simple list, window: ");DebugConsole::addC(windowID.data());
+		DebugConsole::addToLog(" did not exist");
+	}
+};
+
+void UI::addImgListToWindow(std::string windowID, std::string vecID, int cloneID, float x, float y, float width, float height, float imgWidth, float imgHeight, int r, int g, int b, int a)
+{
+	//Finding the right window
+	Window* window = getWindowByID(windowID);
+
+	if(window != NULL)
+	{
+		window->addImgList(vecID, cloneID, x, y, width, height, imgWidth, imgHeight, r, g, b, a);
+	}
+	else
+	{
+		DebugConsole::addC("Failed to add imgList: ");DebugConsole::addC(vecID.data());
+		DebugConsole::addC(" to window: ");DebugConsole::addC(windowID.data());
+		DebugConsole::addToLog(" -- window did not exist");
+	}
+}
+void UI::addImageToImgList(std::string windowID, std::string vecID, std::string img)
+{
+	Window* window = getWindowByID(windowID);
+	if(window != NULL)
+	{
+		window->addImageToImgList(vecID, img);
+	}
+	else
+	{
+		DebugConsole::addC("Failed to add image to imglist, window: ");DebugConsole::addC(windowID.data());
 		DebugConsole::addToLog(" did not exist");
 	}
 }
@@ -151,6 +222,7 @@ void Window::create(std::string vecID, std::string bgName, float x, float y, flo
 	//Initialising vectors
 	lists = new std::vector< List >;
 	buttons = new std::vector< Button >;
+	imgLists = new std::vector< ImgList >;
 }
 int Window::update(float mx, float my)
 {
@@ -176,9 +248,18 @@ void Window::updateInput(float mx, float my)
 }
 void Window::remove()
 {
+	for(unsigned int i = 0; i < imgLists->size(); i++)
+	{
+		imgLists->at(i).remove();
+	}
+	imgLists->clear();
+	delete imgLists;
+	imgLists = NULL;
+
 	//Removing vectors
 	lists->clear();
 	delete lists;
+	lists = NULL;
 }
 void Window::updateScissors()
 {
@@ -200,6 +281,22 @@ void Window::addList(std::string listID, float offsetX, float offsetY, float wid
 	lists->push_back(tempList);
 	
 }
+void Window::addSimpleList(std::string listID, float xPos, float yPos, float width, float height, std::string header)
+{
+	//Temporary vectors for creating the list
+	std::vector< float > colWidth;
+	colWidth.push_back(width);
+	std::vector< std::string > colHeader;
+	colHeader.push_back(header);
+
+	float listX = x + xPos;
+	float listY = y + yPos;
+
+	List tempList;
+	tempList.create(listID, listX, listY, width, height, &colWidth, &colHeader);
+
+	lists->push_back(tempList);
+}
 void Window::addToList(std::string listID, std::vector< std::string >* values)
 {
 	List* list = findListByID(listID);
@@ -213,6 +310,54 @@ void Window::addToList(std::string listID, std::vector< std::string >* values)
 		DebugConsole::addC("Failed to add item to the list: ");DebugConsole::addC(listID.data());
 		DebugConsole::addToLog(". List did not exist");
 	}
+}
+void Window::addToSimpleList(std::string listID, std::string value)
+{
+	//Finding the list
+	List* list = findListByID(listID);
+
+	if(list != NULL)
+	{
+		//Creating a vector for the value
+		std::vector< std::string > values;
+		values.push_back(value);
+
+		list->addItem(&values);
+	}
+	else
+	{
+		DebugConsole::addC("Failed to add value to simple list: ");DebugConsole::addC(listID.data());
+		DebugConsole::addToLog(" -- List did not exist");
+	}
+
+}
+
+void Window::addImgList(std::string vecID, int cloneID, float xPos, float yPos, float width, float height, float imgWidth, float imgHeight, int r, int g, int b, int a)
+{
+	//Creating a temporary list
+	ImgList tempList;
+	float listX = x + xPos;
+	float listY = y + yPos;
+	tempList.create(vecID, cloneID, listX, listY, width, height, imgWidth, imgHeight, r, g, b, a);
+
+	//Add that list to the vector
+	imgLists->push_back(tempList);
+}
+void Window::addImageToImgList(std::string vecID, std::string img)
+{
+	//Getting the list
+	ImgList* list = findImgListById(vecID);
+	
+	if(list != NULL) //Making sure the list exists before modifying it
+	{
+		list->addImage(img);
+	}
+	else
+	{
+		DebugConsole::addC("Failed to add image to the Imglist: ");DebugConsole::addC(vecID.data());
+		DebugConsole::addToLog(". List did not exist");
+	}
+
 }
 
 void Window::addColorButton(std::string buttonID, float x, float y, float width, float height)
@@ -249,6 +394,20 @@ List* Window::findListByID(std::string ID)
 	}
 	
 	return NULL;
+}
+ImgList* Window::findImgListById(std::string ID)
+{
+	ImgList* result = NULL;
+
+	for(unsigned int i = 0; i < imgLists->size(); i++)
+	{
+		if(imgLists->at(i).getVecID().compare(ID) == 0)
+		{
+			result = &imgLists->at(i);
+		}
+	}
+
+	return result;
 }
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
@@ -297,7 +456,7 @@ void List::updateInput(float mx, float my)
 	//Checking for collision
 	if(mx > startX && my > startY && mx < endX && my < endY)
 	{
-		
+		agk::Print("List is hit");
 	}
 }
 void List::updateScissors()
@@ -371,9 +530,71 @@ void ListCell::setScissor(float x1, float y1, float x2, float y2)
 
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
+
+void ImgList::create(std::string vecID, int cloneID, float x, float y, float width, float height, float imgWidth, float imgHeight, int r, int g, int b, int a)
+{
+	this->vecID = vecID;
+	this->x = x;
+	this->y = y;
+
+	this->width = width;
+	this->height = height;
+
+	this->imgHeight = imgHeight;
+	this->imgWidth = imgWidth;
+
+	//Creating the background
+	bgSID = agk::CloneSprite(cloneID);
+	agk::FixSpriteToScreen(bgSID, 1);
+	agk::SetSpritePosition(bgSID, x, y);
+	float bgWidth = width / agk::GetImageWidth(agk::GetSpriteImageID(cloneID));
+	float bgHeight = height / agk::GetImageHeight(agk::GetSpriteImageID(cloneID));
+	agk::SetSpriteScale(bgSID, bgWidth, bgHeight);
+	agk::SetSpriteColor(bgSID, r, g, b, a);
+
+	//Initialising vectors
+	listItems = new std::vector< ImgListItem >;
+}
+
+void ImgList::remove()
+{
+	//Removing garbage
+	listItems->clear();
+	delete[] listItems;
+	listItems = NULL;
+}
+
+void ImgList::addImage(std::string image)
+{
+	ImgListItem listItem;
+	
+	//Calculating the position of the new image
+	int xAmount = (int) width / imgWidth; //The amount of images that fit in one row
+
+	float yPos = (int)(listItems->size() / xAmount) * imgHeight + y;
+	int rest = listItems->size() % xAmount;
+	float xPos = rest * imgWidth + x;
+	
+	listItem.create(image, xPos, yPos, imgWidth, imgHeight);
+}
+
+std::string ImgList::getVecID()
+{
+	return vecID;
+}
+
+void ImgListItem::create(std::string image, float x, float y, float width, float height)
+{
+	imgID = agk::LoadImage(image.data());
+	SID = agk::CreateSprite(imgID);
+
+	agk::FixSpriteToScreen(SID, 1);
+	agk::SetSpriteScale(SID, width / agk::GetImageWidth(imgID), height / agk::GetImageHeight(imgID));
+	agk::SetSpritePosition(SID, x, y);
+}
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
 void Button::createColorButton(std::string vecID, float x, float y, float width, float height)
 {
 	this->vecID = vecID;
-
-	SID = agk::CreateSprite(
 }
