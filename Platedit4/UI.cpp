@@ -63,6 +63,24 @@ void UI::addWindow(std::string ID, std::string bgName, float x, float y, float s
 
 	windows->push_back(tempWindow);
 }
+void UI::removeWindow(std::string windowID)
+{
+	//Finding the window
+	Window* window = getWindowByID(windowID);
+
+	if(window != NULL)
+	{
+		window->remove();
+
+		//Removing the window from the vector
+		this->deleteWindowByID(windowID);
+	}
+	else
+	{
+		DebugConsole::addC("Failed to remove window: ");DebugConsole::addC(windowID.data());
+		DebugConsole::addC(" -- Window did not exist");
+	}
+}
 void UI::addListToWindow(std::string window, std::string listID, float offsetX, float offsetY, float width, float height, std::vector< float >* colWidth, std::vector< std::string >* colHeaders)
 {
 	//Adding the list
@@ -129,18 +147,65 @@ void UI::addImgListToWindow(std::string windowID, std::string vecID, int cloneID
 		DebugConsole::addToLog(" -- window did not exist");
 	}
 }
-void UI::addImageToImgList(std::string windowID, std::string vecID, std::string img)
+void UI::addImageToImgList(std::string windowID, std::string vecID, std::string img, std::string value)
 {
 	Window* window = getWindowByID(windowID);
 	if(window != NULL)
 	{
-		window->addImageToImgList(vecID, img);
+		window->addImageToImgList(vecID, img, value);
 	}
 	else
 	{
 		DebugConsole::addC("Failed to add image to imglist, window: ");DebugConsole::addC(windowID.data());
 		DebugConsole::addToLog(" did not exist");
 	}
+}
+std::string UI::getImgListSelValue(std::string windowID, std::string vecID)
+{
+	Window* window = getWindowByID(windowID);
+	if(window != NULL)
+	{
+		return window->getImgListSelValue(vecID);
+	}
+	else
+	{
+		DebugConsole::addC("Failed to get selected value from imglist, window: ");DebugConsole::addC(windowID.data());
+		DebugConsole::addToLog(" did not exist");
+	}
+
+	return "";
+}
+
+void UI::addEditboxToWindow(std::string windowID, std::string vecID, float x, float y, float sizeX, float sizeY)
+{
+	//Finding the right window
+	Window* window = getWindowByID(windowID);
+
+	if(window != NULL)
+	{
+		window->addEditbox(vecID, x, y, sizeX, sizeY);
+	}
+	else
+	{
+		DebugConsole::addC("Failed to add editbox: ");DebugConsole::addC(vecID.data());
+		DebugConsole::addC(" to window: ");DebugConsole::addC(windowID.data());
+		DebugConsole::addToLog(" -- window did not exist");
+	}
+}
+std::string UI::getEditboxValue(std::string windowID, std::string vecID)
+{
+	Window* window = this->getWindowByID(windowID);
+
+	if(window != NULL)
+	{
+		return window->getEditboxValue(vecID);
+	}
+	else
+	{
+		DebugConsole::addC("Failed to get editbox: ");DebugConsole::addC(vecID.data());DebugConsole::addC(" value -- Window did not exist: ");
+		DebugConsole::addToLog(windowID.data());
+	}
+	return "";
 }
 
 void UI::addColorButtonToWindow(std::string windowID, std::string buttonID, float x, float y, float width, float height)
@@ -184,6 +249,19 @@ Window* UI::getWindowByID(std::string ID)
 
 	return NULL;
 }
+void UI::deleteWindowByID(std::string ID)
+{
+	std::vector< Window >::iterator it;
+	for(it = windows->begin(); it != windows->end(); it++)
+	{
+		if(it->getID().compare(ID) == 0)
+		{
+			windows->erase(it);
+
+			return;
+		}
+	}
+}
 /////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
 
@@ -223,6 +301,7 @@ void Window::create(std::string vecID, std::string bgName, float x, float y, flo
 	lists = new std::vector< List >;
 	buttons = new std::vector< Button >;
 	imgLists = new std::vector< ImgList >;
+	editboxes = new std::vector< UI_editbox >;
 }
 int Window::update(float mx, float my)
 {
@@ -245,12 +324,28 @@ void Window::updateInput(float mx, float my)
 	{
 		lists->at(i).updateInput(mx, my);
 	}
+	for(unsigned int i = 0; i < imgLists->size(); i++)
+	{
+		imgLists->at(i).updateInput(mx, my);
+	}
 }
 void Window::remove()
 {
+	if(agk::GetSpriteExists(bgSID))
+	{
+		agk::DeleteSprite(bgSID);
+	}
 	for(unsigned int i = 0; i < imgLists->size(); i++)
 	{
 		imgLists->at(i).remove();
+	}
+	for(unsigned int i = 0; i < lists->size(); i++)
+	{
+		lists->at(i).remove();
+	}
+	for(unsigned int i = 0; i < editboxes->size(); i++)
+	{
+		editboxes->at(i).remove();
 	}
 	imgLists->clear();
 	delete imgLists;
@@ -260,6 +355,10 @@ void Window::remove()
 	lists->clear();
 	delete lists;
 	lists = NULL;
+
+	editboxes->clear();
+	delete editboxes;
+	editboxes = NULL;
 }
 void Window::updateScissors()
 {
@@ -343,14 +442,14 @@ void Window::addImgList(std::string vecID, int cloneID, float xPos, float yPos, 
 	//Add that list to the vector
 	imgLists->push_back(tempList);
 }
-void Window::addImageToImgList(std::string vecID, std::string img)
+void Window::addImageToImgList(std::string vecID, std::string img, std::string value)
 {
 	//Getting the list
 	ImgList* list = findImgListById(vecID);
 	
 	if(list != NULL) //Making sure the list exists before modifying it
 	{
-		list->addImage(img);
+		list->addImage(img, value);
 	}
 	else
 	{
@@ -359,6 +458,22 @@ void Window::addImageToImgList(std::string vecID, std::string img)
 	}
 
 }
+std::string Window::getImgListSelValue(std::string vecID)
+{
+	//Getting the list
+	ImgList* list = findImgListById(vecID);
+	
+	if(list != NULL) //Making sure the list exists before modifying it
+	{
+		return list->getSelectedValue();
+	}
+	else
+	{
+		DebugConsole::addC("Failed to add image to the Imglist: ");DebugConsole::addC(vecID.data());
+		DebugConsole::addToLog(". List did not exist");
+	}
+	return "";
+}
 
 void Window::addColorButton(std::string buttonID, float x, float y, float width, float height)
 {
@@ -366,6 +481,34 @@ void Window::addColorButton(std::string buttonID, float x, float y, float width,
 	tempButton.createColorButton(buttonID, x, y, width, height);
 }
 
+void Window::addEditbox(std::string vecID, float x, float y, float sizeX, float sizeY)
+{
+	float xPos = this->x + x;
+	float yPos = this->y + y;
+	
+	UI_editbox tempBox;
+	tempBox.create(vecID, xPos, yPos, sizeX, sizeY);
+
+	editboxes->push_back(tempBox);
+}
+std::string Window::getEditboxValue(std::string vecID)
+{
+	UI_editbox* editbox = findEditboxById(vecID);
+
+	if(editbox != NULL)
+	{
+		return editbox->getValue();
+	}
+	else
+	{
+		DebugConsole::addC("Failed to get editbox value -- Editbox: ");
+		DebugConsole::addC(vecID.data());
+		DebugConsole::addC("  did not exist in window: ");
+		DebugConsole::addToLog(this->vecID.data());
+	}
+
+	return "";
+}
 
 void Window::setBgColor(int r, int g, int b, int a)
 {
@@ -409,6 +552,19 @@ ImgList* Window::findImgListById(std::string ID)
 
 	return result;
 }
+UI_editbox* Window::findEditboxById(std::string ID)
+{
+	UI_editbox* result;
+	for(unsigned int i = 0; i < editboxes->size(); i++)
+	{
+		if(ID.compare(editboxes->at(i).getVecID()) == 0)
+		{
+			result = &editboxes->at(i);
+		}
+	}
+
+	return result;
+}
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
@@ -430,6 +586,21 @@ void List::create(std::string vecID, float x, float y, float width, float height
 
 	rowHeight = 13;
 	nextItemY = y + rowHeight;
+}
+void List::remove()
+{
+	this->header.remove();
+	for(unsigned int i = 0; i < listItems->size(); i++)
+	{
+		listItems->at(i).remove();
+	}
+	listItems->clear();
+	delete listItems;
+	listItems = NULL;
+
+	colWidth->clear();
+	delete colWidth;
+	colWidth = NULL;
 }
 
 int List::addItem(std::vector< std::string >* values)
@@ -456,7 +627,7 @@ void List::updateInput(float mx, float my)
 	//Checking for collision
 	if(mx > startX && my > startY && mx < endX && my < endY)
 	{
-		agk::Print("List is hit");
+		
 	}
 }
 void List::updateScissors()
@@ -502,6 +673,16 @@ void ListItem::create(std::vector< float >* colWidth, std::vector< std::string >
 		nextXPos = nextXPos + colWidth->at(i);
 	}
 }
+void ListItem::remove()
+{
+	for(unsigned int i = 0; i < cells->size(); i++)
+	{
+		cells->at(i).remove();
+	}
+	cells->clear();
+	delete cells;
+	cells = NULL;
+}
 
 void ListItem::setScissor(float x1, float y1, float x2, float y2)
 {
@@ -518,6 +699,13 @@ void ListCell::create(std::string value, float width, float x, float y)
 	agk::FixTextToScreen(TID, 1);
 	agk::SetTextPosition(TID, x, y);
 	agk::SetTextSize(TID, 16);
+}
+void ListCell::remove()
+{
+	if(agk::GetTextExists(TID))
+	{
+		agk::DeleteText(TID);
+	}
 }
 
 void ListCell::setScissor(float x1, float y1, float x2, float y2)
@@ -555,46 +743,211 @@ void ImgList::create(std::string vecID, int cloneID, float x, float y, float wid
 	//Initialising vectors
 	listItems = new std::vector< ImgListItem >;
 }
+void ImgList::updateInput(float mx, float my)
+{
+	//Checking if the list is hit
+	if(mx > agk::ScreenToWorldX(x) && my > agk::ScreenToWorldY(y) && mx < agk::ScreenToWorldX(x + width) && my < agk::ScreenToWorldY(y + height))
+	{
+		for(unsigned int i = 0; i < listItems->size(); i++)
+		{
+			bool hit = listItems->at(i).updateInput(mx, my);
 
+			if(hit == true && Input::shoot())
+			{
+				selected = listItems->at(i).getImage();
+			}
+		}
+	}
+
+	if(selected.compare("") != 0)
+	{
+		ImgListItem* item = getItemByImage(selected);
+
+		if(item != NULL)
+		{
+			item->highlight(100, 100, 255);
+		}
+	}
+}
 void ImgList::remove()
 {
+	if(agk::GetSpriteExists(bgSID))
+	{
+		agk::DeleteSprite(bgSID);
+	}
+
+	for(unsigned int i = 0; i < listItems->size(); i++)
+	{
+		listItems->at(i).remove();
+	}
 	//Removing garbage
 	listItems->clear();
-	delete[] listItems;
+	delete listItems;
 	listItems = NULL;
 }
 
-void ImgList::addImage(std::string image)
+void ImgList::addImage(std::string image, std::string value)
 {
 	ImgListItem listItem;
 	
 	//Calculating the position of the new image
-	int xAmount = (int) width / imgWidth; //The amount of images that fit in one row
+	int xAmount = (int) (width - imgWidth * 3) / imgWidth; //The amount of images that fit in one row
 
 	float yPos = (int)(listItems->size() / xAmount) * imgHeight + y;
 	int rest = listItems->size() % xAmount;
 	float xPos = rest * imgWidth + x;
 	
-	listItem.create(image, xPos, yPos, imgWidth, imgHeight);
+	listItem.create(image, xPos, yPos, imgWidth, imgHeight, value);
+
+	listItems->push_back(listItem);
 }
 
+std::string ImgList::getSelectedValue()
+{
+	ImgListItem* item = getItemByImage(selected);
+
+	std::string result = "";
+
+	if(item != NULL)
+	{
+		result = item->getValue();
+	}
+
+	return result;
+}
 std::string ImgList::getVecID()
 {
 	return vecID;
 }
 
-void ImgListItem::create(std::string image, float x, float y, float width, float height)
+ImgListItem* ImgList::getItemByImage(std::string ID)
+{
+	for(unsigned int i = 0; i < listItems->size(); i++)
+	{
+		if(listItems->at(i).getImage().compare(ID) == 0)
+		{
+			return &listItems->at(i);
+		}
+	}
+
+	return NULL;
+}
+
+void ImgListItem::create(std::string image, float x, float y, float width, float height, std::string value)
 {
 	imgID = agk::LoadImage(image.data());
 	SID = agk::CreateSprite(imgID);
 
 	agk::FixSpriteToScreen(SID, 1);
-	agk::SetSpriteScale(SID, width / agk::GetImageWidth(imgID), height / agk::GetImageHeight(imgID));
-	agk::SetSpritePosition(SID, x, y);
+
+	//Calculating the scale
+	float scaleX = width / agk::GetImageWidth(imgID);
+	float scaleY = width / agk::GetImageWidth(imgID);
+	if(agk::GetImageWidth(imgID) < agk::GetImageHeight(imgID))
+	{
+		scaleX = height / agk::GetImageHeight(imgID);
+		scaleY = height / agk::GetImageHeight(imgID);
+	}
+
+	float xPos = x;
+	float yPos = y;
+
+	agk::SetSpriteScale(SID, scaleX, scaleY);
+	agk::SetSpritePosition(SID, xPos, yPos);
+
+	this->value = value;
+	this->image = image;
+
+	this->x = xPos;
+	this->y = yPos;
+
+	this->width = width;
+	this->height = height;
+	this->scaleX = scaleX;
+	this->scaleY = scaleY;
+}
+bool ImgListItem::updateInput(float mx, float my)
+{
+	if(mx > agk::ScreenToWorldX(x) && mx < agk::ScreenToWorldX(x + width) && my > agk::ScreenToWorldY(y) && my < agk::ScreenToWorldY(y + height))
+	{
+		this->highlight(255, 100, 100);
+
+		return true;
+	}
+	else
+	{
+		
+	}
+
+	return false;
+}
+void ImgListItem::remove()
+{
+	if(agk::GetSpriteExists(SID))
+	{
+		agk::DeleteSprite(SID);
+	}
+	if(agk::GetImageExists(imgID))
+	{
+		agk::DeleteImage(imgID);
+	}
+}
+
+void ImgListItem::highlight(int r, int g, int b)
+{
+	agk::DrawLine(x, y, x + width, y, r, g, b);
+	agk::DrawLine(x, y, x, y + height, r, g, b);
+	agk::DrawLine(x + width, y, x + width, y + height, r, g, b);
+	agk::DrawLine(x, y + height, x + width, y + height, r, g, b);
+}
+void ImgListItem::setColor(int r, int g, int b, int a)
+{
+	agk::SetSpriteColor(SID, r, g, b, a);
+}
+
+std::string ImgListItem::getImage()
+{
+	return image;
+}
+std::string ImgListItem::getValue()
+{
+	return this->value;
 }
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 void Button::createColorButton(std::string vecID, float x, float y, float width, float height)
 {
 	this->vecID = vecID;
+}
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+
+void UI_editbox::create(std::string vecID, float x, float y, float sizeX, float sizeY)
+{
+	this->vecID = vecID;
+	this->x = x;
+	this->y = y;
+	this->sizeX = sizeX;
+	this->sizeY = sizeY;
+
+	ID = agk::CreateEditBox();
+	agk::SetEditBoxPosition(ID, x, y);
+	agk::SetEditBoxSize(ID, sizeX, sizeY);
+}
+void UI_editbox::remove()
+{
+	agk::DeleteEditBox(ID);
+}
+
+std::string  UI_editbox::getVecID()
+{
+	return this->vecID;
+}
+std::string UI_editbox::getValue()
+{
+	char* p = agk::GetEditBoxText(ID);;
+	std::string result = p;
+	delete[] p;
+	return result;
 }

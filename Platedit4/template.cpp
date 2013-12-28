@@ -43,10 +43,10 @@ void app::Loop (void)
 		uiGroup.setWindowColor("toolbar", 150, 150, 150, 255);
 		std::vector< float > colWidth;
 		colWidth.push_back(120.0f);
-		colWidth.push_back(20.0f);
+		colWidth.push_back(40.0f);
 		std::vector< std::string > headers;
 		headers.push_back("Parts");headers.push_back("key");
-		uiGroup.addListToWindow("toolbar", "toolList", 5.0f, 5.0f, 140.0f, agk::GetVirtualHeight() - 5.0f, &colWidth, &headers);
+		uiGroup.addListToWindow("toolbar", "toolList", 5.0f, 5.0f, 240.0f, agk::GetVirtualHeight() - 5.0f, &colWidth, &headers);
 
 		std::vector< std::string > tool;
 		tool.push_back("");
@@ -61,6 +61,11 @@ void app::Loop (void)
 		tool.clear();
 		tool.push_back("");
 		tool.push_back("");
+		uiGroup.addToList("toolbar", "toolList", &tool);
+
+		tool.clear();
+		tool.push_back("Select");
+		tool.push_back("space");
 		uiGroup.addToList("toolbar", "toolList", &tool);
 
 		tool.clear();
@@ -88,6 +93,7 @@ void app::Loop (void)
 	if(programState == 1)
 	{
 		toolInput();
+		updateMenus();
 
 		editor.update(selTool, uiGroup.getUIActive());
 	}
@@ -166,12 +172,12 @@ void app::toolInput()
 	if(agk::GetRawKeyPressed(80))
 	{
 		//part picker
-		if(uiGroup.getWindowExists("partpicker") == false)
+		if(uiGroup.getWindowExists("partpicker") == false && uiGroup.getWindowExists("saving") == false && uiGroup.getWindowExists("loading") == false)
 		{
 			uiGroup.addWindow("partpicker", "1x1.png", 250.0f, 0, (float)agk::GetVirtualWidth() - 250.0f, (float)agk::GetVirtualHeight());
 			uiGroup.setWindowColor("partpicker", 150, 150, 150, 255);
 			//Adding the image list to the window
-			uiGroup.addImgListToWindow("partpicker", "imgList", 1, 360, 5, (float)agk::GetVirtualWidth() - 350 - 10, (float)agk::GetVirtualHeight() - 10, 150, 150, 255, 255, 255, 150);
+			uiGroup.addImgListToWindow("partpicker", "imgList", 1, 360, 5, (float)agk::GetVirtualWidth() - 350 - 10, (float)agk::GetVirtualHeight() - 10, 100, 100, 255, 255, 255, 150);
 		
 			//Adding the folder list
 			uiGroup.addSimpleListToWindow("partpicker", "folderList", 5, 5, 100, (float) agk::GetVirtualHeight() - 10, "Folder");
@@ -185,11 +191,12 @@ void app::toolInput()
 			std::string file = agk::GetFirstFile();
 			while(file.compare("") != 0)
 			{
-				std::string filepath = mediaFolder;
-				filepath.append("/");
-				filepath.append(file);
+				std::string fullFilepath = mediaFolder;
+				fullFilepath.append("/");
+				fullFilepath.append(file);
+				std::string filepath = file;
 
-				uiGroup.addImageToImgList("partpicker", "imgList", filepath);
+				uiGroup.addImageToImgList("partpicker", "imgList", filepath, fullFilepath);
 
 				file = agk::GetNextFile();
 			}
@@ -202,6 +209,98 @@ void app::toolInput()
 				
 				folder = agk::GetNextFolder();
 			}
+
+			agk::SetCurrentDir(oldDir.data());
+		}
+	}
+
+	//If the ctrl key is not pressed
+	if(agk::GetRawKeyState(17) == 0)
+	{
+		if(agk::GetRawKeyPressed(67))
+		{
+			selTool = tool_place;
+		}
+		if(agk::GetRawKeyState(32))
+		{
+			selTool = tool_select;
+		}
+		if(agk::GetRawKeyState(77))
+		{
+			selTool = tool_move;
+		}
+		if(agk::GetRawKeyState(83))
+		{
+			selTool = tool_scale;
+		}
+		if(agk::GetRawKeyState(82))
+		{
+			selTool = tool_rotate;
+		}
+	}
+	else
+	{
+		//Saving
+		if(agk::GetRawKeyState(83))
+		{
+			//Creating the save window
+			if(uiGroup.getWindowExists("saving") == 0)
+			{
+				uiGroup.addWindow("saving", "1x1.png", agk::GetVirtualWidth() / 2 - 250, agk::GetVirtualHeight() / 2 - 100, 500, 200);
+				uiGroup.setWindowColor("saving", 150, 150, 150, 255);
+
+				uiGroup.addEditboxToWindow("saving", "filename", 30, 80, 440, 25);
+			}
+		}
+		if(agk::GetRawKeyState(76))
+		{
+			if(uiGroup.getWindowExists("loading") == 0)
+			{
+				uiGroup.addWindow("loading", "1x1.png", agk::GetVirtualWidth() / 2 - 250, agk::GetVirtualHeight() / 2 - 100, 500, 200);
+				uiGroup.setWindowColor("loading", 150, 150, 150, 255);
+
+				uiGroup.addEditboxToWindow("loading", "filename", 30, 80, 440, 25);
+			}
+		}
+	}
+}
+
+void app::updateMenus()
+{
+	if(uiGroup.getWindowExists("partpicker"))
+	{
+		std::string selectedValue = uiGroup.getImgListSelValue("partpicker", "imgList");
+		if(selectedValue.compare("") != 0)
+		{
+			//Save the value
+			editor.setSelImage(selectedValue);
+
+			uiGroup.removeWindow("partpicker");
+		}
+	}
+	if(uiGroup.getWindowExists("saving"))
+	{
+		//If the user preses enter
+		if(agk::GetRawKeyState(13))
+		{
+			//Getting the value of the editbox
+			std::string value = uiGroup.getEditboxValue("saving", "filename");
+
+			editor.saveMap(value);
+			uiGroup.removeWindow("saving");
+		}
+	}
+
+	if(uiGroup.getWindowExists("loading"))
+	{
+		//If the user preses enter
+		if(agk::GetRawKeyState(13))
+		{
+			//Getting the value of the editbox
+			std::string value = uiGroup.getEditboxValue("loading", "filename");
+			
+			editor.loadMap(value);
+			uiGroup.removeWindow("loading");
 		}
 	}
 }

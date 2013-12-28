@@ -7,6 +7,7 @@
 #include "UI.h"
 #include "DebugConsole.h"
 #include "Editor.h"
+#include "zString.h"
 
 #define DEVICE_WIDTH 1600
 #define DEVICE_HEIGHT 900
@@ -28,6 +29,7 @@ class app
 		void End( void );
 
 		void toolInput();
+		void updateMenus();
 
 		int programState;
 

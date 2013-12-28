@@ -18,7 +18,10 @@
 	extern float i_my;
 	extern float i_screenMX;
 	extern float i_screenMY;
-
+	extern float i_moveX;
+	extern float i_moveY;
+	extern float i_sMoveX;
+	extern float i_sMoveY;
 	//extern float i_moveX;
 #endif
 
@@ -44,5 +47,14 @@ public:
 	static float moveX();
 
 	static bool shoot(); //Return 1 for pointer state, 2 for press
+	static int mouseClick();
+	static int mouseHold();
+	static int mouseRelease();
+
+	static float scrollAmount();
+
+	static bool cameraMove();
+
+	static bool selectMultiple();
 };
 

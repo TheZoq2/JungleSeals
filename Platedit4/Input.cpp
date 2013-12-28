@@ -14,7 +14,10 @@ float i_mx;
 float i_my;
 float i_screenMX;
 float i_screenMY;
-
+float i_moveX;
+float i_moveY;
+float i_sMoveX;
+float i_sMoveY;
 //float i_moveX;
 
 
@@ -46,11 +49,23 @@ void Input::updateInput()
 	/*if(agk::GetRawKeyState(83)) { i_down = true; }
 	else { i_down = false; }*/
 
+	float oldSX = i_screenMX;
+	float oldSY = i_screenMY;
+
 	i_screenMX = agk::GetPointerX();
 	i_screenMY = agk::GetPointerY();
 
+	float oldX = i_mx;
+	float oldY = i_my;
+
 	i_mx = agk::ScreenToWorldX(i_screenMX);
 	i_my = agk::ScreenToWorldY(i_screenMY);
+
+	i_moveX = i_mx - oldX;
+	i_moveY = i_my - oldY;
+
+	i_sMoveX = i_screenMX - oldSX;
+	i_sMoveY = i_screenMY - oldSY;
 }
 
 bool Input::debugKey()
@@ -160,6 +175,41 @@ float Input::moveX()
 bool Input::shoot()
 {
 	if(agk::GetPointerState())
+	{
+		return true;
+	}
+	return false;
+}
+
+int Input::mouseClick()
+{
+	return agk::GetPointerPressed();
+}
+int Input::mouseHold()
+{
+	return agk::GetPointerState();
+}
+int Input::mouseRelease()
+{
+	return agk::GetPointerReleased();
+}
+float Input::scrollAmount()
+{
+	return agk::GetRawMouseWheelDelta();
+}
+
+bool Input::cameraMove()
+{
+	if(agk::GetRawMouseRightState() == 1)
+	{
+		return true;
+	}
+	else return false;
+}
+
+bool Input::selectMultiple()
+{
+	if(agk::GetRawKeyState(16))
 	{
 		return true;
 	}
