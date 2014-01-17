@@ -18,6 +18,11 @@ public:
 	void setAngle(float angle);
 	void setPosition(float x, float y);
 	void setScale(float scaleX, float scaleY);
+	void incPhysState(int amount);
+	void setPhysState(int state);
+	void incDepth(int amount);
+	void setDepth(int depth);
+	void setData(std::string name);
 
 	bool isHit(float xChk, float yChk);
 
@@ -28,6 +33,9 @@ public:
 	float getScaleX();
 	float getScaleY();
 	float getAngle();
+	int getPhysState();
+	int getDepth();
+	std::string getData();
 private:
 	int vecID;
 
@@ -50,5 +58,8 @@ private:
 	float angleNoSnap;
 
 	int depth;
+	int physState;
+
+	std::string data;
 };
 

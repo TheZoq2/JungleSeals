@@ -206,10 +206,88 @@ void Editor::update(int selTool, bool uiActive)
 		cameraX = cameraX + -sMoveX / cameraZoom;
 		cameraY = cameraY + -sMoveY / cameraZoom;
 	}
-	cameraZoom = cameraZoom + 0.01 * scrollAmount;
+	cameraZoom = cameraZoom + 0.01f * scrollAmount;
 
 	agk::SetViewZoom(cameraZoom);
 	agk::SetViewOffset(cameraX - agk::GetVirtualWidth() / 2, cameraY - agk::GetVirtualHeight() / 2);
+}
+void Editor::updateSelectedWindow( UI* uiGroup)
+{
+	if(selParts->size() == 0) //If no parts are selected
+	{
+		if(uiGroup->getWindowExists("selected"))
+		{
+			uiGroup->removeWindow("selected");
+		}
+	}
+	else
+	{
+		if(selParts->size() == 1)
+		{
+			if(lastSelID != selParts->at(0))
+			{
+				uiGroup->removeWindow("selected");
+			}
+
+			lastSelID = selParts->at(0);
+			Part* part = findPartByID(selParts->at(0));
+
+			if(uiGroup->getWindowExists("selected") == 0)
+			{
+				uiGroup->addWindow("selected", "1x1.png", (float)agk::GetVirtualWidth() - 250.0f, 0, 250.0f, (float)agk::GetVirtualHeight());
+				uiGroup->setWindowColor("selected", 150, 150, 150, 255);
+
+				uiGroup->addEditboxToWindow("selected", "name", 5, 5, 250, 16);
+				uiGroup->setEditboxValue("selected", "name", part->getData());
+
+				uiGroup->addSimpleListToWindow("selected", "dataList", 5, 25, 240, 200, "Data");
+			}
+
+			//Adding the data to the data list
+			uiGroup->clearList("selected", "dataList");
+			std::string listVal = "Depth: ";
+			char* p = agk::Str(part->getDepth());
+			listVal.append(p);
+			delete p;
+			uiGroup->addToSimpleList("selected", "dataList", listVal);
+			p = agk::Str(part->getPhysState());
+			listVal = "Phys state: ";
+			listVal.append(p);
+			delete p;
+			uiGroup->addToSimpleList("selected", "dataList", listVal);
+
+
+			part->setData(uiGroup->getEditboxValue("selected", "name"));
+
+			
+		}
+		else //If there is more than 1 part selected
+		{
+			if(uiGroup->getWindowExists("selected"))
+			{
+				uiGroup->removeWindow("selected");
+			}
+		}
+	}
+}
+
+void Editor::incPhysState(int amount)
+{
+	for(unsigned int i = 0; i < selParts->size(); i++)
+	{
+		Part* part = findPartByID(selParts->at(i));
+
+		part->incPhysState(amount);
+	}
+}
+void Editor::incDepth(int amount)
+{
+	for(unsigned int i = 0; i < selParts->size(); i++)
+	{
+		Part* part = findPartByID(selParts->at(i));
+
+		part->incDepth(amount);
+	}
 }
 
 void Editor::setSelImage(std::string selImage)
@@ -250,6 +328,8 @@ void Editor::saveMap(std::string filename)
 			float scaleX = parts->at(i).getScaleX();
 			float scaleY = parts->at(i).getScaleY();
 			float angle = parts->at(i).getAngle();
+			int physState = parts->at(i).getPhysState();
+			int depth = parts->at(i).getDepth();
 
 			//Starting a new part
 			agk::WriteString(fileID, "|");
@@ -265,6 +345,12 @@ void Editor::saveMap(std::string filename)
 			partString.append(DataEditor::createData("scaleY", scaleY));
 			partString.append(";");
 			partString.append(DataEditor::createData("angle", angle));
+			partString.append(";");
+			partString.append(DataEditor::createData("physState", physState));
+			partString.append(";");
+			partString.append(DataEditor::createData("depth", depth));
+			partString.append(";");
+			partString.append(parts->at(i).getData());
 
 			//Writing the data
 			agk::WriteString(fileID, partString.data());
@@ -302,7 +388,10 @@ void Editor::loadMap(std::string filename)
 			float scaleX = 1;
 			float scaleY = 0;
 			float angle = 0;
-			float depth = 100;
+			int depth = 100;
+			int physState = 1;
+
+			std::string additionalData;
 
 			p = agk::ReadString(fileID); // '|'
 			delete[] p;
@@ -327,25 +416,40 @@ void Editor::loadMap(std::string filename)
 					{
 						imgName = dataValue;
 					}
-					if(dataType.compare("xPos") == 0)
+					else if(dataType.compare("xPos") == 0)
 					{
 						xPos = agk::ValFloat(dataValue.data());
 					}
-					if(dataType.compare("yPos") == 0)
+					else if(dataType.compare("yPos") == 0)
 					{
 						yPos = agk::ValFloat(dataValue.data());
 					}
-					if(dataType.compare("scaleX") == 0)
+					else if(dataType.compare("scaleX") == 0)
 					{
 						scaleX = agk::ValFloat(dataValue.data());
 					}
-					if(dataType.compare("scaleY") == 0)
+					else if(dataType.compare("scaleY") == 0)
 					{
 						scaleY = agk::ValFloat(dataValue.data());
 					}
-					if(dataType.compare("angle") == 0)
+					else if(dataType.compare("angle") == 0)
 					{
 						angle = agk::ValFloat(dataValue.data());
+					}
+					else if(dataType.compare("physState") == 0)
+					{
+						physState = agk::Val(dataValue.data());
+					}
+					else if(dataType.compare("depth") == 0)
+					{
+						depth = agk::Val(dataValue.data());
+					}
+					else
+					{
+						additionalData.append(dataType);
+						additionalData.append(":");
+						additionalData.append(dataValue);
+						additionalData.append(";");
 					}
 				}
 			}
@@ -359,6 +463,9 @@ void Editor::loadMap(std::string filename)
 				tempPart.setScale(scaleX, scaleY);
 				tempPart.setPosition(xPos, yPos);
 				tempPart.setAngle(angle);
+				tempPart.setPhysState(physState);
+				tempPart.setDepth(depth);
+				tempPart.setData(additionalData);
 
 				nextPart++;
 				parts->push_back(tempPart);

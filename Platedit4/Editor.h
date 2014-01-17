@@ -7,6 +7,7 @@
 #include "Input.h"
 #include "DataEditor.h"
 #include "DebugConsole.h"
+#include "UI.h"
 
 #include "zString.h"
 
@@ -25,11 +26,15 @@ public:
 
 	void setup();
 	void update(int tool, bool uiActive);
+	void updateSelectedWindow(UI* uiGroup);
 
 	void setSelImage(std::string selImage);
 
 	void saveMap(std::string filename);
 	void loadMap(std::string filename);
+
+	void incPhysState(int amount);
+	void incDepth(int depth);
 private:
 	int nextPart;
 	std::string selImage;
@@ -44,5 +49,7 @@ private:
 	float cameraX;
 	float cameraY;
 	float cameraZoom;
+
+	int lastSelID;
 };
 

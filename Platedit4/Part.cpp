@@ -26,6 +26,10 @@ void Part::create(int vecID, std::string imgName, float x, float y, int depth)
 	this->scaleYNoSnap = 1;
 
 	this->angle = 0;
+	this->depth = depth;
+	this->physState = 1;
+
+	this->data = "";
 
 	imgID = agk::LoadImage(imgName.data());
 	SID = agk::CreateSprite(imgID);
@@ -33,6 +37,8 @@ void Part::create(int vecID, std::string imgName, float x, float y, int depth)
 	agk::SetSpritePositionByOffset(SID, x, y);
 	agk::SetSpriteDepth(SID, depth);
 	agk::SetSpriteShape(SID, 3);
+
+	agk::SetSpritePhysicsOn(SID, physState);
 }
 
 int Part::getVecID()
@@ -99,6 +105,42 @@ void Part::setScale(float scaleX, float scaleY)
 
 	agk::SetSpriteScale(SID, scaleX, scaleY);
 }
+void Part::incPhysState(int amount)
+{
+	physState = physState + amount;
+
+	if(physState > 2)
+	{
+		physState = 0;
+	}
+	if(physState < 0)
+	{
+		physState = 2;
+	}
+
+	agk::SetSpritePhysicsDelete(SID);
+	agk::SetSpritePhysicsOn(SID, physState);
+}
+void Part::setPhysState(int state)
+{
+	physState = state;
+	agk::SetSpritePhysicsDelete(SID);
+	agk::SetSpritePhysicsOn(SID, physState);
+}
+void Part::incDepth(int amount)
+{
+	depth = depth + amount;
+	agk::SetSpriteDepth(SID, depth);
+}
+void Part::setDepth(int depth)
+{
+	this->depth = depth;
+	agk::SetSpriteDepth(SID, depth);
+}
+void Part::setData(std::string data)
+{
+	this->data = data;
+}
 
 std::string Part::getImgName()
 {
@@ -123,4 +165,16 @@ float Part::getScaleX()
 float Part::getScaleY()
 {
 	return scaleY;
+}
+int Part::getPhysState()
+{
+	return physState;
+}
+int Part::getDepth()
+{
+	return depth;
+}
+std::string Part::getData()
+{
+	return data;
 }

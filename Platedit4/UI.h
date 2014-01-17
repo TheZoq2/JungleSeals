@@ -16,9 +16,11 @@ public:
 
 	std::string getVecID();
 	std::string getValue();
+	
+	void setValue(std::string value);
 private:
 	std::string vecID;
-	
+
 	int ID;
 
 	float x;
@@ -31,7 +33,14 @@ private:
 class Button
 {
 public:
-	void createColorButton(std::string vecID, float x, float y, float width, float height);
+	void createColorButton(std::string vecID, float x, float y, float width, float height, std::string text);
+	void updateInput(float mx, float my);
+
+	void reset();
+
+	void setColors(int r, int g, int b, int hr, int hg, int hb);
+
+	std::string getVecID();
 private:
 	std::string vecID;
 
@@ -42,6 +51,13 @@ private:
 
 	float x;
 	float y;
+
+	int r;
+	int g;
+	int b;
+	int hr;
+	int hg;
+	int hb;
 };
 //////////////////////////////////////////////////////////////////////////
 class ImgListItem
@@ -143,6 +159,8 @@ public:
 	void updateScissors();
 	void remove();
 
+	void clear();
+
 	int addItem(std::vector< std::string >* values);
 	
 	std::string getID();
@@ -181,6 +199,8 @@ public:
 	//UI elements
 	void addList(std::string listID, float offsetX, float offsetY, float width, float height, std::vector< float >* colWidth, std::vector< std::string >* colHeaders);
 	void addSimpleList(std::string listID, float x, float y, float width, float height, std::string header);
+	void removeList(std::string listID);
+	void clearList(std::string listID);
 
 	void addToList(std::string listID, std::vector< std::string >* values);
 	void addToSimpleList(std::string listID, std::string value);
@@ -191,8 +211,10 @@ public:
 
 	void addEditbox(std::string vecID, float x, float y, float sizeX, float sizeY);
 	std::string getEditboxValue(std::string vecID);
+	void setEditboxValue(std::string vecID, std::string value);
 
-	void addColorButton(std::string buttonID, float x, float y, float width, float height);
+	void addColorButton(std::string buttonID, float x, float y, float width, float height, std::string text);
+	void setButtonColor(std::string buttonID, int r, int g, int b, int hr, int hg, int hb);
 private:
 	std::string vecID;
 
@@ -222,6 +244,7 @@ private:
 	List* findListByID(std::string ID);
 	ImgList* findImgListById(std::string ID);
 	UI_editbox* findEditboxById(std::string ID);
+	Button* findButtonById(std::string ID);
 };
 
 //Group that cointains UI elements
@@ -245,6 +268,8 @@ public:
 	//UI elements
 	void addListToWindow(std::string windowID, std::string listID, float x, float y, float width, float height, std::vector< float >* colWidth, std::vector< std::string >* colHeaders);
 	void addSimpleListToWindow(std::string windowID, std::string listID, float x, float y, float width, float height, std::string header);
+	void removeList(std::string windowID, std::string listID);
+	void clearList(std::string windowID, std::string listID);
 
 	void addToList(std::string windowID, std::string listID, std::vector< std::string >* values);
 	void addToSimpleList(std::string windowID, std::string listID, std::string value);
@@ -255,8 +280,10 @@ public:
 
 	void addEditboxToWindow(std::string windowID, std::string vecID, float x, float y, float sizeX, float sizeY);
 	std::string getEditboxValue(std::string windowID, std::string vecID);
+	void setEditboxValue(std::string windowID, std::string vecID, std::string value);
 
-	void addColorButtonToWindow(std::string windowID, std::string buttonID, float x, float y, float width, float height);
+	void addColorButtonToWindow(std::string windowID, std::string buttonID, float x, float y, float width, float height, std::string text);
+	void setButtonColor(std::string windowID, std::string buttonID, int r, int g, int b, int hr, int hg, int hb);
 
 	bool getWindowExists(std::string ID);
 private:

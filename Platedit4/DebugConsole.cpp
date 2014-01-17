@@ -28,14 +28,14 @@ void DebugConsole::setup()
 	dc_editID = agk::CreateEditBox();
 	agk::FixEditBoxToScreen(dc_editID, 1);
 	agk::SetEditBoxPosition(dc_editID, 0, 250);
-	agk::SetEditBoxSize(dc_editID, agk::GetVirtualWidth(), 20.0f);
+	agk::SetEditBoxSize(dc_editID, (float)agk::GetVirtualWidth(), 20.0f);
 	agk::SetEditBoxBorderColor(dc_editID, 150, 150, 150, 150);
 	agk::SetEditBoxBackgroundColor(dc_editID, 150, 150, 150, 150);
 
 	//Creating the background sprite
 	dc_bgSID = agk::CloneSprite(1);
 	agk::FixSpriteToScreen(dc_bgSID, 1);
-	agk::SetSpriteScale(dc_bgSID, agk::GetVirtualWidth(), 270.0f);
+	agk::SetSpriteScale(dc_bgSID, (float)agk::GetVirtualWidth(), 270.0f);
 	agk::SetSpriteColor(dc_bgSID, 150, 150, 150, 100);
 	agk::SetSpriteVisible(dc_bgSID, 0);
 
