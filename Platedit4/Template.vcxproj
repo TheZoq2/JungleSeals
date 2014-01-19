@@ -105,18 +105,26 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Core.cpp" />
+    <ClCompile Include="DataEditor.cpp" />
     <ClCompile Include="DebugConsole.cpp" />
+    <ClCompile Include="Editor.cpp" />
     <ClCompile Include="GF.cpp" />
     <ClCompile Include="Input.cpp" />
+    <ClCompile Include="Part.cpp" />
     <ClCompile Include="template.cpp" />
     <ClCompile Include="UI.cpp" />
+    <ClCompile Include="zString.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DataEditor.h" />
     <ClInclude Include="DebugConsole.h" />
+    <ClInclude Include="Editor.h" />
     <ClInclude Include="GF.h" />
     <ClInclude Include="Input.h" />
+    <ClInclude Include="Part.h" />
     <ClInclude Include="template.h" />
     <ClInclude Include="UI.h" />
+    <ClInclude Include="zString.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

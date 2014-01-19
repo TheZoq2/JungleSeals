@@ -1,0 +1,13 @@
+
+Name:Weapon1
+Sprite:Weapons/Base1.png
+MagCap:30
+Spread:5
+OffsetX:11
+OffsetY:63
+BarrelX:0
+BarrelY:63
+ScaleX:1.0
+ScaleY:1.0
+Projectile:Bullet1
+RateOfFire:8

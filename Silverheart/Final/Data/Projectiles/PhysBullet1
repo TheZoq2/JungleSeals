@@ -1,0 +1,15 @@
+
+Name:Bullet
+Type:Physics
+Sprite:Weapons/Grenade1.png
+ScaleX:0.05
+ScaleY:0.05
+Speed:50.0
+ColorR:255
+ColorG:255
+ColorB:255
+//
+//Physics properties
+//
+Friction:0.8
+RelativeMass:0.5

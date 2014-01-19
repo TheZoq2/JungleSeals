@@ -1,0 +1,46 @@
+﻿Build started 2014-01-18 12:33:29.
+     1>Project "C:\ProgramFilesX86\The Game Creators\AGK\IDE\JungleSeals\Platedit4\Template.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Creating "Debug\Platedit4.unsuccessfulbuild" because "AlwaysCreate" was specified.
+       ClCompile:
+         D:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I..\..\common\Include /I..\..\common /ZI /nologo /W3 /WX- /Od /Oy- /D AGKWINDOWS /D WIN32 /D _DEBUG /D _WINDOWS /D IDE_VS2008 /D _CRT_SECURE_NO_WARNINGS /Gm- /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt Core.cpp DebugConsole.cpp Editor.cpp Part.cpp UI.cpp template.cpp
+         Core.cpp
+     1>c:\programfilesx86\the game creators\agk\ide\jungleseals\platedit4\core.cpp(580): warning C4244: '=' : conversion from 'float' to 'int', possible loss of data
+     1>c:\programfilesx86\the game creators\agk\ide\jungleseals\platedit4\core.cpp(589): warning C4244: '=' : conversion from 'float' to 'int', possible loss of data
+         DebugConsole.cpp
+         Editor.cpp
+         Part.cpp
+         UI.cpp
+         template.cpp
+     1>c:\programfilesx86\the game creators\agk\ide\jungleseals\platedit4\template.cpp(321): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\programfilesx86\the game creators\agk\ide\jungleseals\platedit4\template.cpp(321): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+         Generating Code...
+       ManifestResourceCompile:
+         All outputs are up-to-date.
+     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\Microsoft.CppBuild.targets(990,5): warning MSB8012: TargetPath(C:\ProgramFilesX86\The Game Creators\AGK\IDE\JungleSeals\Platedit4\Debug\Platedit4.exe) does not match the Linker's OutputFile property value (C:\ProgramFilesX86\The Game Creators\AGK\IDE\JungleSeals\Platedit4\Final\Platedit4.exe). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
+       Link:
+         D:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"Final\Platedit4.exe" /INCREMENTAL /NOLOGO /LIBPATH:..\..\platform\windows\Lib\VS2010\Debug AGKWindows.lib OpenGL32.lib winmm.lib dwmapi.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib Delayimp.lib /NODEFAULTLIB:atlsd.lib /DELAYLOAD:Dwmapi.dll /MANIFEST /ManifestFile:"Debug\Platedit4.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\ProgramFilesX86\The Game Creators\AGK\IDE\JungleSeals\Platedit4\Debug\Platedit4.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\ProgramFilesX86\The Game Creators\AGK\IDE\JungleSeals\Platedit4\Debug\Platedit4.lib" /MACHINE:X86 Debug\Platedit4.exe.embed.manifest.res
+         Debug\Core.obj
+         Debug\DataEditor.obj
+         Debug\DebugConsole.obj
+         Debug\Editor.obj
+         Debug\GF.obj
+         Debug\Input.obj
+         Debug\Part.obj
+         Debug\template.obj
+         Debug\UI.obj
+         Debug\zString.obj
+       Manifest:
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /out:"Debug\Platedit4.exe.embed.manifest" /manifest Debug\Platedit4.exe.intermediate.manifest
+         All outputs are up-to-date.
+       LinkEmbedManifest:
+         All outputs are up-to-date.
+         Template.vcxproj -> C:\ProgramFilesX86\The Game Creators\AGK\IDE\JungleSeals\Platedit4\Debug\Platedit4.exe
+       FinalizeBuildStatus:
+         Deleting file "Debug\Platedit4.unsuccessfulbuild".
+         Touching "Debug\Platedit4.lastbuildstate".
+     1>Done Building Project "C:\ProgramFilesX86\The Game Creators\AGK\IDE\JungleSeals\Platedit4\Template.vcxproj" (build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:02.83

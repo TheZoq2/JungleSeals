@@ -36,6 +36,8 @@ void app::Loop (void)
 	uiGroup.update();
 	uiGroup.updateScissors();
 	
+	agk::StepPhysics(0);
+
 	if(programState == 0) //Loading stuff
 	{
 		//Setting up the menus
@@ -87,15 +89,57 @@ void app::Loop (void)
 		tool.push_back("Rotate");
 		tool.push_back("r");
 		uiGroup.addToList("toolbar", "toolList", &tool);
+		
+		tool.clear();
+		tool.push_back("");
+		tool.push_back("");
+		uiGroup.addToList("toolbar", "toolList", &tool);
+
+		tool.clear();
+		tool.push_back("Physics +");
+		tool.push_back(".");
+		uiGroup.addToList("toolbar", "toolList", &tool);
+		tool.clear();
+		tool.push_back("Physics -");
+		tool.push_back(",");
+		uiGroup.addToList("toolbar", "toolList", &tool);
+
+		tool.clear();
+		tool.push_back("Depth +");
+		tool.push_back("up");
+		uiGroup.addToList("toolbar", "toolList", &tool);
+		tool.clear();
+		tool.push_back("Depth -");
+		tool.push_back("down");
+		uiGroup.addToList("toolbar", "toolList", &tool);
+
+		tool.clear();
+		tool.push_back("");
+		tool.push_back("");
+		uiGroup.addToList("toolbar", "toolList", &tool);
+
+		tool.clear();
+		tool.push_back("Save");
+		tool.push_back("ctrl+s");
+		uiGroup.addToList("toolbar", "toolList", &tool);
+
+		tool.clear();
+		tool.push_back("Load");
+		tool.push_back("ctrl+l");
+		uiGroup.addToList("toolbar", "toolList", &tool);
 
 		programState = 1;
 	}
 	if(programState == 1)
 	{
-		toolInput();
+		if(uiGroup.getUIActive() == false)
+		{
+			toolInput();
+		}
 		updateMenus();
 
 		editor.update(selTool, uiGroup.getUIActive());
+		editor.updateSelectedWindow(&uiGroup);
 	}
 	
 	///////////////////////////////////////////////////////////////
@@ -237,6 +281,24 @@ void app::toolInput()
 		{
 			selTool = tool_rotate;
 		}
+
+		if(agk::GetRawKeyPressed(188))
+		{
+			editor.incPhysState(-1);
+		}
+		if(agk::GetRawKeyPressed(190))
+		{
+			editor.incPhysState(1);
+		}
+
+		if(agk::GetRawKeyPressed(38))
+		{
+			editor.incDepth(1);
+		}
+		if(agk::GetRawKeyPressed(40))
+		{
+			editor.incDepth(-1);
+		}
 	}
 	else
 	{
@@ -246,7 +308,7 @@ void app::toolInput()
 			//Creating the save window
 			if(uiGroup.getWindowExists("saving") == 0)
 			{
-				uiGroup.addWindow("saving", "1x1.png", agk::GetVirtualWidth() / 2 - 250, agk::GetVirtualHeight() / 2 - 100, 500, 200);
+				uiGroup.addWindow("saving", "1x1.png", (float)agk::GetVirtualWidth() / 2.0f - 250, (float)agk::GetVirtualHeight() / 2.0f - 100, 500, 200);
 				uiGroup.setWindowColor("saving", 150, 150, 150, 255);
 
 				uiGroup.addEditboxToWindow("saving", "filename", 30, 80, 440, 25);
@@ -257,7 +319,7 @@ void app::toolInput()
 			if(uiGroup.getWindowExists("loading") == 0)
 			{
 				uiGroup.addWindow("loading", "1x1.png", agk::GetVirtualWidth() / 2 - 250, agk::GetVirtualHeight() / 2 - 100, 500, 200);
-				uiGroup.setWindowColor("loading", 150, 150, 150, 255);
+				uiGroup.setWindowColor("loading", 150, 150, 150, 100);
 
 				uiGroup.addEditboxToWindow("loading", "filename", 30, 80, 440, 25);
 			}

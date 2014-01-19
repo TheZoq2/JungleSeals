@@ -1,0 +1,9 @@
+
+Name:Weapon1
+Sprite:Weapons/Base2.png
+MagCap:30
+Spread:7.5
+OffsetX:11
+OffsetY:-10
+ScaleX:0.07
+ScaleY:0.07
